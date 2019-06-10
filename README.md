@@ -9,9 +9,8 @@ Chimera Composable Semantic Data Transformation
 
 ### Building Chimera 
 
-To build Chimera, simply run:
+To build Chimera, import all the projects in eclipse
 
-    mvn clean package
     
 ### Available blocks
 
