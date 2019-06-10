@@ -18,14 +18,13 @@ To build Chimera, simply run:
 #### Lifting
 * Pinto: mappingless lifting (RDF4j)
 * RML: declarative approach based on https://github.com/RMLio/rmlmapper-java
-
-TODO: ST4RT lifting 
+* ST4RT lifting (RDF4j) 
 
 #### Lowering
 * Pinto: mappingless lowering (RDF4j)
+* ST4RT lowering (RDF4j)
 
 IN PROGRESS: Template-based lowering based on Apache Velocity
-TODO: ST4RT lowering
 
 #### Data Enrichment
 * RDF4j enrichment
