@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd     http://camel.apache.org/schema/spring     http://camel.apache.org/schema/spring/camel-spring.xsd     http://www.springframework.org/schema/util      http://www.springframework.org/schema/util/spring-util.xsd     ">
+  <bean class="it.cefriel.chimaera.processor.rdf4j.DataEnricher" id="masterDataEnricher">
+    <property name="masterDataUrls">
+      <util:list id="someArrayId">
+        <value>Tiger</value>
+        <value>Lion</value>
+      </util:list>
+    </property>
+  </bean>
+  <bean class="it.cefriel.chimaera.processor.rdf4j.PintoLiftingProcessor" id="pintoLift">
+    <property name="masterDataUrls">
+      <util:list id="someArrayId">
+        <value>Tiger</value>
+        <value>Lion</value>
+      </util:list>
+    </property>
+  </bean>
+  <bean class="it.cefriel.chimaera.processor.ModelEnricher" id="modelEnricher"/>
+  <bean class="it.cefriel.chimaera.processor.LiftingProcessor" id="lifter"/>
+  <bean class="it.cefriel.chimaera.processor.LoweringProcessor" id="lowerer"/>
+  <bean class="it.cefriel.chimaera.processor.ShaclProcessor" id="shacl"/>
+  <bean class="it.cefriel.chimaera.processor.SemanticLoader" id="rdfparser"/>
+  <bean class="it.cefriel.chimaera.processor.StopProcessor" id="quit"/>
+  <camelContext id="camelContext-f1d4f4ea-253c-4a19-95bb-1e0fb86dbf03" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    <route id="_route1"/>
+  </camelContext>
+</beans>

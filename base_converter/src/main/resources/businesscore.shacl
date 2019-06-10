@@ -1,0 +1,243 @@
+#baseURI: http://www.cefriel.it/shacl/businesscorevoc#
+#imports: http://datashapes.org/dash
+#prefix: c
+@prefix c: <http://www.cefriel.it/shacl/businesscorevoc#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix schema: <http://schema.org/> .
+@prefix cc: <http://creativecommons.org/ns#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xhv: <http://www.w3.org/1999/xhtml/vocab#> .
+@prefix wdrs: <http://www.w3.org/2007/05/powder-s#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix person: <http://www.w3.org/ns/person#> .
+@prefix legal: <http://www.w3.org/ns/legal#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix rov: <http://www.w3.org/ns/regorg#>.
+
+
+c:AddressShape
+    a sh:NodeShape ;
+    sh:targetClass c:Address;
+    
+    sh:property [
+      sh:path c:fullAddress;
+      sh:datatype xsd:string;
+      sh:name "Full Address" ;
+    ] ;
+    sh:property [
+      sh:path c:poBox;
+      sh:datatype xsd:string;
+      sh:name "PO Box" ;
+    ] ;
+    sh:property [
+      sh:path c:thoroughfare;
+      sh:datatype xsd:string;
+      sh:name "Thoroughfare" ;
+    ] ;
+    sh:property [
+      sh:path c:locatorDesignator;
+      sh:datatype xsd:string;
+      sh:name "LocatorDesignator" ;
+    ] ;
+    sh:property [
+      sh:path c:locatorName;
+      sh:datatype xsd:string;
+      sh:name "LocatorName" ;
+    ] ;
+    sh:property [
+      sh:path c:addressArea;
+      sh:datatype xsd:string;
+      sh:name "AddressArea" ;
+    ] ;
+    sh:property [
+      sh:path c:postName;
+      sh:datatype xsd:string;
+      sh:name "PostName" ;
+    ] ;
+    sh:property [
+      sh:path c:adminUnitL1;
+      sh:datatype xsd:string;
+      sh:name "AdminUnitL1" ;
+    ] ;
+    sh:property [
+      sh:path c:adminUnitL2;
+      sh:datatype xsd:string;
+      sh:name "AdminUnitL2" ;
+    ] ;
+    sh:property [
+      sh:path c:postCode;
+      sh:datatype xsd:string;
+      sh:name "PostCode" ;
+    ] ;
+    sh:property [
+      sh:path c:addressID;
+      sh:datatype xsd:string;
+      sh:name "AddressID" ;
+    ] ;
+.
+
+
+c:OpenCorporatesCompanyShape
+    a sh:NodeShape ;
+    sh:targetClass rov:RegisteredOrganization;
+
+
+    # Conversion rules
+    sh:rule [
+      rdf:type sh:SPARQLRule ;
+      sh:construct """
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+          PREFIX legal: <http://www.w3.org/ns/legal#> 
+          PREFIX netex: <http://www.cefriel.it/ontologies/netex#>
+          PREFIX dcterms: <http://purl.org/dc/terms/> 
+          PREFIX rov: <http://www.w3.org/ns/regorg#>
+          PREFIX c: <http://www.cefriel.it/shacl/businesscorevoc#>
+          PREFIX opencorporates: <http://opencorporates.com/vocab/0.1#>
+          PREFIX adms: <http://www.w3.org/ns/adms#> 
+          PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+          CONSTRUCT {
+              $this rdf:type netex:Organisation;
+                netex:legalName [ a netex:MultilingualString;
+                    netex:value ?legal_name;
+                ];
+                netex:companyNumber ?legalIdentifier;
+                netex:name [ a netex:MultilingualString;
+                    netex:value ?company_name;
+                ];
+                #netex:shortName ?name_TODO;
+                netex:tradingName [ a netex:MultilingualString;
+                    netex:value ?company_name;
+                ];
+
+                # TODO               # TODO
+                #netex:typesOfOrganisation
+                #netex:status
+                #netex:organisationType ?org_type;
+                
+                netex:publicCode [
+                    rdf:type netex:PrivateCodeStructure;
+                    netex:type ?identifier_issuer;
+                    netex:value ?legalIdentifier;
+                ];
+                netex:privateCode [
+                    rdf:type netex:PrivateCodeStructure;
+                    netex:type ?identifier_issuer;
+                    netex:value ?legalIdentifier;
+                ];
+                .
+
+                
+          }
+          WHERE {
+              $this rdf:type rov:RegisteredOrganization;
+                rdfs:label ?company_name;
+                rov:legalName ?legal_name;
+                rov:orgType ?org_type;
+                rov:registration [
+                    rdf:type adms:Identifier;
+                    skos:notation ?legalIdentifier;
+                    adms:schemaAgency ?identifier_issuer;
+                ];
+
+              .
+          }
+      """ ;
+    ] ;
+
+
+.
+
+c:LegalEntityShape
+    a sh:NodeShape ;
+    sh:targetClass legal:LegalEntity;
+    
+    # String attributes
+    sh:property [
+      sh:path legal:legalName;
+      sh:datatype xsd:string;
+      sh:name "Legal Name" ;
+    ] ;
+    sh:property [
+      sh:path c:alternativeName;
+      sh:datatype xsd:string;
+      sh:name "Alternative Name" ;
+    ] ;
+    # Associations
+    sh:property [
+      sh:path legal:registeredAddress;
+      sh:class c:Address;
+      sh:name "Registered Address" ;
+    ] ;
+    sh:property [
+      sh:path legal:companyActivity;
+      sh:class c:Code;
+      sh:name "Company Activity" ;
+    ] ;
+    sh:property [
+      sh:path legal:companyStatus;
+      sh:class c:Code;
+      sh:name "Company Status" ;
+    ] ;
+    sh:property [
+      sh:path legal:companyType;
+      sh:class c:Code;
+      sh:name "Company Type" ;
+    ] ;
+    sh:property [
+      sh:path dcterms:identifier;
+      sh:class adms:Identifier;
+      sh:name "Identifier" ;
+    ] ;
+    sh:property [
+      sh:path legal:legalIdentifier;
+      sh:class adms:Identifier;
+      sh:name "Legal Identifier" ;
+    ] ;
+
+
+.
+
+
+c:CodeShape
+    a sh:NodeShape ;
+    sh:targetClass c:Code;
+    
+    sh:property [
+      sh:path c:content;
+      sh:datatype xsd:string;
+      sh:name "Content" ;
+    ] ;
+    sh:property [
+      sh:path c:list;
+      sh:datatype xsd:string;
+      sh:name "List" ;
+    ] ;
+    sh:property [
+      sh:path c:listAgency;
+      sh:datatype xsd:string;
+      sh:name "List Agency" ;
+    ] ;
+    sh:property [
+      sh:path c:listVersion;
+      sh:datatype xsd:string;
+      sh:name "List Version" ;
+    ] ;
+.
+
+
+
+
+
+
+

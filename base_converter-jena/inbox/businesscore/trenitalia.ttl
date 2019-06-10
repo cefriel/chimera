@@ -1,0 +1,82 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix vCard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix gr: <http://purl.org/goodrelations/v1#> .
+@prefix cld: <http://s.opencalais.com/1/linkeddata/pred/> .
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix rov: <http://www.w3.org/ns/regorg#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix opencorporates: <http://opencorporates.com/vocab/0.1#> .
+
+<https://opencorporates.com/companies/fr/521178327>
+    dct:created "2017-01-17T08:29:42Z"^^xsd:dateTime ;
+    dct:hasFormat <https://opencorporates.com/companies/fr/521178327.html>, <https://opencorporates.com/companies/fr/521178327.json>, <https://opencorporates.com/companies/fr/521178327.rdf>, <https://opencorporates.com/companies/fr/521178327.xml> ;
+    dct:modified "2017-01-27T00:34:12Z"^^xsd:dateTime ;
+    dct:title "Information about TRENITALIA SPA" ;
+    a <http://purl.org/dc/dcmitype/Text>, foaf:Document ;
+    foaf:primaryTopic <https://opencorporates.com/id/companies/fr/521178327> .
+
+<https://opencorporates.com/companies/fr/521178327.html>
+    dct:format "text/html" ;
+    dct:isFormatOf <https://opencorporates.com/companies/fr/521178327> ;
+    dct:title "Data in HTML format for TRENITALIA SPA" ;
+    a <http://purl.org/dc/dcmitype/Text>, foaf:Document ;
+    foaf:primaryTopic <https://opencorporates.com/id/companies/fr/521178327> .
+
+<https://opencorporates.com/companies/fr/521178327.json>
+    dct:format "application/json" ;
+    dct:isFormatOf <https://opencorporates.com/companies/fr/521178327> ;
+    dct:title "Data in JSON format for TRENITALIA SPA" ;
+    a <http://purl.org/dc/dcmitype/Text>, foaf:Document ;
+    foaf:primaryTopic <https://opencorporates.com/id/companies/fr/521178327> .
+
+<https://opencorporates.com/companies/fr/521178327.rdf>
+    dct:format "application/rdf+xml" ;
+    dct:isFormatOf <https://opencorporates.com/companies/fr/521178327> ;
+    dct:title "Linked Data in RDF format for TRENITALIA SPA" ;
+    a <http://purl.org/dc/dcmitype/Text>, foaf:Document ;
+    foaf:primaryTopic <https://opencorporates.com/id/companies/fr/521178327> .
+
+<https://opencorporates.com/companies/fr/521178327.xml>
+    dct:format "application/xml" ;
+    dct:isFormatOf <https://opencorporates.com/companies/fr/521178327> ;
+    dct:title "Data in XML format for TRENITALIA SPA" ;
+    a <http://purl.org/dc/dcmitype/Text>, foaf:Document ;
+    foaf:primaryTopic <https://opencorporates.com/id/companies/fr/521178327> .
+
+<https://opencorporates.com/id/companies/fr/521178327>
+    opencorporates:companyType "Société étrangère non immatriculée au RCS" ;
+    opencorporates:legalName "TRENITALIA SPA" ;
+    a <http://s.opencalais.com/1/type/er/Company>, rov:RegisteredOrganization ;
+    rdfs:label "TRENITALIA SPA" ;
+    vCard:adr [
+        vCard:extended-address """TRENITALIA SPA
+PIAZZA DELLA CROCE ROSSA 1
+00161 ROME"""
+    ] ;
+    org:hasRegisteredSite <https://opencorporates.com/id/companies/fr/521178327#ra> ;
+    rov:legalName "TRENITALIA SPA" ;
+    rov:orgType "Société étrangère non immatriculée au RCS" ;
+    rov:registration <https://opencorporates.com/id/companies/fr/521178327#id> .
+
+<https://opencorporates.com/id/companies/fr/521178327#id>
+    dct:issued "2010-01-01"^^xsd:date ;
+    a adms:Identifier ;
+    skos:notation "521178327" ;
+    adms:schemaAgency "Institut National de la Statistique et des Études Économiques (INSEE)" .
+
+<https://opencorporates.com/id/companies/fr/521178327#ra>
+    a org:Site ;
+    org:siteAddress [
+        a locn:Address ;
+        locn:fullAddress """TRENITALIA SPA
+PIAZZA DELLA CROCE ROSSA 1
+00161 ROME"""
+    ] .
+

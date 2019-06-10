@@ -1,0 +1,10 @@
+*.class
+
+# Package Files
+*.jar
+*.war
+
+# IDE state
+*.iml
+.idea/
+target/
