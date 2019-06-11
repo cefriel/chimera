@@ -10,7 +10,11 @@ import java.util.Set;
  * Created by landon on 10/4/16.
  */
 public class TransferPerformanceSummary implements Serializable {
-    public String fromRoute;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7441799536168525562L;
+	public String fromRoute;
     public String toRoute;
     public int bestCase;
     public int worstCase;

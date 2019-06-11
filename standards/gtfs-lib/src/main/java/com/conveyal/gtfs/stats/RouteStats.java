@@ -1,9 +1,7 @@
 package com.conveyal.gtfs.stats;
 
 import com.conveyal.gtfs.GTFSFeed;
-import com.conveyal.gtfs.model.Pattern;
 import com.conveyal.gtfs.model.Route;
-import com.conveyal.gtfs.model.Service;
 import com.conveyal.gtfs.model.Trip;
 import com.conveyal.gtfs.stats.model.RouteStatistic;
 
@@ -12,7 +10,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

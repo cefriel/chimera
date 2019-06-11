@@ -8,8 +8,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.conveyal.gtfs.util.Util.randomIdString;
-
 public class TestUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestUtils.class);

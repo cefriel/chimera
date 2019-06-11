@@ -1,6 +1,5 @@
 package com.conveyal.gtfs.validator;
 
-import com.conveyal.gtfs.error.NewGTFSError;
 import com.conveyal.gtfs.error.SQLErrorStorage;
 import com.conveyal.gtfs.loader.Feed;
 import com.conveyal.gtfs.model.Route;

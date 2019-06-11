@@ -1,7 +1,5 @@
 package com.conveyal.gtfs.error;
 
-import com.conveyal.gtfs.model.Agency;
-
 import java.io.Serializable;
 
 /**

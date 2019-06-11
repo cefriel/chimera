@@ -11,6 +11,10 @@ import java.util.NavigableSet;
 
 
 public class ValidationResult implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6035720414298520449L;
 	public String fileName;
 	public String validationTimestamp;
 	public FeedStatistic feedStatistics;

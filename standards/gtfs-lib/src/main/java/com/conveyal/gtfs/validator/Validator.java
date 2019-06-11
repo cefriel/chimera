@@ -6,10 +6,6 @@ import com.conveyal.gtfs.error.SQLErrorStorage;
 import com.conveyal.gtfs.loader.Feed;
 import com.conveyal.gtfs.model.Entity;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A Validator examines a whole GTFS feed or a single trip within a GTFS feed. It accumulates error messages for
  * problems it finds in that feed, optionally repairing the problems it encounters.

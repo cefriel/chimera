@@ -1,8 +1,6 @@
 package com.conveyal.gtfs.storage;
 
-import com.conveyal.gtfs.error.NewGTFSError;
 import com.conveyal.gtfs.error.NewGTFSErrorType;
-import org.apache.http.util.ExceptionUtils;
 
 /**
  * Some errors are detected way down the call stack where we don't have a reference to the errorStorage object.
@@ -12,7 +10,12 @@ import org.apache.http.util.ExceptionUtils;
  */
 public class StorageException extends RuntimeException {
 
-    /** For expected, recognized errors that have a defined enum value. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4443161632393802812L;
+
+	/** For expected, recognized errors that have a defined enum value. */
     public NewGTFSErrorType errorType = NewGTFSErrorType.OTHER;
 
     /** This is the string that will make it out to the client, explaining what went wrong. */

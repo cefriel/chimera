@@ -2,9 +2,7 @@ package com.conveyal.gtfs.validator;
 
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import com.conveyal.gtfs.model.Pattern;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * An instance of this class is returned by the validator.

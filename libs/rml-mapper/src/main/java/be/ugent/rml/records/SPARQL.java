@@ -113,7 +113,12 @@ public class SPARQL {
             connection.setRequestProperty("Accept", resultFormat.getMediaType());
 
             // Set 'query' parameter
-            Map<String,String> urlParams = new HashMap<String, String>(){{
+            Map<String,String> urlParams = new HashMap<String, String>(){/**
+				 * 
+				 */
+				private static final long serialVersionUID = 6319670013210356536L;
+
+			{
                 put("query", qs);
             }};
             connection.setDoOutput(true);

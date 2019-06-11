@@ -1,10 +1,7 @@
 package com.conveyal.gtfs.stats.model;
 
-import com.conveyal.gtfs.GTFSFeed;
-import com.conveyal.gtfs.stats.FeedStats;
 import com.conveyal.gtfs.stats.RouteStats;
 
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +10,11 @@ import java.time.LocalTime;
  * Created by landon on 9/2/16.
  */
 public class RouteStatistic implements Serializable {
-    public String route_id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3114031946963460365L;
+	public String route_id;
     public String routeName;
     public int headway;
     public Double avgSpeed;
