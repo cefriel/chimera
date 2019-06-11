@@ -1,6 +1,5 @@
 package com.conveyal.gtfs.error;
 
-import com.conveyal.gtfs.model.Route;
 import com.conveyal.gtfs.validator.model.Priority;
 
 import java.io.Serializable;

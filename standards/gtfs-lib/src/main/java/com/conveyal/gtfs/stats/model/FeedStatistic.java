@@ -8,14 +8,17 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by landon on 10/11/16.
  */
 public class FeedStatistic implements Serializable {
 
-    public String feed_id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8372217734733942121L;
+	public String feed_id;
     public int headway;
     public Double avgSpeed;
     public long revenueTime;

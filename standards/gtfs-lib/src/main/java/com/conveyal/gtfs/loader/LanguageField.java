@@ -1,14 +1,11 @@
 package com.conveyal.gtfs.loader;
 
-import com.conveyal.gtfs.error.NewGTFSErrorType;
 import com.conveyal.gtfs.storage.StorageException;
 
 import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.SQLType;
 import java.util.Locale;
-import java.util.regex.Pattern;
-
 import static com.conveyal.gtfs.error.NewGTFSErrorType.LANGUAGE_FORMAT;
 
 /**

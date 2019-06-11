@@ -7,9 +7,6 @@ import com.google.common.collect.Sets;
 import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.SQLType;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class CurrencyField extends Field {

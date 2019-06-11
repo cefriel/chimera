@@ -1,22 +1,14 @@
 package com.conveyal.gtfs.util.json;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.google.common.io.BaseEncoding;
-import org.mapdb.Fun.Tuple2;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 //import java.time.format.D;
@@ -38,7 +30,12 @@ public class JacksonSerializers {
 
     /** deserialize local dates from GMT epochs */
     public static class LocalDateStringDeserializer extends StdScalarDeserializer<LocalDate> {
-        public LocalDateStringDeserializer () {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 6898429041915279383L;
+
+		public LocalDateStringDeserializer () {
             super(LocalDate.class);
         }
 
@@ -80,7 +77,12 @@ public class JacksonSerializers {
 
     /** Deserialize an ISO date (year-month-day) */
     public static class LocalDateIsoDeserializer extends StdScalarDeserializer<LocalDate> {
-        public LocalDateIsoDeserializer () {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5609172284867268616L;
+
+		public LocalDateIsoDeserializer () {
             super(LocalDate.class);
         }
 

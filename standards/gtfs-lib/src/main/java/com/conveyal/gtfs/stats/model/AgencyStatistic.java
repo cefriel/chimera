@@ -9,6 +9,10 @@ import java.time.LocalDate;
  *
  */
 public class AgencyStatistic implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5631573380752674427L;
 	private String agencyId;
 	private Integer routeCount;
 	private Integer tripCount;

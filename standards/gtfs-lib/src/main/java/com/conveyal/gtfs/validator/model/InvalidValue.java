@@ -6,6 +6,11 @@ import java.io.Serializable;
 
 public class InvalidValue implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1288669744723790569L;
+
 	public String affectedEntity;
 	
 	public String affectedField;

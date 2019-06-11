@@ -1,13 +1,8 @@
 package com.conveyal.gtfs.validator;
 
-import com.conveyal.gtfs.error.NewGTFSError;
-import com.conveyal.gtfs.error.OverlappingTripsInBlockError;
 import com.conveyal.gtfs.error.SQLErrorStorage;
 import com.conveyal.gtfs.loader.Feed;
 import com.conveyal.gtfs.model.*;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
 import java.time.LocalDate;
 import java.util.*;
 

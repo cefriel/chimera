@@ -1,10 +1,8 @@
 package com.conveyal.gtfs;
 
 import com.conveyal.gtfs.error.GTFSError;
-import com.conveyal.gtfs.loader.DateField;
 import com.conveyal.gtfs.model.*;
 import com.conveyal.gtfs.model.Calendar;
-import com.conveyal.gtfs.validator.*;
 import com.conveyal.gtfs.validator.Validator;
 import com.conveyal.gtfs.stats.FeedStats;
 import com.conveyal.gtfs.validator.service.GeoUtils;
@@ -47,8 +45,6 @@ import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
-import static com.conveyal.gtfs.util.Util.human;
 
 /**
  * All entities must be from a single feed namespace.
@@ -698,6 +694,11 @@ public class GTFSFeed implements Cloneable, Closeable {
 
     /** Thrown when we cannot interpolate stop times because the first or last stops do not have times */
     public class FirstAndLastStopsDoNotHaveTimes extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7165077543518383446L;
         /** do nothing */
     }
 

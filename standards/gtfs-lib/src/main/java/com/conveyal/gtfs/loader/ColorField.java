@@ -7,8 +7,6 @@ import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.SQLType;
 
-import static com.conveyal.gtfs.loader.Field.cleanString;
-
 /**
  * Represents a six-digit hex color code. Should be parsed as hex text and less than OxFFFFFF.
  *

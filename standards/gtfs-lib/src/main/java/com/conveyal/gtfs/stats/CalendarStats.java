@@ -1,13 +1,6 @@
 package com.conveyal.gtfs.stats;
 
 import com.conveyal.gtfs.GTFSFeed;
-import com.conveyal.gtfs.model.Service;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by landon on 9/2/16.

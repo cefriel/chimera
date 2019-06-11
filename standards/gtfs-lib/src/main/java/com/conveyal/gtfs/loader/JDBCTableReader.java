@@ -2,7 +2,6 @@ package com.conveyal.gtfs.loader;
 
 import com.conveyal.gtfs.model.Entity;
 import com.conveyal.gtfs.storage.StorageException;
-import com.vividsolutions.jts.awt.PointShapeFactory;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.apache.commons.dbutils.DbUtils;

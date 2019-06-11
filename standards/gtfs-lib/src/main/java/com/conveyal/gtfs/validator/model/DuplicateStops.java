@@ -6,6 +6,10 @@ import java.io.Serializable;
 
 public class DuplicateStops implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2094360182807698144L;
 	public Stop stop1;
 	public Stop stop2;
 	

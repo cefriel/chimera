@@ -1,6 +1,5 @@
 package com.conveyal.gtfs.validator;
 
-import com.conveyal.gtfs.error.NewGTFSErrorType;
 import com.conveyal.gtfs.error.SQLErrorStorage;
 import com.conveyal.gtfs.loader.Feed;
 import com.conveyal.gtfs.model.Entity;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 import static com.conveyal.gtfs.error.NewGTFSErrorType.*;
-import static com.conveyal.gtfs.util.Util.fastDistance;
 
 /**
  * Check that the travel times between adjacent stops in trips are reasonable.

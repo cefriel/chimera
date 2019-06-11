@@ -11,7 +11,11 @@ import java.time.LocalTime;
  */
 public class PatternStatistic implements Serializable {
 
-    public String pattern_id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8982604424404617786L;
+	public String pattern_id;
     public int headway;
     public Double avgSpeed;
     public long tripCount;

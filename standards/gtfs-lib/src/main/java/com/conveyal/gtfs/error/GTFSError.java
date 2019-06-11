@@ -13,7 +13,11 @@ import java.io.Serializable;
  */
 public abstract class GTFSError implements Comparable<GTFSError>, Serializable {
 
-    public final String file; // TODO GTFSTable enum? Or simply use class objects.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2109674094970109466L;
+	public final String file; // TODO GTFSTable enum? Or simply use class objects.
     public final long   line;
     public final String field;
     public final String affectedEntityId;

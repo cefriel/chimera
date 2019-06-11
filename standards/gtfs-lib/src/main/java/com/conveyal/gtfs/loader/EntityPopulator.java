@@ -1,8 +1,6 @@
 package com.conveyal.gtfs.loader;
 
-import com.conveyal.gtfs.error.NewGTFSErrorType;
 import com.conveyal.gtfs.model.*;
-import com.conveyal.gtfs.storage.StorageException;
 import gnu.trove.map.TObjectIntMap;
 
 import java.net.MalformedURLException;
@@ -12,8 +10,6 @@ import java.time.LocalDate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.format.DateTimeParseException;
-
-import static com.conveyal.gtfs.model.Entity.INT_MISSING;
 
 /**
  * For now we will copy all available fields into Java model objects.

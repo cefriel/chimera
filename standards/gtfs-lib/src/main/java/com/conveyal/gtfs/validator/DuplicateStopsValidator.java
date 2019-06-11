@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.conveyal.gtfs.error.NewGTFSErrorType.DUPLICATE_STOP;
-import static com.conveyal.gtfs.util.Util.getCoordString;
 
 /**
  * Find stops that are very close together.

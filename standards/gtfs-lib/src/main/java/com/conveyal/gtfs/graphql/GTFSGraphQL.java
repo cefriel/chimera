@@ -1,6 +1,5 @@
 package com.conveyal.gtfs.graphql;
 
-import com.conveyal.gtfs.GTFS;
 import graphql.GraphQL;
 
 import javax.sql.DataSource;

@@ -4,7 +4,6 @@ import com.conveyal.gtfs.model.Trip;
 import com.conveyal.gtfs.validator.model.Priority;
 
 import java.io.Serializable;
-import java.time.LocalTime;
 
 /**
  * Created by landon on 5/6/16.
