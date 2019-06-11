@@ -10,7 +10,7 @@
     <slf4j.version>1.7.25</slf4j.version>
     <spring.version>5.0.4.RELEASE</spring.version>
     <log4j.version>2.10.0</log4j.version>
-    <camel.version>2.20.2</camel.version>
+    <camel.version>2.24.0</camel.version>
   </properties>
 
   <dependencies>

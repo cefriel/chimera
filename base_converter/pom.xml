@@ -8,17 +8,12 @@
 
   <properties>
     <slf4j.version>1.7.25</slf4j.version>
-    <spring.version>5.0.4.RELEASE</spring.version>
     <log4j.version>2.10.0</log4j.version>
-    <camel.version>2.20.2</camel.version>
+    <camel.version>2.24.0</camel.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring</artifactId>
@@ -69,9 +64,14 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-runtime</artifactId>
+      <version>2.5.2</version>
+    </dependency>
 
     <dependency>
-      <groupId>com.complexible.pinto</groupId>
+      <groupId>com.cefriel</groupId>
       <artifactId>pinto</artifactId>
       <version>2.0.2-SNAPSHOT</version>
     </dependency>
@@ -85,11 +85,6 @@
       <groupId>it.cefriel.rml</groupId>
       <artifactId>rmlmapper</artifactId>
       <version>4.3.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.rdf4j</groupId>
-      <artifactId>rdf4j-runtime</artifactId>
-      <version>2.5.2</version>
     </dependency>
 
   </dependencies>
