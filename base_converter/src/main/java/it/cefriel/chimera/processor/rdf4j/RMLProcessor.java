@@ -33,6 +33,8 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import be.ugent.rml.Executor;
 import be.ugent.rml.records.RecordsFactory;
@@ -42,7 +44,8 @@ import it.cefriel.chimera.util.ProcessorConstants;
 import it.cefriel.chimera.util.UniLoader;
 
 public class RMLProcessor  extends SemanticLoader implements Processor{
-    
+    private Logger log = LoggerFactory.getLogger(RMLProcessor.class); 
+
     private List<String> rmlMappings=null;
     private Map<String, InputStream> streamsMap = new HashMap<String, InputStream>();          
     private RDF4JStore rmlStore = null;
@@ -53,21 +56,32 @@ public class RMLProcessor  extends SemanticLoader implements Processor{
         Repository repo=null;
         Message in = exchange.getIn();
         String incoming_message = in.getBody(String.class);
+        String stream_label=null;
         
         // RML Processor configuration
         if (rmlMappings==null) 
-        	setRmlMappings(in.getHeader(ProcessorConstants.RML_MAPPINGS, List.class));
-        if (label==null)
-        	setLabel(in.getHeader(ProcessorConstants.RML_LABEL, String.class));
+        	loadMappings(in.getHeader(ProcessorConstants.RML_MAPPINGS, List.class));
+        if (label==null) {
+        	stream_label=in.getHeader(ProcessorConstants.RML_LABEL, String.class);
+    	}
+        else {
+        	stream_label=label;
+        }
+        
+        log.info("Incoming message: "+incoming_message);
+        log.info("RML mappings: "+rmlMappings);
+        log.info("RML label: "+stream_label);
         repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
-        streamsMap.put("stream://"+label, new ByteArrayInputStream(incoming_message.getBytes()));
+        streamsMap.put("stream://"+stream_label, new ByteArrayInputStream(incoming_message.getBytes()));
         
         // RML mappings execution
         try (RepositoryConnection con = repo.getConnection()) {
-        	Model mapping_results=new LinkedHashModel();
-        	RDF4JStore rml_results=new RDF4JStore(mapping_results);
-
+        	// Results
+        	Model rml_results_model=new LinkedHashModel();
+        	RDF4JStore rml_results=new RDF4JStore(rml_results_model);
+        	
+        	// Mappings execution
             Executor executor = new Executor(rmlStore, new RecordsFactory(streamsMap), null, rml_results, ProcessorConstants.BASE_CONVERSION_IRI);
             executor.execute(null);
             con.add(rml_results.getModel());
@@ -81,7 +95,7 @@ public class RMLProcessor  extends SemanticLoader implements Processor{
 	public void setRmlMappings(List<String> rmlMappings) {
 		this.rmlMappings = rmlMappings;
 		try {
-			loadMappings();
+			loadMappings(rmlMappings);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,12 +110,13 @@ public class RMLProcessor  extends SemanticLoader implements Processor{
 		this.label = label;
 	}
 
-	private void loadMappings() throws MalformedURLException, IOException {
+	private void loadMappings(List<String> rmlMappings) throws MalformedURLException, IOException {
     	Model rml_model=new LinkedHashModel();
     	for (String resource: rmlMappings) {
             Model model = Rio.parse(UniLoader.open(resource), "", RDFFormat.TURTLE);
             rml_model.addAll(model);
     	}
+    	log.info(rml_model.toString());
     	rmlStore=new RDF4JStore(rml_model);
     }
     
