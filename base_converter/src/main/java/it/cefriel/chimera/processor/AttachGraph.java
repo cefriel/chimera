@@ -9,22 +9,13 @@ import it.cefriel.chimera.util.ProcessorConstants;
 
 public class AttachGraph implements Processor {
 
-	private RDFGraph graph=null;
 	
     public void process(Exchange exchange) throws Exception {
+    	RDFGraph graph=new RDFGraph();
+
     	Message msg=exchange.getIn();
         msg.setHeader(ProcessorConstants.CONTEXT_GRAPH, graph);
 
     }
-
-	public RDFGraph getGraph() {
-		return graph;
-	}
-
-	public void setGraph(RDFGraph graph) {
-		this.graph = graph;
-	}
-    
-    
 
 }
