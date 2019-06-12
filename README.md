@@ -22,8 +22,7 @@ To build Chimera, import all the projects in eclipse
 #### Lowering
 * Pinto: mappingless lowering (RDF4j)
 * ST4RT lowering (RDF4j)
-
-IN PROGRESS: Template-based lowering based on Apache Velocity
+* Template-based lowering based on Apache Velocity
 
 #### Data Enrichment
 * RDF4j enrichment
