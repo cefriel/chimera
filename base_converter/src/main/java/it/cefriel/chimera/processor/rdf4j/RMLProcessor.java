@@ -43,7 +43,7 @@ import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
 import it.cefriel.chimera.util.UniLoader;
 
-public class RMLProcessor  extends SemanticLoader implements Processor{
+public class RMLProcessor implements Processor{
     private Logger log = LoggerFactory.getLogger(RMLProcessor.class); 
 
     private List<String> rmlMappings=null;

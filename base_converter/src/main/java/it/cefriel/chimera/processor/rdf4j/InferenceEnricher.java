@@ -33,8 +33,9 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
+import it.cefriel.chimera.util.SemanticLoader;
 
-public class InferenceEnricher extends SemanticLoader implements Processor{
+public class InferenceEnricher implements Processor{
 	private List<String> ontologyUrls=null;
 
 	public void process(Exchange exchange) throws Exception {
@@ -54,7 +55,7 @@ public class InferenceEnricher extends SemanticLoader implements Processor{
 		
 		try (RepositoryConnection con = schema_repo.getConnection()) {
         	for (String url: ontologyUrls) {
-        		con.add(load_data(url), vf.createIRI(url));
+        		con.add(SemanticLoader.load_data(url), vf.createIRI(url));
         	}
         }
 

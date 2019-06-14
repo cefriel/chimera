@@ -29,8 +29,9 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
+import it.cefriel.chimera.util.SemanticLoader;
 
-public class DataEnricher  extends SemanticLoader implements Processor{
+public class DataEnricher implements Processor{
 
 	private List<String> masterDataUrls=null;
 
@@ -48,7 +49,7 @@ public class DataEnricher  extends SemanticLoader implements Processor{
 		try (RepositoryConnection con = repo.getConnection()) {
 
 			for (String url: masterDataUrls) {
-				current_dataset=load_data(url);    
+				current_dataset=SemanticLoader.load_data(url);    
 				con.add(current_dataset, vf.createIRI(url));
 			}
 		}

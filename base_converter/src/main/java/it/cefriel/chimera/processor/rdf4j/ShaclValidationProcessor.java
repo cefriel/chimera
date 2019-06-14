@@ -20,8 +20,9 @@ import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
+import it.cefriel.chimera.util.SemanticLoader;
 
-public class ShaclValidationProcessor   extends SemanticLoader implements Processor {
+public class ShaclValidationProcessor implements Processor {
 	private List<String> shaclRulesUrls=null;
 
 	public void process(Exchange exchange) throws Exception {
@@ -54,7 +55,7 @@ public class ShaclValidationProcessor   extends SemanticLoader implements Proces
 
 				connection.begin();
 				for (String url: shaclRulesUrls) {
-					current_ruleset=load_data(url);    
+					current_ruleset=SemanticLoader.load_data(url);    
 					connection.add(current_ruleset, vf.createIRI(url));
 				}
 				connection.commit();
