@@ -7,40 +7,58 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.eclipse.rdf4j.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
 import it.cefriel.chimera.util.RDFReader;
 
 public class TemplateLowererProcessor  implements Processor{ 
-
-	private String templatePath;
+	private String templatePath=null;
+	private VelocityEngine velocityEngine = null;
+    private Logger log = LoggerFactory.getLogger(TemplateLowererProcessor.class); 
 
 	public void process(Exchange exchange) throws Exception {
 		Repository repo=null;
+		String output=null;
 		Message in = exchange.getIn();
 		String lowering_template=null;
 		//Singleton
-		Velocity.init();
-     
+		if (velocityEngine==null) {
+			velocityEngine = new VelocityEngine();
+			velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+			velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+			velocityEngine.init();
+			   
+		}
 		repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		RDFReader reader = new RDFReader();
 		reader.setRepository(repo);
+
 		if (templatePath==null) {
 			lowering_template=in.getHeader(ProcessorConstants.LOWERING_TEMPLATE, String.class);
-    	}
-		
-		Template t = Velocity.getTemplate(lowering_template);		
+		}
+		else {
+			lowering_template=templatePath;
+		}
+
+		log.info("template path: "+templatePath);
+		Template t = velocityEngine.getTemplate(lowering_template);		
 		VelocityContext context = new VelocityContext();
 		context.put("reader", reader);
 
 		StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
-		in.setBody(writer.toString());
+		output=writer.toString();
+		in.setBody(output);
+
 	}
 
 	public String getTemplatePath() {
