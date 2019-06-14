@@ -87,7 +87,7 @@
       <plugin>
         <groupId>io.hawt</groupId>
         <artifactId>hawtio-maven-plugin</artifactId>
-        <version>1.5.9</version>
+        <version>2.6.0</version>
         <configuration>
           <!-- configuration options goes here -->
         </configuration>

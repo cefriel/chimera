@@ -11,6 +11,11 @@
   <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit"/>
   <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin"/>
   <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
+  <bean class="it.cefriel.chimera.processor.rdf4j.TemplateLowererProcessor" id="templateLower">
+    <property name="templatePath">
+      <value>mapping/NeTEx/template.vm</value>
+    </property>
+  </bean>
   <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zipSplitter"/>
   <camelContext id="GTFS_Conversion_Context" trace="false" xmlns="http://camel.apache.org/schema/spring">
     <onException>
@@ -37,13 +42,19 @@
         <camel:choice id="_choice2">
           <camel:when id="_when14">
             <camel:simple>${body} != null</camel:simple>
-            <camel:setHeader headerName="rml_label" id="RML inputstream">
-              <camel:simple>${file:name}</camel:simple>
-            </camel:setHeader>
-            <camel:log id="_log2" loggingLevel="WARN" message="Converting ${file:name}"/>
-            <camel:process id="execute_mappings" ref="rmlLifter"/>
-            <camel:process id="dump_graph" ref="graphDumper"/>
-            <camel:log id="Entry lifting completed" loggingLevel="INFO" message="Entry extracted"/>
+            <!-- TODO remove the filter  -->
+            <camel:filter id="_filter1">
+              <camel:simple>${file:name} == "agency.txt"</camel:simple>
+              <camel:setHeader headerName="rml_label" id="RML inputstream">
+                <camel:simple>${file:name}</camel:simple>
+              </camel:setHeader>
+              <camel:log id="_log2" loggingLevel="WARN" message="Converting ${file:name}"/>
+              <camel:process id="execute_mappings" ref="rmlLifter"/>
+              <camel:process id="dump_graph" ref="graphDumper"/>
+              <camel:process id="lower" ref="templateLower"/>
+              <camel:log id="lower_log" loggingLevel="WARN" message="${body}"/>
+              <camel:log id="Entry lifting completed" loggingLevel="INFO" message="Entry extracted"/>
+            </camel:filter>
           </camel:when>
           <camel:otherwise id="_otherwise1">
             <camel:log id="Warn empty message" loggingLevel="WARN" message="$simple{file:name} is empty"/>

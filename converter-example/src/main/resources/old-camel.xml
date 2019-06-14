@@ -183,10 +183,10 @@
     <!-- Business Core Vocabulary input route -->
     <camel:route autoStartup="true" id="businesscore_in">
       <!--  Route settings -->
+      <!--  Transformation process -->
       <camel:from id="_from5" uri="file:inbox/businesscore?noop=true"/>
       <camel:log id="_log9" loggingLevel="WARN" message="Starting BusinessCore conversion"/>
       <camel:process id="_process2" ref="rdfparser"/>
-      <!--  Transformation process -->
       <camel:setHeader headerName="default_ns" id="_setHeader12">
         <camel:constant>http://www.cefriel.it/ontologies/netex#</camel:constant>
       </camel:setHeader>

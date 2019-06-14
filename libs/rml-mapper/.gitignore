@@ -5,3 +5,4 @@ rmlmapper.iml
 .settings
 .vscode
 .attach_*
+/bin/
