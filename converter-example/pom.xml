@@ -19,14 +19,19 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <camel.version>2.24.0</camel.version>
     <spring.version>5.0.14.RELEASE</spring.version>
-
+    <jetty.version>9.4.12.v20180830</jetty.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
+      <groupId>eu.sprint</groupId>
+      <artifactId>chimera-converter</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.cefriel.mapping</groupId>
+      <artifactId>velocity-lowerer</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>eu.sprint</groupId>
@@ -34,15 +39,14 @@
       <version>1.0.6-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>eu.sprint</groupId>
-      <artifactId>chimera-converter</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-undertow</artifactId>
+      <version>${camel.version}</version>
     </dependency>
     <dependency>
-
-      <groupId>com.cefriel.mapping</groupId>
-      <artifactId>velocity-lowerer</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-mail</artifactId>
+      <version>${camel.version}</version>
     </dependency>
 
     <!-- TRAIN STANDARDS -->
@@ -85,12 +89,56 @@
         <version>${camel.version}</version>
       </plugin>
       <plugin>
-        <groupId>io.hawt</groupId>
-        <artifactId>hawtio-maven-plugin</artifactId>
-        <version>2.6.0</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.1</version>
         <configuration>
-          <!-- configuration options goes here -->
+          <createDependencyReducedPom>false</createDependencyReducedPom>
         </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>false</minimizeJar>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ConverterApplication</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>log4j:log4j</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>commons-logging:commons-logging</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <!-- we need to define main class for this -->
       <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>exec-maven-plugin</artifactId> <version>1.2</version> <configuration> <executable>java</executable> 
