@@ -13,6 +13,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
@@ -27,6 +28,7 @@ public class TemplateLowererProcessor  implements Processor{
 		Repository repo=null;
 		String output=null;
 		Message in = exchange.getIn();
+		Message out = exchange.getOut();
 		String lowering_template=null;
 		//Singleton
 		if (velocityEngine==null) {
@@ -57,8 +59,9 @@ public class TemplateLowererProcessor  implements Processor{
 		t.merge(context, writer);
 
 		output=writer.toString();
-		in.setBody(output);
-
+		out.setHeader(Exchange.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
+		out.setBody(output);
+		
 	}
 
 	public String getTemplatePath() {

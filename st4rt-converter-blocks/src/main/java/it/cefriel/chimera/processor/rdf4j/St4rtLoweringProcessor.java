@@ -26,7 +26,7 @@ import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
 
 
-public class St4rtLoweringProcessor extends SemanticLoader implements Processor{
+public class St4rtLoweringProcessor implements Processor{
     private static final Logger LOGGER = LoggerFactory.getLogger(St4rtLoweringProcessor.class);
     private String destinationPackage= null;
     
