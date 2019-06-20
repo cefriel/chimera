@@ -1,0 +1,511 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://st4rt.eu/ontologies/st4rt#"
+     xml:base="http://st4rt.eu/ontologies/st4rt"
+     xmlns:annotation="http://www.it2rail.eu/ontology/annotation#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:countries="http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:st4rt="http://st4rt.eu/ontologies/st4rt#"
+     xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#">
+    <owl:Ontology rdf:about="http://st4rt.eu/ontologies/st4rt">
+        <owl:imports rdf:resource="http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries"/>
+        <owl:imports rdf:resource="http://www.it2rail.eu/ontology/"/>
+        <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mohammad Mehdi Pourhashem K.</dc:creator>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2017-03-29T09:00:00</dc:date>
+        <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">st4rt ontology</dc:title>
+        <dc:language rdf:datatype="http://www.w3.org/2001/XMLSchema#string">English</dc:language>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasDestination -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasDestination">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/travel#Segment"/>
+        <rdfs:range rdf:resource="http://www.it2rail.eu/ontology/infrastructure#StopPlace"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasID -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasID"/>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasNumber -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasNumber">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Terminal"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#CodedValue"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasOrigin -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasOrigin">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/travel#Segment"/>
+        <rdfs:range rdf:resource="http://www.it2rail.eu/ontology/infrastructure#StopPlace"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasPassenger -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasPassenger">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOffer"/>
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOfferItem"/>
+        <rdfs:range rdf:resource="http://www.it2rail.eu/ontology/customer#Passenger"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasProductInformation -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasProductInformation">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/product#Product"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#ProductInformation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasReceivingSystem -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasReceivingSystem">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Message"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasRequestor -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasRequestor">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Message"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#Requestor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasSendingSystem -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasSendingSystem">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Message"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasSystem -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasSystem">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Message"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasTerminal -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasTerminal">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#Requestor"/>
+        <rdfs:range rdf:resource="http://st4rt.eu/ontologies/st4rt#Terminal"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasTravelEpisode -->
+
+    <owl:ObjectProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasTravelEpisode">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/travel#Itinerary"/>
+        <rdfs:range rdf:resource="http://www.it2rail.eu/ontology/travel#TravelEpisode"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#FSM_DataProperty -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#FSM_DataProperty"/>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#FSM_HasPassengerIDREF -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#FSM_HasPassengerIDREF">
+        <rdfs:subPropertyOf rdf:resource="http://st4rt.eu/ontologies/st4rt#FSM_DataProperty"/>
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOfferItem"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasAccommodationType -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasAccommodationType">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#BerthProduct"/>
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#SeatProduct"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasCVValue -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasCVValue">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#CodedValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasCodingSystem -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasCodingSystem">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#CodedValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasID -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasID">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasKey -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasKey">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#ProductInformation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasNumberOfPassengers -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasNumberOfPassengers">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOfferItem"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasPIValue -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasPIValue">
+        <rdfs:domain rdf:resource="http://st4rt.eu/ontologies/st4rt#ProductInformation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#hasProductType -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#hasProductType">
+        <rdfs:domain rdf:resource="http://www.it2rail.eu/ontology/product#Product"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#isInCountry_Alpha2 -->
+
+    <owl:DatatypeProperty rdf:about="http://st4rt.eu/ontologies/st4rt#isInCountry_Alpha2">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#BerthProduct -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#BerthProduct">
+        <rdfs:subClassOf rdf:resource="http://www.it2rail.eu/ontology/product#Product"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasAccommodationType"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#CodedValue -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#CodedValue">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasCVValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasCodingSystem"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#DinnerProduct -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#DinnerProduct">
+        <rdfs:subClassOf rdf:resource="http://www.it2rail.eu/ontology/product#Product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#Message -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#Message">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasRequestor"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#Requestor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasID"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#ProductInformation -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#ProductInformation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasKey"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasPIValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#ProvisionalBookingRequestMessage -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#ProvisionalBookingRequestMessage">
+        <rdfs:subClassOf rdf:resource="http://st4rt.eu/ontologies/st4rt#Message"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.it2rail.eu/ontology/travel#hasItineraryOffer"/>
+                <owl:allValuesFrom rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOffer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasSystem"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#Requestor -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#Requestor">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasReceivingSystem"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasSendingSystem"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#System"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasTerminal"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#Terminal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#SeatProduct -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#SeatProduct">
+        <rdfs:subClassOf rdf:resource="http://www.it2rail.eu/ontology/product#Product"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasAccommodationType"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#System -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#System">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasID"/>
+                <owl:allValuesFrom rdf:resource="http://st4rt.eu/ontologies/st4rt#CodedValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://st4rt.eu/ontologies/st4rt#Terminal -->
+
+    <owl:Class rdf:about="http://st4rt.eu/ontologies/st4rt#Terminal">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasNumber"/>
+                <owl:allValuesFrom rdf:resource="http://st4rt.eu/ontologies/st4rt#CodedValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#isInCountry_Alpha2"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.it2rail.eu/ontology/product#Product -->
+
+    <rdf:Description rdf:about="http://www.it2rail.eu/ontology/product#Product">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasProductInformation"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://st4rt.eu/ontologies/st4rt#ProductInformation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasProductType"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.it2rail.eu/ontology/shopping#ItineraryOffer -->
+
+    <rdf:Description rdf:about="http://www.it2rail.eu/ontology/shopping#ItineraryOffer">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.it2rail.eu/ontology/shopping#hasItineraryOfferItem"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.it2rail.eu/ontology/shopping#ItineraryOfferItem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.it2rail.eu/ontology/travel#Itinerary -->
+
+    <rdf:Description rdf:about="http://www.it2rail.eu/ontology/travel#Itinerary">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasTravelEpisode"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.it2rail.eu/ontology/travel#TravelEpisode"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.it2rail.eu/ontology/travel#Segment -->
+
+    <rdf:Description rdf:about="http://www.it2rail.eu/ontology/travel#Segment">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasDestination"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.it2rail.eu/ontology/infrastructure#StopPlace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://st4rt.eu/ontologies/st4rt#hasOrigin"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.it2rail.eu/ontology/infrastructure#StopPlace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

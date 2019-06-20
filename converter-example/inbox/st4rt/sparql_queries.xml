@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+    <!-- původní dodaný dotaz, vytvoří sekvenci stanic pro segment -->
+    <query>
+        <name>FSM_LF_Segment</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX it2r: <http://www.it2rail.eu/ontology#>
+PREFIX infrastructure: <http://www.it2rail.eu/ontology/infrastructure#>
+
+construct {
+    ?x travel:isSequenceOf [
+        a infrastructure:RouteLink;
+        it2r:isStartingAt ?source;
+        it2r:isEndingAt ?dest
+    ]
+}
+where {
+    {
+        ?x a travel:Segment;
+            st4rt:hasOrigin [ infrastructure:hasStopPlaceName ?source];
+            st4rt:hasStopPlace ?list_head;
+            .
+        ?list_head rdf:first [infrastructure:hasStopPlaceName ?dest].
+    }
+
+    union {
+        ?x a travel:Segment;
+            st4rt:hasStopPlace/rdf:rest*/rdf:first ?item;
+        .
+
+    	?item infrastructure:hasStopPlaceName ?source.
+    	?node_el rdf:first ?item;
+         rdf:rest ?next_el.
+
+    	?next_el rdf:first [infrastructure:hasStopPlaceName ?dest].
+    }
+    union {
+        ?x a travel:Segment;
+            st4rt:hasStopPlace/rdf:rest*/rdf:first ?item;
+            st4rt:hasDestination [infrastructure:hasStopPlaceName ?dest];
+        .
+        ?last rdf:first ?item;
+            rdf:rest rdf:nil.
+        ?item infrastructure:hasStopPlaceName ?source.
+    }
+}
+]]></sparqlQuery>
+    </query>
+
+    <!-- původní dodaný dotaz, vytáhne stopPlace ze sekvence -->
+    <query>
+        <name>FSM_LW_Segment</name>
+        <outputs>
+            <output>
+                stopPlace
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX it2r: <http://www.it2rail.eu/ontology#>
+PREFIX infrastructure: <http://www.it2rail.eu/ontology/infrastructure#>
+
+SELECT ?stopPlace
+WHERE {
+?routeLink rdf:type infrastructure:RouteLink;
+	it2r:isStartingAt ?stopPlace.
+??this st4rt:hasOrigin ?origin.
+FILTER (?stopPlace != ?origin)
+}
+]]></sparqlQuery>
+    </query>
+
+    <!-- nastaví default stopPlaceId=00000 při liftingu 918 zprávy na RDF, možno nastavit celou cestu od root -->
+    <query>
+        <name>918_LF_StopPlaceId</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX infrastructure: <http://www.it2rail.eu/ontology/infrastructure#>
+
+CONSTRUCT {
+	?origin st4rt:country "00";st4rt:station "00000" .
+	?destination st4rt:country "11";st4rt:station "11111" .
+} WHERE {
+    ?this st4rt:hasOrigin ?origin;st4rt:hasDestination ?destination.
+}
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>FSM_LW_Merge_LocationStation</name>
+        <comment>
+            Input: country code + station code together = as one value
+            Outputs: country and station
+        </comment>
+        <outputs>
+            <output>
+                stopPlaceId
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX infrastructure: <http://www.it2rail.eu/ontology/infrastructure#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+
+SELECT ?stopPlaceId
+WHERE {
+    ??this st4rt:country ?country;st4rt:station ?station.
+    BIND (CONCAT(?country, IF(STRLEN(STR(?station)) < 5, CONCAT("0", STR(?station)), STR(?station))) AS ?stopPlaceId).
+}
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>918_LW_AccommodationType</name>
+        <outputs>
+            <output>
+                type
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+SELECT
+    ?type
+WHERE {
+    ??this travel:hasItineraryOffer ?itineraryOffer.
+    ?itineraryOffer st4rt:hasItineraryOfferItem/rdf:rest*/rdf:first ?itineraryOfferItem .
+    ?itineraryOfferItem shopping:hasOfferedProduct ?offeredProduct .
+    ?offeredProduct st4rt:hasAccommodationType ?accommodationType.
+    ?accommodationType st4rt:hasCVValue ?cvValue; st4rt:hasCodingSystem ?codingSystem.
+    ?x rdf:type st4rt:CodedSeat.
+    ?x st4rt:code ?code.
+    ?code st4rt:hasCVValue ?cvValue;st4rt:hasCodingSystem ?codingSystem.
+    ?x st4rt:code ?code1.
+    ?code1 st4rt:hasCVValue ?type;st4rt:hasCodingSystem "918".
+}
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>FSM_LW_ProductInformation</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+
+INSERT {
+	?product st4rt:hasProductInformation ?bnode .
+	?product st4rt:hasProductInformation ?bnode1 .
+	?bnode rdf:type st4rt:ProductInformation;st4rt:hasKey "PRODUCT_TYPE";st4rt:hasPIValue ?productType .
+	?bnode1 rdf:type st4rt:ProductInformation;st4rt:hasKey "ACCOMMODATION_TYPE";st4rt:hasPIValue ?hasCVValue1 .
+} WHERE {
+    ?product st4rt:hasProductType ?productType; st4rt:hasAccommodationType ?accommodationType.
+    ?accommodationType st4rt:hasCVValue ?cvValue; st4rt:hasCodingSystem ?codingSystem.
+    ?x rdf:type st4rt:CodedSeat.
+    ?x st4rt:code ?code.
+    ?code st4rt:hasCVValue ?cvValue;st4rt:hasCodingSystem ?codingSystem.
+    ?x st4rt:code ?code1.
+    ?code1 st4rt:hasCVValue ?hasCVValue1;st4rt:hasCodingSystem "FSM".
+    BIND(BNODE() AS ?bnode).
+    BIND(BNODE() AS ?bnode1).
+}
+]]></sparqlQuery>
+    </query>
+
+    <!-- nastaví currency na 918 při liftingu 918 zprávy na RDF, možno nastavit celou cestu od root -->
+    <query>
+        <name>918_LF_Currency</name>
+        <sparqlQuery><![CDATA[
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+CONSTRUCT {
+	?this shopping:hasCurrency "EUR" .
+} WHERE {
+    ?this shopping:hasAmount ?amount .
+}
+]]></sparqlQuery>
+    </query>
+    <!-- nastaví fareType na 918 při liftingu 918 zprávy na RDF, možno nastavit celou cestu od root -->
+    <query>
+        <name>FSM_LW_FareType</name>
+        <sparqlQuery><![CDATA[
+SELECT ?fareTypeId
+WHERE
+{
+BIND("RESERVATION_ONLY" AS ?fareTypeId).
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LF_AccommodationType</name>
+        <sparqlQuery><![CDATA[
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+CONSTRUCT {
+	?accommodationType st4rt:hasCodingSystem "918" .
+} WHERE {
+?itineraryOfferItem shopping:hasOfferedProduct ?offeredProduct .
+?offeredProduct st4rt:hasAccommodationType ?accommodationType .
+}
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>918_LF_DepartureDate</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX mobility: <http://www.it2rail.eu/ontology/mobility#>
+
+DELETE { ?this st4rt:hasOrigin ?origin. ?origin st4rt:hasEffectiveDepartureTime ?effectiveDepartureTime }
+INSERT { ?origin2 st4rt:hasEffectiveDepartureTime ?effectiveDepartureTime }
+WHERE
+  {
+    ?this st4rt:hasOrigin ?origin . ?origin st4rt:hasEffectiveDepartureTime ?effectiveDepartureTime .
+    ?this st4rt:hasOrigin ?origin2 . ?origin2 st4rt:country ?country .
+  }
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_CallerToTerminal</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+
+CONSTRUCT {
+	?requestor st4rt:hasTerminal ?bnode .
+	?bnode rdf:type st4rt:Terminal .
+	?bnode st4rt:hasNumber ?cvValue .
+}
+WHERE {
+	??this st4rt:hasRequestor ?requestor .
+	?requestor st4rt:hasSendingSystem ?sendingSystem .
+	?sendingSystem st4rt:hasPrevious ?previousCaller .
+	?previousCaller st4rt:hasID ?callerId.
+	?callerId st4rt:hasCVValue ?cvValue.
+	BIND(BNODE() AS ?bnode)
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LF_TerminalToCaller</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+
+CONSTRUCT {
+	?sendingSystem st4rt:hasPrevious ?bnode .
+	?bnode rdf:type st4rt:System .
+	?bnode st4rt:hasID ?bnode2 .
+	?bnode2 st4rt:hasCVValue ?cvValue .
+}
+WHERE {
+	??this st4rt:hasRequestor ?requestor .
+	?requestor st4rt:hasTerminal ?terminal ;
+	st4rt:hasSendingSystem ?sendingSystem .
+	?terminal st4rt:hasNumber ?cvValue .
+	BIND(BNODE() AS ?bnode) .
+	BIND(BNODE() AS ?bnode2)
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LW_Default_TerminalType</name>
+        <outputs>
+            <output>
+                type
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+SELECT ?type
+WHERE
+{
+BIND(0 AS ?type).
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LW_Default_Dialog</name>
+        <outputs>
+            <output>
+                test
+            </output>
+            <output>
+                applicationVersion
+            </output>
+            <output>
+                requestDate
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+SELECT ?applicationVersion ?test ?requestDate
+WHERE
+{
+BIND ("false" AS ?test).
+BIND (0 AS ?applicationVersion).
+BIND(NOW() AS ?requestDate).
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LW_Default_SequenceId</name>
+        <outputs>
+            <output>
+                sequenceId
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+SELECT ?sequenceId
+WHERE
+{
+BIND(01 AS ?sequenceId).
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LW_SendingSystem</name>
+        <comment>
+            Outputs: reservationSystemCvValue
+        </comment>
+        <outputs>
+            <output>
+                sendingSystem
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX reservationSystems: <http://st4rt.eu/ontologies/reservationsystems#>
+
+SELECT ?sendingSystem
+WHERE {
+    ??this st4rt:hasSendingSystem ?thisSendingSystem .
+    ?thisSendingSystem st4rt:hasID ?requestorId .
+    ?requestorId st4rt:hasCVValue ?cvValue .
+    ?y reservationSystems:code ?code .
+    ?code st4rt:hasCVValue ?cvValue .
+    ?y reservationSystems:hasReservationSystem ?reservationSystem .
+    ?reservationSystem reservationSystems:code ?code1 .
+    ?code1 st4rt:hasCVValue ?sendingSystem .
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>918_LW_Divide1CodeInto2</name>
+        <comment>
+            Input: country code + station code together = as one value
+            Outputs: country and station
+        </comment>
+        <outputs>
+            <output>
+                country
+            </output>
+            <output>
+                localCode
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+
+SELECT ?country ?localCode
+WHERE {
+    ??this st4rt:hasStopPlaceId ?code.
+    BIND ( SUBSTR(?code, 1, 2) AS ?country).
+    BIND ( SUBSTR(?code, 3) AS ?localCode).
+}
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>FSM_LF_NumberOfPassengers</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX customer: <http://www.it2rail.eu/ontology/customer#>
+
+CONSTRUCT {
+    ?itineraryOfferItem st4rt:hasNumberOfPassengers ?n .
+}
+WHERE
+    {
+        SELECT ?itineraryOfferItem (COUNT(?passengerID) AS ?n)
+        WHERE
+            {
+            ?itineraryOfferItem customer:hasRefToPassenger/rdf:rest*/rdf:first ?passenger .
+            ?passenger st4rt:hasID ?passengerID .
+            }
+        GROUP BY ?itineraryOfferItem
+    }
+
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_Delete_HasPassenger1</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+DELETE
+    { ?z rdf:first ?head ; rdf:rest ?tail . }
+WHERE {
+    ??this travel:hasItineraryOffer ?itineraryOffer .
+	?itineraryOffer rdf:type shopping:ItineraryOffer .
+	?itineraryOffer st4rt:hasPassenger ?passenger .
+      ?passenger rdf:rest* ?z .
+      ?z rdf:first ?head ;
+         rdf:rest ?tail .
+      }
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_Delete_HasPassenger2</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+DELETE {
+    ?itineraryOffer st4rt:hasPassenger ?z .
+} WHERE {
+    ??this travel:hasItineraryOffer ?itineraryOffer .
+	?itineraryOffer rdf:type shopping:ItineraryOffer .
+	?itineraryOffer st4rt:hasPassenger ?z .
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_Product</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+PREFIX travel: <http://www.it2rail.eu/ontology/travel#>
+PREFIX shopping: <http://www.it2rail.eu/ontology/shopping#>
+
+CONSTRUCT {
+    ?product st4rt:hasProductType ?productType;
+    st4rt:hasAccommodationType ?bnode.
+    ?bnode st4rt:hasCVValue ?accommodationType;st4rt:hasCodingSystem "FSM"
+} WHERE {
+    ??this travel:hasItineraryOffer ?itineraryOffer .
+    ?itineraryOffer st4rt:hasItineraryOfferItem/rdf:rest*/rdf:first ?itineraryOfferItem .
+    ?itineraryOfferItem shopping:hasOfferedProduct ?product .
+    ?product st4rt:hasProductInformation/rdf:rest*/rdf:first ?productInf1 ;
+    st4rt:hasProductInformation/rdf:rest*/rdf:first ?productInf2 .
+    ?productInf1 st4rt:hasKey "PRODUCT_TYPE";
+    st4rt:hasPIValue ?productType.
+    ?productInf2 st4rt:hasKey "ACCOMMODATION_TYPE";
+    st4rt:hasPIValue ?accommodationType.
+    BIND(BNODE() as ?bnode).
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_CodingSystem</name>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+
+CONSTRUCT {
+	?codedValue st4rt:hasCodingSystem "FSM".
+}
+WHERE {
+	?codedValue rdf:type st4rt:CodedValue.
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_RequestingSystem</name>
+        <sparqlQuery><![CDATA[
+PREFIX st4rt: <http://st4rt.eu/ontologies/st4rt#>
+
+CONSTRUCT {
+	?requestor st4rt:hasRequestingSystem 83.
+}
+WHERE {
+	??this st4rt:hasRequestor ?requestor.
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>getAlpha2ByName</name>
+        <inputs>
+            <input>
+                input1
+            </input>
+        </inputs>
+        <comment>
+            Input: Country name (??input1)
+            Output: ??input1's Alpha2 code
+        </comment>
+        <sparqlquery><![CDATA[
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+SELECT ?alpha2
+	WHERE {
+	?subject countries:countryCodeISO3166Alpha2 ?alpha2 ;
+		countries:countryNameISO3166Short ??input1 }
+]]></sparqlquery>
+    </query>
+
+    <query>
+        <name>PreBookRequest</name>
+        <inputs>
+            <input>
+                input1
+            </input>
+        </inputs>
+
+        <comment>
+            Input: PreBookRequest instance name (??input1)
+            Creates further
+            information about PreBookRequest message.
+        </comment>
+        <sparqlquery><![CDATA[
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+CONSTRUCT{
+	??input1 st4rt:hasStandard FSM .
+	} where {
+		??input1 st4rt:hasMessageType PreBookRequest .
+		}
+]]></sparqlquery>
+    </query>
+
+    <query>
+        <name>FSM_LW_ContactInformation</name>
+        <comment>
+            Lowering query for ContactInformation attributes.
+        </comment>
+        <outputs>
+            <output>
+                gender
+            </output>
+            <output>
+                country
+            </output>
+        </outputs>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+PREFIX it2r: <http://www.it2rail.eu/ontology#>
+PREFIX customer: <http://www.it2rail.eu/ontology/customer#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1#>
+SELECT ?gender ?country
+	WHERE {
+	?p rdf:type customer:Passenger .
+	?p <http://xmlns.com/foaf/0.1/gender> ?gender .
+	?p st4rt:isInCountry_Alpha2 ?alpha2 .
+	?countryS countries:countryCodeISO3166Alpha2 ?alpha2 .
+	?countryS countries:countryNameISO3166Short ?country .
+}
+]]></sparqlQuery>
+    </query>
+    <query>
+        <name>FSM_LF_ContactInformation</name>
+        <comment>
+            Lifting query for ContactInformation attributes.
+        </comment>
+        <inputs>
+            <input>
+                country
+            </input>
+        </inputs>
+        <sparqlQuery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+CONSTRUCT {??this st4rt:isInCountry_Alpha2 ?alpha2 .}
+	WHERE {
+	?subject countries:countryCodeISO3166Alpha2 ?alpha2 ;
+		countries:countryNameISO3166Short ??country . }
+]]></sparqlQuery>
+    </query>
+
+    <query>
+        <name>LiftingMessage</name>
+        <inputs>
+            <input>
+                messageID
+            </input>
+            <input>
+                messageType
+            </input>
+        </inputs>
+        <sparqlquery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+CONSTRUCT {
+??messageID rdf:type owl:NamedIndividual;
+	rdf:type st4rt:Message;
+	st4rt:hasMessageType ??messageType.
+}
+]]></sparqlquery>
+    </query>
+
+    <query>
+        <name>LiftingProvisionalBookingRequestMessage</name>
+        <inputs>
+            <input>
+                provisionalBookingRequestMessageID
+            </input>
+            <input>
+                caller
+            </input>
+        </inputs>
+        <sparqlquery><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX st4rt: <http://www.semanticweb.org/Mehdi/ontologies/2017/2/st4rt#>
+PREFIX countries: <http://www.bpiresearch.com/BPMO/2004/03/03/cdl/Countries#>
+CONSTRUCT {
+??provisionalBookingRequestMessageID rdf:type owl:NamedIndividual;
+	rdf:type st4rt:provisionalBookingRequestMessageID.
+
+}
+]]></sparqlquery>
+    </query>
+
+</queries>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rsp.booking.messages:PreBookRequest
+        xmlns:common="http://domainmodel.pts_fsm.org/2015/10/29/common"
+        xmlns:fsm.common.messages="http://servicemodel.pts_fsm.org/2015/10/29/fsm.common.messages"
+        xmlns:infrastructure="http://domainmodel.pts_fsm.org/2015/10/29/infrastructure"
+        xmlns:journeyplan="http://domainmodel.pts_fsm.org/2015/10/29/journeyplan"
+        xmlns:offering="http://domainmodel.pts_fsm.org/2015/10/29/offering"
+        xmlns:passenger="http://domainmodel.pts_fsm.org/2015/10/29/passenger"
+        xmlns:rsp.booking.messages="http://servicemodel.pts_fsm.org/2015/10/29/rsp.booking.messages"
+        xmlns:tariff="http://domainmodel.pts_fsm.org/2015/10/29/tariff"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://servicemodel.pts_fsm.org/2015/10/29/rsp.booking.messages WSDL/Booking/RailServiceProvider.Booking.Messages.xsd ">
+
+    <fsm.common.messages:Caller AddresseeId="87" BusinessRoleIdType="DISTRIBUTOR">
+        <fsm.common.messages:PreviousCaller AddresseeId="15" BusinessRoleIdType="XXXX-STATION_OFFICE"/>
+    </fsm.common.messages:Caller>
+
+    <rsp.booking.messages:CarrierOfferContainer>
+
+        <offering:Passenger DIST_ID="87" FirstName="PAUL" Gender="MALE" Name="DUPONT" RSP_ID="83" Id="12">
+            <passenger:PassengerTypeId>ADULT</passenger:PassengerTypeId>
+        </offering:Passenger>
+
+        <offering:Passenger DIST_ID="87" FirstName="PAUL" Gender="MALE" Name="DUPONT" RSP_ID="83" Id="13">
+            <passenger:PassengerTypeId>ADULT</passenger:PassengerTypeId>
+        </offering:Passenger>
+
+        <offering:Passenger DIST_ID="87" FirstName="PAUL" Gender="MALE" Name="DUPONT" RSP_ID="83" Id="14">
+            <passenger:PassengerTypeId>ADULT</passenger:PassengerTypeId>
+        </offering:Passenger>
+
+        <offering:Itinerary DIST_ID="87" RSP_ID="83">
+            <journeyplan:ServiceTypeId>TRAIN</journeyplan:ServiceTypeId>
+            <journeyplan:Segment Id="xml_id_segment_01">
+                <journeyplan:ServiceModeId>NIGHT_TRAIN</journeyplan:ServiceModeId>
+                <journeyplan:Origin Name="ROMA_TERMINI" StopPlaceId="8308409">
+                    <infrastructure:ScheduledStopPoint>
+                        <infrastructure:EffectiveDeparture>2017-10-20T21:31:00</infrastructure:EffectiveDeparture>
+                    </infrastructure:ScheduledStopPoint>
+                </journeyplan:Origin>
+                <journeyplan:Destination Name="PALERMO_CENTRALE" StopPlaceId="8312002">
+                    <infrastructure:ScheduledStopPoint>
+                        <infrastructure:ArrivalTime>2017-10-21T10:06:00</infrastructure:ArrivalTime>
+                    </infrastructure:ScheduledStopPoint>
+                </journeyplan:Destination>
+                <!--<journeyplan:StopPlace Name="ANETA_TERMINI" StopPlaceId="8308411">-->
+                    <!--<infrastructure:ScheduledStopPoint>-->
+                        <!--<infrastructure:EffectiveDeparture>2017-10-20T21:31:00</infrastructure:EffectiveDeparture>-->
+                    <!--</infrastructure:ScheduledStopPoint>-->
+                <!--</journeyplan:StopPlace>-->
+                <!--<journeyplan:StopPlace Name="ANETA_TERMINI2" StopPlaceId="8308412">-->
+                    <!--<infrastructure:ScheduledStopPoint>-->
+                        <!--<infrastructure:EffectiveDeparture>2017-10-20T21:31:00</infrastructure:EffectiveDeparture>-->
+                    <!--</infrastructure:ScheduledStopPoint>-->
+                <!--</journeyplan:StopPlace>-->
+                <journeyplan:Vehicle TypeId="TRAIN" VehicleId="1955"></journeyplan:Vehicle>
+            </journeyplan:Segment>
+        </offering:Itinerary>
+
+        <offering:CarrierOffer OfferCategoryId="ANCILLARY" RSP_ID = "1234">
+            <offering:PassengerRefsList>12 13 14</offering:PassengerRefsList>
+            <offering:Product QualityOfServiceId="FIRST_CLASS" >
+                <tariff:ProductInformation>
+                    <common:key>PRODUCT_TYPE</common:key>
+                    <common:value LanguageId="EN"><common:text>BERTH</common:text></common:value>
+                </tariff:ProductInformation>
+                <tariff:ProductInformation>
+                    <common:key>ACCOMMODATION_TYPE</common:key>
+                    <common:value LanguageId="EN"><common:text>SINGLE</common:text></common:value>
+                </tariff:ProductInformation>
+            </offering:Product>
+            <offering:Fare FareTypeId="TOTAL">
+                <tariff:RSPPrice>
+                    <tariff:Currency>
+                        <tariff:CurrencyId>EUR</tariff:CurrencyId>
+                    </tariff:Currency>
+                    <tariff:Amount>
+                        <tariff:FlatFeeAmount>7000</tariff:FlatFeeAmount>
+                    </tariff:Amount>
+                </tariff:RSPPrice>
+            </offering:Fare>
+        </offering:CarrierOffer>
+
+    </rsp.booking.messages:CarrierOfferContainer>
+
+</rsp.booking.messages:PreBookRequest>
+
