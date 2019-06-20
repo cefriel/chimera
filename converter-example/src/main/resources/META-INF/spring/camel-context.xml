@@ -8,16 +8,24 @@
       </util:list>
     </property>
   </bean>
-  <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit"/>
-  <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin"/>
-  <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
   <bean class="it.cefriel.chimera.processor.rdf4j.TemplateLowererProcessor" id="templateLower">
     <property name="templatePath">
       <value>mapping/NeTEx/template.vm</value>
     </property>
   </bean>
+  <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit"/>
+  <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin"/>
+  <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
+  <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLiftingProcessor" id="st4rtLifter"/>
+  <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLoweringProcessor" id="st4rtLower"/>
   <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zipSplitter"/>
   <camelContext id="GTFS_Conversion_Context" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    <!-- Data format for marshalling/unmarshalling -->
+    <camel:dataFormats>
+      <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.TAPTSI918" id="Jaxb918" objectFactory="true" prettyPrint="true"/>
+      <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.FSM" id="JaxbFSM" objectFactory="true" prettyPrint="true"/>
+    </camel:dataFormats>
+    <!-- Exceptions management -->
     <onException>
       <!-- the exception is full qualified names as plain strings -->
       <!-- there can be more just add a 2nd, 3rd exception element (unbounded) -->
@@ -31,9 +39,10 @@
       <camel:process id="force_quit" ref="quit"/>
     </onException>
     <!-- GTFS input route -->
-    <camel:route autoStartup="true" id="gtfs_route">
+    <camel:route id="gtfs_route">
       <!-- <camel:process id="add_ontologies" ref="modelEnricher" /> <camel:process id="add_master_data" ref="dataEnricher" /> -->
-      <camel:from id="_from1" uri="file:inbox/gtfs?noop=true"/>
+      <!-- <camel:from id="_from1" uri="file:inbox/gtfs?noop=true"/> -->
+      <camel:from id="_from1" uri="undertow://http://0.0.0.0:8888/conversion/gtfs?httpMethodRestrict=POST"/>
       <camel:log id="_log1" loggingLevel="WARN" message="GTFS conversion"/>
       <camel:process id="init_rdf" ref="begin"/>
       <camel:split id="_split1" streaming="true">
@@ -42,7 +51,7 @@
         <camel:choice id="_choice2">
           <camel:when id="_when14">
             <camel:simple>${body} != null</camel:simple>
-            <!-- TODO remove the filter  -->
+            <!-- TODO remove the filter -->
             <camel:filter id="_filter1">
               <camel:simple>${file:name} == "agency.txt"</camel:simple>
               <camel:setHeader headerName="rml_label" id="RML inputstream">
@@ -51,9 +60,8 @@
               <camel:log id="_log2" loggingLevel="WARN" message="Converting ${file:name}"/>
               <camel:process id="execute_mappings" ref="rmlLifter"/>
               <camel:process id="dump_graph" ref="graphDumper"/>
-              <camel:process id="lower" ref="templateLower"/>
-              <camel:log id="lower_log" loggingLevel="WARN" message="${body}"/>
-              <camel:log id="Entry lifting completed" loggingLevel="INFO" message="Entry extracted"/>
+              <!-- <camel:log id="lower_log" loggingLevel="WARN" message="${body}"/> -->
+              <!-- <camel:log id="Entry lifting completed" loggingLevel="INFO" message="Entry extracted"/> -->
             </camel:filter>
           </camel:when>
           <camel:otherwise id="_otherwise1">
@@ -61,7 +69,29 @@
           </camel:otherwise>
         </camel:choice>
       </camel:split>
-      <camel:process id="force_quit" ref="quit"/>
+      <camel:process id="lower" ref="templateLower"/>
+    </camel:route>
+    <camel:route id="st4rt_918_route">
+      <camel:from id="from_918" uri="undertow://http://0.0.0.0:8888/conversion/918?httpMethodRestrict=POST"/>
+      <camel:unmarshal id="unmarshal_918" ref="Jaxb918"/>
+      <camel:process id="add_ontologies" ref="st4rtModelEnricher"/>
+      <camel:process id="add_master_data" ref="st4rtDataEnricher"/>
+      <camel:log id="_log3" loggingLevel="WARN" message="918 -> FSM conversion"/>
+      <camel:process id="init_rdf" ref="begin"/>
+      <camel:process id="lift918" ref="st4rtLifter"/>
+      <camel:process id="dump_graph" ref="graphDumper"/>
+      <camel:process id="lowerFSM" ref="templateLower"/>
+    </camel:route>
+    <camel:route id="st4rt_fsm_route">
+      <camel:from id="from_fsm" uri="undertow://http://0.0.0.0:8888/conversion/fsm?httpMethodRestrict=POST"/>
+      <camel:unmarshal id="unmarshal_fsm" ref="JaxbFSM"/>
+      <camel:process id="add_ontologies" ref="st4rtModelEnricher"/>
+      <camel:process id="add_master_data" ref="st4rtDataEnricher"/>
+      <camel:log id="_log3" loggingLevel="WARN" message="FSM -> 918 conversion"/>
+      <camel:process id="init_rdf" ref="begin"/>
+      <camel:process id="liftFSM" ref="st4rtLifter"/>
+      <camel:process id="dump_graph" ref="graphDumper"/>
+      <camel:process id="lowerFSM" ref="templateLower"/>
     </camel:route>
   </camelContext>
 </beans>
