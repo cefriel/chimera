@@ -59,7 +59,7 @@ public class BindyEmptyCsvAwareDataFormat extends BindyCsvDataFormat {
                 return models;
             }
     
-            in = new InputStreamReader(inputStream, IOHelper.getCharsetName(exchange));
+            in = new InputStreamReader(inputStream);
     
             // Scanner is used to read big file
             scanner = new Scanner(in);

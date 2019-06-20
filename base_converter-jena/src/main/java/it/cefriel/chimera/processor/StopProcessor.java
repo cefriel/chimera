@@ -26,7 +26,7 @@ public class StopProcessor implements Processor {
         // remove myself from the in flight registry so we can stop this route without trouble
         camelContext.getInflightRepository().remove(exchange);
         // stop the route
-        camelContext.stopRoute(routeId);
+        camelContext.stop();
     }
 
 }
