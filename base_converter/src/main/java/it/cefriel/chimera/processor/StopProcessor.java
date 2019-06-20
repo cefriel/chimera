@@ -35,7 +35,7 @@ public class StopProcessor implements Processor {
         	log.error(stack_to_string(caused));
         camelContext.getInflightRepository().remove(exchange);
         // stop the route
-        camelContext.stopRoute(routeId);
+        camelContext.stop();
     }
     
     
