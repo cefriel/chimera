@@ -7,6 +7,7 @@ public class ProcessorConstants {
 	public static final String RML_LABEL = "rml_label";
 	public static final String MSG_ID = "message_id";
 	public static final String LOWERING_TEMPLATE = "lowering_template_url";
+	public static final String JWT_TOKEN = "JWT_TOKEN";
     
     public static String SHACL_RULES="shacl_rules";
     public static String MASTER_DATA="master_data";
