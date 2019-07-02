@@ -48,7 +48,17 @@
       <artifactId>camel-mail</artifactId>
       <version>${camel.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jackson</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-http4</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    
     <!-- TRAIN STANDARDS -->
     <dependency>
       <groupId>eu.st4rt.converter.standards</groupId>
