@@ -18,6 +18,7 @@ package it.cefriel.chimera.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.eclipse.rdf4j.model.Model;
@@ -61,5 +62,40 @@ public class SemanticLoader {
         
     }
 
+    
+    public static Model load_data(String url, String token) throws RDFParseException, RDFHandlerException, IOException {
+    	Model model = new LinkedHashModel();
+        
+        RDFParser rdfParser = null;
+        ValueFactory vf = SimpleValueFactory.getInstance();
 
+        if (url.startsWith("classpath://")){
+        	rdfParser=Rio.createParser(RDFFormat.TURTLE);
+        	rdfParser.setRDFHandler(new StatementCollector(model));
+        	url=url.replaceAll("classpath://", "");
+        	rdfParser.parse(SemanticLoader.class.getClassLoader().getResourceAsStream(url),url);
+        	return model;
+        }
+        
+        if (url.startsWith("/")) {
+        	url="file://"+url;
+        }
+        RDFFormat format = Rio.getParserFormatForFileName(url.toString()).orElse(RDFFormat.RDFXML);
+        rdfParser=Rio.createParser(format);
+        rdfParser.setRDFHandler(new ContextStatementCollector(model, vf, vf.createIRI(url)));
+        java.net.URL documentUrl = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
+
+        // set up url connection to get retrieve information back
+        con.setRequestMethod( "GET" );
+        con.setRequestProperty( "Authorization", "Bearer " + token );
+
+        // pull the information back from the URL
+        InputStream inputStream = con.getInputStream();
+        rdfParser.parse(inputStream,url);
+
+        return model;
+        
+    }
+    
 }
