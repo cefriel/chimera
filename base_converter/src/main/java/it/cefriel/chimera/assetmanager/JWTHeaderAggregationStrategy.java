@@ -9,12 +9,13 @@ public class JWTHeaderAggregationStrategy implements AggregationStrategy {
 
     public Exchange aggregate(Exchange original, Exchange resource) {
         Object originalBody = original.getIn().getBody();
-        AccessResponseToken resourceResponse = resource.getOut().getBody(AccessResponseToken.class);
+        AccessResponseToken resourceResponse = resource.getIn().getBody(AccessResponseToken.class);
         
         if (original.getPattern().isOutCapable()) {
-        	original.getOut().setHeader(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
+        	System.out.println("original out: "+original.getOut()+" - "+resource.getIn().getBody());
         	if (originalBody!=null)
         		original.getOut().setBody(originalBody);
+        	original.getOut().setHeader(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
         } else {
         	original.getIn().setHeader(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
         	if (originalBody!=null)
