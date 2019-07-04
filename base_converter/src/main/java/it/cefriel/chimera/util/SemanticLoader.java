@@ -89,6 +89,7 @@ public class SemanticLoader {
         // set up url connection to get retrieve information back
         con.setRequestMethod( "GET" );
         con.setRequestProperty( "Authorization", "Bearer " + token );
+        con.setRequestProperty( "Accept", "application/x-turtle, application/rdf+xml");
 
         // pull the information back from the URL
         InputStream inputStream = con.getInputStream();
