@@ -60,12 +60,16 @@
             <groupId>org.it2rail.cp-rdf4j-utils</groupId>
             <artifactId>it2rail.cp-rdf4j-utils</artifactId>
             <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/it2rail.cp-rdf4j-utils-1.0.0.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>com.complexible.common.utils</groupId>
             <artifactId>cp-common-utils</artifactId>
             <version>5.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/cp-common-utils-5.0.1.jar</systemPath>
         </dependency>
 
         <dependency>
