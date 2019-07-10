@@ -71,7 +71,7 @@
       </camel:split>
       <camel:process id="lower" ref="templateLower"/>
     </camel:route>
-    <camel:route id="st4rt_918_route">
+    <!-- <camel:route id="st4rt_918_route">
       <camel:from id="from_918" uri="undertow://http://0.0.0.0:8888/conversion/918?httpMethodRestrict=POST"/>
       <camel:unmarshal id="unmarshal_918" ref="Jaxb918"/>
       <camel:process id="add_ontologies" ref="st4rtModelEnricher"/>
@@ -92,6 +92,6 @@
       <camel:process id="liftFSM" ref="st4rtLifter"/>
       <camel:process id="dump_graph" ref="graphDumper"/>
       <camel:process id="lowerFSM" ref="templateLower"/>
-    </camel:route>
+    </camel:route> -->
   </camelContext>
 </beans>
