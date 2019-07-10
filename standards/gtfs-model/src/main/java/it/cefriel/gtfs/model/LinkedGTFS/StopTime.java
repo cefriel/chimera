@@ -1,20 +1,22 @@
-package it.cefriel.gtfs.model;
+package it.cefriel.gtfs.model.LinkedGTFS;
 
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 import st4rt.convertor.empire.annotation.Namespaces;
 import st4rt.convertor.empire.annotation.RdfsClass;
 import st4rt.convertor.empire.annotation.RdfProperty;
+import st4rt.convertor.empire.annotation.SupportsRdfId;
 import st4rt.convertor.empire.annotation.SupportsRdfIdImpl;
 
 @CsvRecord(separator=",", crlf="UNIX",skipFirstLine=true)
-@Namespaces({"gtfs", "http://vocab.gtfs.org/terms#"
-			"dct", "http://purl.org/dc/terms/"
-			"dcat",	"http://www.w3.org/ns/dcat#"
-			"xsd", "http://www.w3.org/2001/XMLSchema#"
-			"rdfs",	"http://www.w3.org/2000/01/rdf-schema#"
-			"foaf",	"http://xmlns.com/foaf/0.1/"
-			"schema", "http://schema.org/"
+@Namespaces({"gtfs", "http://vocab.gtfs.org/terms#",
+			"dct", "http://purl.org/dc/terms/",
+			"dcat",	"http://www.w3.org/ns/dcat#",
+			"xsd", "http://www.w3.org/2001/XMLSchema#",
+			"rdfs",	"http://www.w3.org/2000/01/rdf-schema#",
+			"foaf",	"http://xmlns.com/foaf/0.1/",
+			"schema", "http://schema.org/",
 			"geo", "http://www.w3.org/2003/01/geo/wgs84_pos#"})
 @RdfsClass("gtfs:StopTime")
 public final class StopTime implements SupportsRdfId {
