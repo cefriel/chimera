@@ -13,30 +13,17 @@
       <value>mapping/NeTEx/template.vm</value>
     </property>
   </bean>
-  <bean class="it.cefriel.chimera.processor.rdf4j.SecuredDataEnricher" id="dataEnricher">
-    <property name="masterDataUrls">
-      <util:list>
-        <value>http://localhost:8000/publisher/media/assets_media/ontology/IT2Rail%20Ontology/it2r_onto_current.owl</value>
-      </util:list>
-    </property>
-  </bean>
   <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit"/>
   <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin"/>
   <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
-  <bean class="it.cefriel.chimera.processor.rdf4j.DataEnricher" id="st4rtDataEnricher"/>
-  <bean class="it.cefriel.chimera.processor.rdf4j.InferenceEnricher" id="st4rtModelEnricher"/>
-  <!-- Utilities -->
-  <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zipSplitter"/>
-  <bean class="it.cefriel.chimera.assetmanager.JWTHeaderAggregationStrategy" id="addJWT"/>
-  <!-- ST4RT components -->
   <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLiftingProcessor" id="st4rtLifter"/>
   <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLoweringProcessor" id="st4rtLower"/>
-  <!-- Camel routes -->
+  <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zipSplitter"/>
   <camelContext id="GTFS_Conversion_Context" trace="false" xmlns="http://camel.apache.org/schema/spring">
     <!-- Data format for marshalling/unmarshalling -->
     <camel:dataFormats>
-      <!-- <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.TAPTSI918" id="Jaxb918" objectFactory="true" prettyPrint="true"/> -->
-      <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.FSM" id="JaxbFSM" prettyPrint="true"/>
+      <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.TAPTSI918" id="Jaxb918" objectFactory="true" prettyPrint="true"/>
+      <camel:jaxb contextPath="st4rt.convertor.eu.start.standards.FSM" id="JaxbFSM" objectFactory="true" prettyPrint="true"/>
     </camel:dataFormats>
     <!-- Exceptions management -->
     <onException>
@@ -58,9 +45,6 @@
       <camel:from id="_from1" uri="undertow://http://0.0.0.0:8888/conversion/gtfs?httpMethodRestrict=POST"/>
       <camel:log id="_log1" loggingLevel="WARN" message="GTFS conversion"/>
       <camel:process id="init_rdf" ref="begin"/>
-      <camel:enrich id="_enrich1" strategyRef="addJWT">
-        <camel:constant>direct:authService</camel:constant>
-      </camel:enrich>
       <camel:split id="_split1" streaming="true">
         <ref>zipSplitter</ref>
         <convertBodyTo id="_convertBodyTo1" type="String"/>
@@ -87,93 +71,27 @@
       </camel:split>
       <camel:process id="lower" ref="templateLower"/>
     </camel:route>
-    <!-- GTFS input route -->
-    <camel:route id="gtfs_am_route">
-      <camel:from id="_from4" uri="undertow://http://0.0.0.0:9999/conversion/gtfs?httpMethodRestrict=GET"/>
-      <camel:log id="_log3" loggingLevel="WARN" message="GTFS conversion"/>
-      <camel:to id="_to3" uri="direct:fetchGTFS"/>
-      <camel:enrich id="_enrich2" strategyRef="addJWT">
-        <camel:constant>direct:authService</camel:constant>
-      </camel:enrich>
-      <camel:process id="_process1" ref="begin"/>
-      <camel:process id="_process5" ref="dataEnricher"/>
-      <camel:split id="_split2" streaming="true">
-        <ref>zipSplitter</ref>
-        <convertBodyTo id="_convertBodyTo3" type="String"/>
-        <camel:choice id="_choice3">
-          <camel:when id="_when2">
-            <camel:simple>${body} != null</camel:simple>
-            <!-- TODO remove the filter -->
-            <camel:filter id="_filter2">
-              <camel:simple>${file:name} == "agency.txt"</camel:simple>
-              <camel:setHeader headerName="rml_label" id="_setHeader5">
-                <camel:simple>${file:name}</camel:simple>
-              </camel:setHeader>
-              <camel:log id="_log4" loggingLevel="WARN" message="Converting ${file:name}"/>
-              <camel:process id="_process2" ref="rmlLifter"/>
-              <camel:process id="_process3" ref="graphDumper"/>
-            </camel:filter>
-          </camel:when>
-          <camel:otherwise id="_otherwise2">
-            <camel:log id="_log5" loggingLevel="WARN" message="$simple{file:name} is empty"/>
-          </camel:otherwise>
-        </camel:choice>
-      </camel:split>
-      <camel:process id="_process4" ref="templateLower"/>
+    <!-- <camel:route id="st4rt_918_route">
+      <camel:from id="from_918" uri="undertow://http://0.0.0.0:8888/conversion/918?httpMethodRestrict=POST"/>
+      <camel:unmarshal id="unmarshal_918" ref="Jaxb918"/>
+      <camel:process id="add_ontologies" ref="st4rtModelEnricher"/>
+      <camel:process id="add_master_data" ref="st4rtDataEnricher"/>
+      <camel:log id="_log3" loggingLevel="WARN" message="918 -> FSM conversion"/>
+      <camel:process id="init_rdf" ref="begin"/>
+      <camel:process id="lift918" ref="st4rtLifter"/>
+      <camel:process id="dump_graph" ref="graphDumper"/>
+      <camel:process id="lowerFSM" ref="templateLower"/>
     </camel:route>
-    <!-- Fetch GTFS -->
-    <camel:route id="get_GTFS">
-      <camel:from id="_from3" uri="direct:fetchGTFS"/>
-      <camel:setHeader headerName="CamelHttpMethod" id="_setHeader4">
-        <camel:simple>GET</camel:simple>
-      </camel:setHeader>
-      <camel:setHeader headerName="Accept" id="_setHeader6">
-        <camel:constant>*/*</camel:constant>
-      </camel:setHeader>
-      <camel:setHeader headerName="CamelHttpUri" id="_setHeader7">
-        <camel:simple>http://localhost:8000/publisher/media/assets_media/network%20data/Test%20GTFS/sample-feed.zip</camel:simple>
-      </camel:setHeader>
-      <camel:to id="_to2" uri="http:dummy"/>
-    </camel:route>
-    <!-- 
-        Call the Asset Manager to verify/renew the token 
-    -->
-    <camel:route id="renew_token">
-      <camel:from id="_from2" uri="direct:authService"/>
-      <camel:setHeader headerName="CamelHttpMethod" id="_setHeader3">
-        <camel:simple>POST</camel:simple>
-      </camel:setHeader>
-      <camel:setHeader headerName="Content-Type" id="_setHeader1">
-        <camel:constant>application/json</camel:constant>
-      </camel:setHeader>
-      <camel:setHeader headerName="Accept" id="_setHeader2">
-        <camel:constant>application/json</camel:constant>
-      </camel:setHeader>
-      <camel:setBody id="_setBody1">
-        <camel:constant>{ "username": "admin", "password": "dp2845unc2p8u8b"}</camel:constant>
-      </camel:setBody>
-      <camel:to id="_to1" uri="undertow:http://localhost:8000/api/token/"/>
-      <convertBodyTo id="_convertBodyTo2" type="String"/>
-      <camel:choice id="_choice1">
-        <camel:when id="_when1">
-          <camel:simple>${header.CamelHttpResponseCode} == 200</camel:simple>
-          <camel:unmarshal id="_unmarshal1">
-            <camel:json library="Jackson" unmarshalTypeName="it.cefriel.chimera.assetmanager.AccessResponseToken"/>
-          </camel:unmarshal>
-          <!-- <camel:setHeader headerName="JWT_TOKEN" id="_setHeader3"> <camel:simple>${body.access}</camel:simple> </camel:setHeader> -->
-        </camel:when>
-      </camel:choice>
-      <camel:log id="_log7" message="${body}"/>
-    </camel:route>
-    <!-- <camel:route id="st4rt_918_route"> <camel:from id="from_918" uri="undertow://http://0.0.0.0:8888/conversion/918?httpMethodRestrict=POST"/> 
-      <camel:unmarshal id="unmarshal_918" ref="Jaxb918"/> <camel:process id="add_ontologies" ref="st4rtModelEnricher"/> <camel:process id="add_master_data" 
-      ref="st4rtDataEnricher"/> <camel:log id="_log3" loggingLevel="WARN" message="918 -> FSM conversion"/> <camel:process id="init_st4rt_rdf" ref="begin"/> 
-      <camel:process id="lift918" ref="st4rtLifter"/> <camel:process id="dump_st4rt_graph" ref="graphDumper"/> <camel:process id="lowerFSM" ref="templateLower"/> 
-      </camel:route> -->
-    <!-- <camel:route id="st4rt_fsm_route"> <camel:from id="from_fsm" uri="undertow://http://0.0.0.0:8888/conversion/fsm?httpMethodRestrict=POST"/> 
-      <camel:unmarshal id="unmarshal_fsm" ref="JaxbFSM"/> <camel:process id="add_fsm_ontologies" ref="st4rtModelEnricher"/> <camel:process id="add_fsm_master_data" 
-      ref="st4rtDataEnricher"/> <camel:log id="_log4" loggingLevel="WARN" message="FSM -> 918 conversion"/> <camel:process id="init_fsm_rdf" ref="begin"/> 
-      <camel:process id="liftFSM" ref="st4rtLifter"/> <camel:process id="dump_fsm_graph" ref="graphDumper"/> <camel:process id="lower918" ref="templateLower"/> 
-      </camel:route> -->
+    <camel:route id="st4rt_fsm_route">
+      <camel:from id="from_fsm" uri="undertow://http://0.0.0.0:8888/conversion/fsm?httpMethodRestrict=POST"/>
+      <camel:unmarshal id="unmarshal_fsm" ref="JaxbFSM"/>
+      <camel:process id="add_ontologies" ref="st4rtModelEnricher"/>
+      <camel:process id="add_master_data" ref="st4rtDataEnricher"/>
+      <camel:log id="_log3" loggingLevel="WARN" message="FSM -> 918 conversion"/>
+      <camel:process id="init_rdf" ref="begin"/>
+      <camel:process id="liftFSM" ref="st4rtLifter"/>
+      <camel:process id="dump_graph" ref="graphDumper"/>
+      <camel:process id="lowerFSM" ref="templateLower"/>
+    </camel:route> -->
   </camelContext>
 </beans>

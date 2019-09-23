@@ -70,21 +70,31 @@
       <artifactId>gtfs</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>eu.st4rt.converter.standards</groupId>
       <artifactId>918-messages</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-    </dependency>
+    </dependency> -->
     <dependency>
+      <groupId>eu.st4rt</groupId>
+      <artifactId>st4rt-918-messages</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <!-- <dependency>
       <groupId>eu.st4rt.converter.standards</groupId>
       <artifactId>fsm-messages</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-    </dependency>
+    </dependency> -->
     <dependency>
+      <groupId>eu.st4rt</groupId>
+      <artifactId>st4rt-fsm-messages</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <!-- <dependency>
       <groupId>org.entur</groupId>
       <artifactId>netex-java-model</artifactId>
       <version>1.0.8-SNAPSHOT</version>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <build>
