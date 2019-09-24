@@ -46,13 +46,13 @@ public class PintoLoweringProcessor  implements Processor{
 
         ValueFactory vf = SimpleValueFactory.getInstance();
 
-        obj_id=(String) msg.getHeader(ProcessorConstants.OBJ_ID, obj_id);
-        dest_standard=msg.getHeader(ProcessorConstants.DEST_STD, String.class);
+        obj_id=(String) exchange.getProperty(ProcessorConstants.OBJ_ID, obj_id);
+        dest_standard=exchange.getProperty(ProcessorConstants.DEST_STD, String.class);
         addDestinationStandard(dest_standard);    
-        classNames=standards.get(msg.getHeader(ProcessorConstants.DEST_STD, String.class));
-        namespace=msg.getHeader(ProcessorConstants.DEFAULT_NS, String.class);
+        classNames=standards.get(exchange.getProperty(ProcessorConstants.DEST_STD, String.class));
+        namespace=exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
 
-        repo=msg.getHeader(ProcessorConstants.CONTEXT_GRAPH, Repository.class);
+        repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, Repository.class);
 
         List<Object> outputs=new ArrayList<Object>();
 
@@ -91,7 +91,7 @@ public class PintoLoweringProcessor  implements Processor{
         }
 
         msg.setBody(result);
-        msg.setHeader(ProcessorConstants.OBJ_CLASS, result.getClass().getName());
+        exchange.getProperty(ProcessorConstants.OBJ_CLASS, result.getClass().getName());
     }
 
 

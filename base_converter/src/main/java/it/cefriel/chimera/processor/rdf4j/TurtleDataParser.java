@@ -47,7 +47,7 @@ public class TurtleDataParser implements Processor{
 
 		Message in = exchange.getIn();
 		String input_msg=in.getBody(String.class);
-		repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		try (RepositoryConnection con = repo.getConnection()) {
         	rdfParser=Rio.createParser(RDFFormat.TURTLE);

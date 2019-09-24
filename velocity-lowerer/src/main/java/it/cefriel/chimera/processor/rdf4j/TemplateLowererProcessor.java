@@ -27,7 +27,6 @@ public class TemplateLowererProcessor  implements Processor{
 	public void process(Exchange exchange) throws Exception {
 		Repository repo=null;
 		String output=null;
-		Message in = exchange.getIn();
 		Message out = exchange.getOut();
 		String lowering_template=null;
 		//Singleton
@@ -38,13 +37,13 @@ public class TemplateLowererProcessor  implements Processor{
 			velocityEngine.init();
 			   
 		}
-		repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		RDFReader reader = new RDFReader();
 		reader.setRepository(repo);
 
 		if (templatePath==null) {
-			lowering_template=in.getHeader(ProcessorConstants.LOWERING_TEMPLATE, String.class);
+			lowering_template=exchange.getProperty(ProcessorConstants.LOWERING_TEMPLATE, String.class);
 		}
 		else {
 			lowering_template=templatePath;

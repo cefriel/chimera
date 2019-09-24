@@ -19,7 +19,6 @@ package it.cefriel.chimera.processor.rdf4j;
 import java.util.List;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -39,12 +38,11 @@ public class DataEnricher implements Processor{
 		Model current_dataset=null;
 		Repository repo=null;
 		ValueFactory vf = SimpleValueFactory.getInstance();
-		Message in = exchange.getIn();
-		
+	
 		if (masterDataUrls==null)
-			masterDataUrls=in.getHeader(ProcessorConstants.MASTER_DATA, List.class);
+			masterDataUrls=exchange.getProperty(ProcessorConstants.MASTER_DATA, List.class);
 
-		repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		try (RepositoryConnection con = repo.getConnection()) {
 

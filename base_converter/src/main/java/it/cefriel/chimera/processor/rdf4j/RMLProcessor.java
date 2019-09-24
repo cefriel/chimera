@@ -60,9 +60,9 @@ public class RMLProcessor implements Processor{
         
         // RML Processor configuration
         if (rmlMappings==null) 
-        	loadMappings(in.getHeader(ProcessorConstants.RML_MAPPINGS, List.class));
+        	loadMappings(exchange.getProperty(ProcessorConstants.RML_MAPPINGS, List.class));
         if (label==null) {
-        	stream_label=in.getHeader(ProcessorConstants.RML_LABEL, String.class);
+        	stream_label=exchange.getProperty(ProcessorConstants.RML_LABEL, String.class);
     	}
         else {
         	stream_label=label;
@@ -71,7 +71,7 @@ public class RMLProcessor implements Processor{
         log.info("Incoming message: "+incoming_message);
         log.info("RML mappings: "+rmlMappings);
         log.info("RML label: "+stream_label);
-        repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+        repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
         streamsMap.put("stream://"+stream_label, new ByteArrayInputStream(incoming_message.getBytes()));
         
@@ -85,6 +85,8 @@ public class RMLProcessor implements Processor{
             Executor executor = new Executor(rmlStore, new RecordsFactory(streamsMap), null, rml_results, ProcessorConstants.BASE_CONVERSION_IRI);
             executor.execute(null);
             con.add(rml_results.getModel());
+        	log.info("RML output: "+rml_results.toString());
+
         }
     }
 
@@ -116,7 +118,7 @@ public class RMLProcessor implements Processor{
             Model model = Rio.parse(UniLoader.open(resource), "", RDFFormat.TURTLE);
             rml_model.addAll(model);
     	}
-    	log.info(rml_model.toString());
+    	log.debug(rml_model.toString());
     	rmlStore=new RDF4JStore(rml_model);
     }
     

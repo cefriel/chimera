@@ -44,14 +44,14 @@ public class InferenceEnricher implements Processor{
 		List<String> ontology_urls=null;
         ValueFactory vf = SimpleValueFactory.getInstance();
 
-		RDFGraph graph=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		RDFGraph graph=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 		
 		Sail data=graph.getData();
 		
 		Repository schema_repo = new SailRepository( new MemoryStore());
 		schema_repo.init();
 		if (ontology_urls==null)
-			ontologyUrls=in.getHeader(ProcessorConstants.ONTOLOGY_URLS, List.class);
+			ontologyUrls=exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
 		
 		try (RepositoryConnection con = schema_repo.getConnection()) {
         	for (String url: ontologyUrls) {

@@ -55,8 +55,8 @@ public class PintoLiftingProcessor  implements Processor{
         Message msg=exchange.getIn();
         Object raw_input=msg.getBody();
 
-        namespace=msg.getHeader(ProcessorConstants.DEFAULT_NS, String.class);
-        repo=msg.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+        namespace=exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
+        repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
         if (namespace==null)
         	namespace=defaultNS;

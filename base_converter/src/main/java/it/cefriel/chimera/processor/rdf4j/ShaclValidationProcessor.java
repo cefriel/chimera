@@ -36,9 +36,8 @@ public class ShaclValidationProcessor implements Processor {
 		//shaclSail.setLogValidationPlans(true);
 		//shaclSail.setGlobalLogValidationExecution(true);
 		//shaclSail.setLogValidationViolations(true);
-		Message in = exchange.getIn();
 
-		RDFGraph graph=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		RDFGraph graph=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 		NotifyingSail data=(NotifyingSail)graph.getData();
 		ShaclSail shaclSail = new ShaclSail(data);
 		shaclSail.setIgnoreNoShapesLoadedException(true);
@@ -47,7 +46,7 @@ public class ShaclValidationProcessor implements Processor {
 
 
 		if (shaclRulesUrls==null)
-			shaclRulesUrls=in.getHeader(ProcessorConstants.SHACL_RULES, List.class);
+			shaclRulesUrls=exchange.getProperty(ProcessorConstants.SHACL_RULES, List.class);
 
 		try (SailRepositoryConnection connection = sailRepository.getConnection()) {
 

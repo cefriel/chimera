@@ -15,9 +15,9 @@ public class JWTHeaderAggregationStrategy implements AggregationStrategy {
         	System.out.println("original out: "+original.getOut()+" - "+resource.getIn().getBody());
         	if (originalBody!=null)
         		original.getOut().setBody(originalBody);
-        	original.getOut().setHeader(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
+        	original.setProperty(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
         } else {
-        	original.getIn().setHeader(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
+        	original.setProperty(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
         	if (originalBody!=null)
         		original.getIn().setBody(originalBody);
         }

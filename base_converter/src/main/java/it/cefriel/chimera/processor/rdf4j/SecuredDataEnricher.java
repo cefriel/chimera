@@ -42,10 +42,10 @@ public class SecuredDataEnricher implements Processor{
 		Message in = exchange.getIn();
 		
 		if (masterDataUrls==null)
-			masterDataUrls=in.getHeader(ProcessorConstants.MASTER_DATA, List.class);
+			masterDataUrls=exchange.getProperty(ProcessorConstants.MASTER_DATA, List.class);
 
-		repo=in.getHeader(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
-		String token=in.getHeader(ProcessorConstants.JWT_TOKEN, String.class);
+		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		String token=exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
 
