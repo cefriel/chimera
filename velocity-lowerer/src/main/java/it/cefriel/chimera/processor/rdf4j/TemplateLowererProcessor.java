@@ -64,7 +64,12 @@ public class TemplateLowererProcessor  implements Processor{
 		t.merge(context, writer);
 
 		output=writer.toString();
-		output=format(output);
+		try {
+			output=format(output);
+		} catch (Exception e) {
+			log.debug("Parsing Exception: XML cannot be correctly serialized.")
+		}
+		
 		out.setHeader(Exchange.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
 		out.setBody(output);
 		
@@ -81,7 +86,7 @@ public class TemplateLowererProcessor  implements Processor{
 	public String format(String xml) throws ParsingException, IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Serializer serializer = new Serializer(out);
-        serializer.setIndent(4);  // or whatever you like
+        serializer.setIndent(4);
         serializer.write(new Builder().build(xml, ""));
         return out.toString("UTF-8");
     }
