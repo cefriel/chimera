@@ -14,12 +14,6 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import nu.xom.ParsingException;
-import nu.xom.Builder;
-import nu.xom.ParsingException;
-import nu.xom.Serializer;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import it.cefriel.chimera.context.RDFGraph;
 import it.cefriel.chimera.util.ProcessorConstants;
@@ -64,11 +58,6 @@ public class TemplateLowererProcessor  implements Processor{
 		t.merge(context, writer);
 
 		output=writer.toString();
-		try {
-			output=format(output);
-		} catch (Exception e) {
-			log.debug("Parsing Exception: XML cannot be correctly serialized.")
-		}
 		
 		out.setHeader(Exchange.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
 		out.setBody(output);
@@ -83,11 +72,4 @@ public class TemplateLowererProcessor  implements Processor{
 		this.templatePath = templatePath;
 	}
 
-	public String format(String xml) throws ParsingException, IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Serializer serializer = new Serializer(out);
-        serializer.setIndent(4);
-        serializer.write(new Builder().build(xml, ""));
-        return out.toString("UTF-8");
-    }
 }
