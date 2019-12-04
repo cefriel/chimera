@@ -1,0 +1,78 @@
+<jxb:bindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" jxb:version="2.0" jxb:extensionBindingPrefixes="xjc substitution"
+              xmlns:substitution="http://jaxb2-commons.dev.java.net/basic/substitution"
+              >
+    
+	<jxb:bindings>
+		<jxb:globalBindings underscoreBinding="asCharInWord">
+			<xjc:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime" adapter="org.rutebanken.util.LocalDateTimeISO8601XmlAdapter" />
+<!--			<xjc:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime" adapter="com.migesok.jaxb.adapter.javatime.LocalDateTimeXmlAdapter" />-->
+			<xjc:javaType name="java.time.LocalTime" xmlType="xs:time" adapter="org.rutebanken.util.LocalTimeISO8601XmlAdapter" />
+			<xjc:javaType name="java.time.LocalDateTime" xmlType="xs:date" adapter="org.rutebanken.util.LocalDateXmlAdapter" />
+			<xjc:javaType name="java.time.Duration" xmlType="xs:duration" adapter="com.migesok.jaxb.adapter.javatime.DurationXmlAdapter" />
+        </jxb:globalBindings>
+	</jxb:bindings>
+
+	<!-- See the script bin/version_updater.sh It updates version in schema locations-->
+
+	<jxb:bindings schemaLocation="./src/main/resources/xsd/1.08/NeTEx_publication.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="org.rutebanken.netex.model" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_framework/netex_genericFramework/netex_organisation_version-v1.1.xsd">
+		<jxb:bindings node="//xsd:element[@name = 'Status']">
+			<jxb:property name="StatusOrganisationGroup" />
+		</jxb:bindings>
+		<jxb:bindings node="//xsd:element[@name = 'NameOfClass']">
+			<jxb:property name="NameOfClassCodespaceAssignment" />
+		</jxb:bindings>
+	</jxb:bindings>
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_part_3/part3_fares/netex_salesPackage_version-v1.0.xsd">
+		<jxb:bindings node="//xsd:element[@ref = 'ResponsibilitySetRef']">
+			<jxb:property name="ResponsibilitySetRefDistributionByGroup" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_part_2/part2_journeyTimes/netex_vehicleJourneyFrequency_version-v1.1.xsd">
+		<jxb:bindings node="//xsd:group[@name= 'HeadwayJourneyGroupGroup']/xsd:sequence/xsd:element[@name = 'Description']">
+			<jxb:property name="DescriptionHeadwayJourneyGroupGroup" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_part_3/part3_salesTransactions/netex_salesContract_version-v1.1.xsd">
+		<jxb:bindings node="//xsd:element[@name = 'Status']">
+			<jxb:property name="StatusPassengerContractGroup" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_part_3/part3_salesTransactions/netex_retailConsortium_version-v1.1.xsd">
+		<jxb:bindings node="//xsd:element[@name = 'Status']">
+			<jxb:property name="StatusRetailDeviceGroup" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings
+		schemaLocation="./src/main/resources/xsd/1.08/netex_framework/netex_responsibility/netex_version_support-v1.1.xsd">
+		<jxb:bindings node="//xsd:attributeGroup[@name = 'BasicModificationDetailsGroup']/xsd:attribute[@name = 'status']">
+			<jxb:property name="status_BasicModificationDetailsGroup" />
+		</jxb:bindings>
+		<jxb:bindings node="//xsd:attributeGroup[@name = 'BasicModificationDetailsGroup']/xsd:attribute[@name = 'derivedFromVersionRef']">
+			<jxb:property name="derivedFromVersionRef_BasicModificationDetailsGroup" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+
+
+
+
+
+</jxb:bindings>

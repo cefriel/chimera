@@ -1,0 +1,811 @@
+#baseURI: http://st4rt.eu/ontologies/gtfs#
+#imports: http://datashapes.org/dash
+#prefix: c
+@prefix dash: <http://datashapes.org/dash#> .
+@prefix c: <http://st4rt.eu/ontologies/gtfs#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+c:Agency
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AgencyShape
+    a sh:NodeShape ;
+    sh:targetClass c:Agency ;
+    
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:string ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:url;
+      sh:datatype xsd:string ;
+      sh:name "url" ;
+    ] ;
+    sh:property [
+      sh:path c:timezone;
+      sh:datatype xsd:string ;
+      sh:name "timezone" ;
+    ] ;
+    sh:property [
+      sh:path c:lang;
+      sh:datatype xsd:string ;
+      sh:name "lang" ;
+    ] ;
+    sh:property [
+      sh:path c:phone;
+      sh:datatype xsd:string ;
+      sh:name "phone" ;
+    ] ;
+    sh:property [
+      sh:path c:fareUrl;
+      sh:datatype xsd:string ;
+      sh:name "fareUrl" ;
+    ] ;
+    sh:property [
+      sh:path c:email;
+      sh:datatype xsd:string ;
+      sh:name "email" ;
+    ] ;
+
+    sh:rule [
+        a sh:SPARQLRule;
+        sh:construct """
+            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            prefix netex: <http://www.cefriel.it/chimaera/netex#>
+            prefix gtfs: <http://st4rt.eu/ontologies/gtfs#>
+            construct {
+                $this a gtfs:Agency;
+                    gtfs:agency_id ?id;
+                    gtfs:agency_name ?name;
+                    gtfs:agency_url ?url;
+                    gtfs:agency_timezone ?tz;
+                    #gtfs:agency_lang ?lang; 
+                    gtfs:agency_phone ?phone; 
+                .
+            }
+            where {
+                $this a netex:Operator;
+                    netex:id ?id;
+                    #netex:shortName ;
+                    netex:name/netex:value ?name ;
+                    netex:contactDetails/netex:url ?url;
+                    netex:contactDetails/netex:phone ?phone;
+                    netex:locale/netex:timeZone ?tz;
+                .
+            }
+        """;
+    ];
+
+.
+c:FareAttribute
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FareAttributeShape
+    a sh:NodeShape ;
+    sh:targetClass c:FareAttribute ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:int ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:fareId;
+      sh:datatype xsd:string ;
+      sh:name "fareId" ;
+    ] ;
+    sh:property [
+      sh:path c:price;
+      sh:datatype c:float ;
+      sh:name "price" ;
+    ] ;
+    sh:property [
+      sh:path c:currencyType;
+      sh:datatype xsd:string ;
+      sh:name "currencyType" ;
+    ] ;
+    sh:property [
+      sh:path c:paymentMethod;
+      sh:datatype xsd:int ;
+      sh:name "paymentMethod" ;
+    ] ;
+    sh:property [
+      sh:path c:transfers;
+      sh:datatype xsd:int ;
+      sh:name "transfers" ;
+    ] ;
+    sh:property [
+      sh:path c:agencyId;
+      sh:datatype xsd:string ;
+      sh:name "agencyId" ;
+    ] ;
+    sh:property [
+      sh:path c:transferDuration;
+      sh:datatype xsd:int ;
+      sh:name "transferDuration" ;
+    ] ;
+.
+c:FareRule
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FareRuleShape
+    a sh:NodeShape ;
+    sh:targetClass c:FareRule ;
+    
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:int ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:fareId;
+      sh:datatype xsd:string ;
+      sh:name "fareId" ;
+    ] ;
+    sh:property [
+      sh:path c:routeId;
+      sh:datatype xsd:string ;
+      sh:name "routeId" ;
+    ] ;
+    sh:property [
+      sh:path c:originId;
+      sh:datatype xsd:string ;
+      sh:name "originId" ;
+    ] ;
+    sh:property [
+      sh:path c:destinationId;
+      sh:datatype xsd:string ;
+      sh:name "destinationId" ;
+    ] ;
+    sh:property [
+      sh:path c:containsId;
+      sh:datatype xsd:string ;
+      sh:name "containsId" ;
+    ] ;
+    sh:property [
+      sh:path c:route;
+      sh:datatype c:Route ;
+      sh:name "route" ;
+    ] ;
+    sh:property [
+      sh:path c:fare;
+      sh:datatype c:FareAttribute ;
+      sh:name "fare" ;
+    ] ;
+.
+c:FeedInfo
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FeedInfoShape
+    a sh:NodeShape ;
+    sh:targetClass c:FeedInfo ;
+    
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:int ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:publisherName;
+      sh:datatype xsd:string ;
+      sh:name "publisherName" ;
+    ] ;
+    sh:property [
+      sh:path c:publisherUrl;
+      sh:datatype xsd:string ;
+      sh:name "publisherUrl" ;
+    ] ;
+    sh:property [
+      sh:path c:lang;
+      sh:datatype xsd:string ;
+      sh:name "lang" ;
+    ] ;
+    sh:property [
+      sh:path c:startDate;
+      sh:datatype xsd:string ;
+      sh:name "startDate" ;
+    ] ;
+    sh:property [
+      sh:path c:endDate;
+      sh:datatype xsd:string ;
+      sh:name "endDate" ;
+    ] ;
+    sh:property [
+      sh:path c:version;
+      sh:datatype xsd:string ;
+      sh:name "version" ;
+    ] ;
+.
+c:Frequency
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FrequencyShape
+    a sh:NodeShape ;
+    sh:targetClass c:Frequency ;
+    
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:int ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:tripId;
+      sh:datatype xsd:string ;
+      sh:name "tripId" ;
+    ] ;
+    sh:property [
+      sh:path c:startTime;
+      sh:datatype xsd:string ;
+      sh:name "startTime" ;
+    ] ;
+    sh:property [
+      sh:path c:endTime;
+      sh:datatype xsd:string ;
+      sh:name "endTime" ;
+    ] ;
+    sh:property [
+      sh:path c:headwaySecs;
+      sh:datatype xsd:int ;
+      sh:name "headwaySecs" ;
+    ] ;
+    sh:property [
+      sh:path c:exactTimes;
+      sh:datatype xsd:int ;
+      sh:name "exactTimes" ;
+    ] ;
+    sh:property [
+      sh:path c:trip;
+      sh:datatype c:Trip ;
+      sh:name "trip" ;
+    ] ;
+.
+c:Route
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RouteShape
+    a sh:NodeShape ;
+    sh:targetClass c:Route ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:int ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:string ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:agency;
+      sh:datatype xsd:string ;
+      sh:name "agency" ;
+    ] ;
+    sh:property [
+      sh:path c:shortName;
+      sh:datatype xsd:string ;
+      sh:name "shortName" ;
+    ] ;
+    sh:property [
+      sh:path c:longName;
+      sh:datatype xsd:string ;
+      sh:name "longName" ;
+    ] ;
+    sh:property [
+      sh:path c:desc;
+      sh:datatype xsd:string ;
+      sh:name "desc" ;
+    ] ;
+    sh:property [
+      sh:path c:type;
+      sh:datatype xsd:int ;
+      sh:name "type" ;
+    ] ;
+    sh:property [
+      sh:path c:url;
+      sh:datatype xsd:string ;
+      sh:name "url" ;
+    ] ;
+    sh:property [
+      sh:path c:color;
+      sh:datatype xsd:string ;
+      sh:name "color" ;
+    ] ;
+    sh:property [
+      sh:path c:textColor;
+      sh:datatype xsd:string ;
+      sh:name "textColor" ;
+    ] ;
+    sh:property [
+      sh:path c:sortOrder;
+      sh:datatype xsd:int ;
+      sh:name "sortOrder" ;
+    ] ;
+    sh:property [
+      sh:path c:routeBikesAllowed;
+      sh:datatype xsd:int ;
+      sh:name "routeBikesAllowed" ;
+    ] ;
+    sh:property [
+      sh:path c:bikesAllowed;
+      sh:datatype xsd:int ;
+      sh:name "bikesAllowed" ;
+    ] ;
+    sh:property [
+      sh:path c:brandingUrl;
+      sh:datatype xsd:string ;
+      sh:name "brandingUrl" ;
+    ] ;
+.
+c:ServiceCalendar
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ServiceCalendarShape
+    a sh:NodeShape ;
+    sh:targetClass c:ServiceCalendar ;
+    
+    sh:property [
+      sh:path c:serviceId;
+      sh:datatype xsd:string ;
+      sh:name "serviceId" ;
+    ] ;
+    sh:property [
+      sh:path c:monday;
+      sh:datatype xsd:int ;
+      sh:name "monday" ;
+    ] ;
+    sh:property [
+      sh:path c:tuesday;
+      sh:datatype xsd:int ;
+      sh:name "tuesday" ;
+    ] ;
+    sh:property [
+      sh:path c:wednesday;
+      sh:datatype xsd:int ;
+      sh:name "wednesday" ;
+    ] ;
+    sh:property [
+      sh:path c:thursday;
+      sh:datatype xsd:int ;
+      sh:name "thursday" ;
+    ] ;
+    sh:property [
+      sh:path c:friday;
+      sh:datatype xsd:int ;
+      sh:name "friday" ;
+    ] ;
+    sh:property [
+      sh:path c:saturday;
+      sh:datatype xsd:int ;
+      sh:name "saturday" ;
+    ] ;
+    sh:property [
+      sh:path c:sunday;
+      sh:datatype xsd:int ;
+      sh:name "sunday" ;
+    ] ;
+    sh:property [
+      sh:path c:startDate;
+      sh:datatype xsd:date ;
+      sh:name "startDate" ;
+    ] ;
+    sh:property [
+      sh:path c:endDate;
+      sh:datatype xsd:date ;
+      sh:name "endDate" ;
+    ] ;
+.
+c:ServiceCalendarDate
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ServiceCalendarDateShape
+    a sh:NodeShape ;
+    sh:targetClass c:ServiceCalendarDate ;
+    
+    sh:property [
+      sh:path c:EXCEPTION_TYPE_ADD;
+      sh:datatype xsd:int ;
+      sh:name "EXCEPTION_TYPE_ADD" ;
+    ] ;
+    sh:property [
+      sh:path c:EXCEPTION_TYPE_REMOVE;
+      sh:datatype xsd:int ;
+      sh:name "EXCEPTION_TYPE_REMOVE" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceId;
+      sh:datatype xsd:string ;
+      sh:name "serviceId" ;
+    ] ;
+    sh:property [
+      sh:path c:date;
+      sh:datatype xsd:date ;
+      sh:name "date" ;
+    ] ;
+    sh:property [
+      sh:path c:exceptionType;
+      sh:datatype xsd:int ;
+      sh:name "exceptionType" ;
+    ] ;
+.
+c:ShapePoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ShapePointShape
+    a sh:NodeShape ;
+    sh:targetClass c:ShapePoint ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:integer ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:shapeId;
+      sh:datatype xsd:string ;
+      sh:name "shapeId" ;
+    ] ;
+    sh:property [
+      sh:path c:lat;
+      sh:datatype xsd:integer ;
+      sh:name "lat" ;
+    ] ;
+    sh:property [
+      sh:path c:lon;
+      sh:datatype xsd:integer ;
+      sh:name "lon" ;
+    ] ;
+    sh:property [
+      sh:path c:sequence;
+      sh:datatype xsd:int ;
+      sh:name "sequence" ;
+    ] ;
+    sh:property [
+      sh:path c:distTraveled;
+      sh:datatype xsd:integer ;
+      sh:name "distTraveled" ;
+    ] ;
+.
+c:Stop
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StopShape
+    a sh:NodeShape ;
+    sh:targetClass c:Stop ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:int ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:string ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:code;
+      sh:datatype xsd:string ;
+      sh:name "code" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:desc;
+      sh:datatype xsd:string ;
+      sh:name "desc" ;
+    ] ;
+    sh:property [
+      sh:path c:lat;
+      sh:datatype xsd:integer ;
+      sh:name "lat" ;
+    ] ;
+    sh:property [
+      sh:path c:lon;
+      sh:datatype xsd:integer ;
+      sh:name "lon" ;
+    ] ;
+    sh:property [
+      sh:path c:zoneId;
+      sh:datatype xsd:string ;
+      sh:name "zoneId" ;
+    ] ;
+    sh:property [
+      sh:path c:url;
+      sh:datatype xsd:string ;
+      sh:name "url" ;
+    ] ;
+    sh:property [
+      sh:path c:locationType;
+      sh:datatype xsd:int ;
+      sh:name "locationType" ;
+    ] ;
+    sh:property [
+      sh:path c:parentStation;
+      sh:datatype xsd:string ;
+      sh:name "parentStation" ;
+    ] ;
+    sh:property [
+      sh:path c:timezone;
+      sh:datatype xsd:string ;
+      sh:name "timezone" ;
+    ] ;
+    sh:property [
+      sh:path c:wheelchairBoarding;
+      sh:datatype xsd:int ;
+      sh:name "wheelchairBoarding" ;
+    ] ;
+    sh:property [
+      sh:path c:direction;
+      sh:datatype xsd:string ;
+      sh:name "direction" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleType;
+      sh:datatype xsd:int ;
+      sh:name "vehicleType" ;
+    ] ;
+    sh:property [
+      sh:path c:platformCode;
+      sh:datatype xsd:string ;
+      sh:name "platformCode" ;
+    ] ;
+.
+c:StopTime
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StopTimeShape
+    a sh:NodeShape ;
+    sh:targetClass c:StopTime ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:int ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:trip;
+      sh:datatype c:Trip ;
+      sh:name "trip" ;
+    ] ;
+    sh:property [
+      sh:path c:stop;
+      sh:datatype c:Stop ;
+      sh:name "stop" ;
+    ] ;
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:int ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:tripId;
+      sh:datatype xsd:string ;
+      sh:name "tripId" ;
+    ] ;
+    sh:property [
+      sh:path c:arrivalTime;
+      sh:datatype xsd:string ;
+      sh:name "arrivalTime" ;
+    ] ;
+    sh:property [
+      sh:path c:departureTime;
+      sh:datatype xsd:string ;
+      sh:name "departureTime" ;
+    ] ;
+    sh:property [
+      sh:path c:stop_id;
+      sh:datatype xsd:string ;
+      sh:name "stop_id" ;
+    ] ;
+    sh:property [
+      sh:path c:stopSequence;
+      sh:datatype xsd:string ;
+      sh:name "stopSequence" ;
+    ] ;
+    sh:property [
+      sh:path c:stopHeadsign;
+      sh:datatype xsd:string ;
+      sh:name "stopHeadsign" ;
+    ] ;
+    sh:property [
+      sh:path c:pickupType;
+      sh:datatype xsd:int ;
+      sh:name "pickupType" ;
+    ] ;
+    sh:property [
+      sh:path c:dropOffType;
+      sh:datatype xsd:int ;
+      sh:name "dropOffType" ;
+    ] ;
+    sh:property [
+      sh:path c:shapeDistTraveled;
+      sh:datatype xsd:integer ;
+      sh:name "shapeDistTraveled" ;
+    ] ;
+    sh:property [
+      sh:path c:timepoint;
+      sh:datatype xsd:int ;
+      sh:name "timepoint" ;
+    ] ;
+    sh:property [
+      sh:path c:track;
+      sh:datatype xsd:string ;
+      sh:name "track" ;
+    ] ;
+.
+c:Transfer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TransferShape
+    a sh:NodeShape ;
+    sh:targetClass c:Transfer ;
+    
+    sh:property [
+      sh:path c:MISSING_VALUE;
+      sh:datatype xsd:int ;
+      sh:name "MISSING_VALUE" ;
+    ] ;
+    sh:property [
+      sh:path c:fromStopId;
+      sh:datatype xsd:string ;
+      sh:name "fromStopId" ;
+    ] ;
+    sh:property [
+      sh:path c:toStopId;
+      sh:datatype xsd:string ;
+      sh:name "toStopId" ;
+    ] ;
+    sh:property [
+      sh:path c:transferType;
+      sh:datatype xsd:int ;
+      sh:name "transferType" ;
+    ] ;
+    sh:property [
+      sh:path c:minTransferTime;
+      sh:datatype xsd:int ;
+      sh:name "minTransferTime" ;
+    ] ;
+    sh:property [
+      sh:path c:fromRoute;
+      sh:datatype c:Route ;
+      sh:name "fromRoute" ;
+    ] ;
+    sh:property [
+      sh:path c:fromTrip;
+      sh:datatype c:Trip ;
+      sh:name "fromTrip" ;
+    ] ;
+    sh:property [
+      sh:path c:toStop;
+      sh:datatype c:Stop ;
+      sh:name "toStop" ;
+    ] ;
+    sh:property [
+      sh:path c:fromStop;
+      sh:datatype c:Stop ;
+      sh:name "fromStop" ;
+    ] ;
+    sh:property [
+      sh:path c:toRoute;
+      sh:datatype c:Route ;
+      sh:name "toRoute" ;
+    ] ;
+    sh:property [
+      sh:path c:toTrip;
+      sh:datatype c:Trip ;
+      sh:name "toTrip" ;
+    ] ;
+.
+c:Trip
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TripShape
+    a sh:NodeShape ;
+    sh:targetClass c:Trip ;
+    
+    sh:property [
+      sh:path c:route_id;
+      sh:datatype xsd:string ;
+      sh:name "route_id" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceId;
+      sh:datatype xsd:string ;
+      sh:name "serviceId" ;
+    ] ;
+    sh:property [
+      sh:path c:tripId;
+      sh:datatype xsd:string ;
+      sh:name "tripId" ;
+    ] ;
+    sh:property [
+      sh:path c:tripHeadsign;
+      sh:datatype xsd:string ;
+      sh:name "tripHeadsign" ;
+    ] ;
+    sh:property [
+      sh:path c:tripShortName;
+      sh:datatype xsd:string ;
+      sh:name "tripShortName" ;
+    ] ;
+    sh:property [
+      sh:path c:directionId;
+      sh:datatype xsd:string ;
+      sh:name "directionId" ;
+    ] ;
+    sh:property [
+      sh:path c:blockId;
+      sh:datatype xsd:string ;
+      sh:name "blockId" ;
+    ] ;
+    sh:property [
+      sh:path c:shapeId;
+      sh:datatype xsd:string ;
+      sh:name "shapeId" ;
+    ] ;
+    sh:property [
+      sh:path c:wheelchairAccessible;
+      sh:datatype xsd:int ;
+      sh:name "wheelchairAccessible" ;
+    ] ;
+    sh:property [
+      sh:path c:bikesAllowed;
+      sh:datatype xsd:int ;
+      sh:name "bikesAllowed" ;
+    ] ;
+    sh:property [
+      sh:path c:route;
+      sh:datatype c:Route ;
+      sh:name "route" ;
+    ] ;
+.
+c:CsvRecord
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CsvRecordShape
+    a sh:NodeShape ;
+    sh:targetClass c:CsvRecord ;
+    
+.

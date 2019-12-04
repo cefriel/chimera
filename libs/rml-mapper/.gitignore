@@ -1,0 +1,8 @@
+.idea
+target
+rmlmapper.iml
+.DS_Store
+.settings
+.vscode
+.attach_*
+/bin/
