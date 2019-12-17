@@ -1,0 +1,5156 @@
+#baseURI: http://st4rt.eu/ontologies/fsm#
+#imports: http://datashapes.org/dash
+#prefix: c
+@prefix dash: <http://datashapes.org/dash#> .
+@prefix c: <http://st4rt.eu/ontologies/fsm#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+c:AdditionalEntry
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AdditionalEntryShape
+    a sh:NodeShape ;
+    sh:targetClass c:AdditionalEntry ;
+    
+    sh:property [
+      sh:path c:key;
+      sh:datatype xsd:string ;
+      sh:name "key" ;
+    ] ;
+    sh:property [
+      sh:path c:valuetype;
+      sh:datatype xsd:string ;
+      sh:name "valuetype" ;
+    ] ;
+    sh:property [
+      sh:path c:value;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "value" ;
+    ] ;
+.
+c:AfterSaleFare
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AfterSaleFareShape
+    a sh:NodeShape ;
+    sh:targetClass c:AfterSaleFare ;
+    
+    sh:property [
+      sh:path c:balance;
+      sh:datatype c:Balance ;
+      sh:name "balance" ;
+    ] ;
+    sh:property [
+      sh:path c:initialPrice;
+      sh:datatype c:InitialPrice ;
+      sh:name "initialPrice" ;
+    ] ;
+    sh:property [
+      sh:path c:handlingFee;
+      sh:datatype c:HandlingFee ;
+      sh:name "handlingFee" ;
+    ] ;
+.
+c:AfterSalesCondition
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AfterSalesConditionShape
+    a sh:NodeShape ;
+    sh:targetClass c:AfterSalesCondition ;
+    
+    sh:property [
+      sh:path c:upgradeConstraintId;
+      sh:datatype xsd:string ;
+      sh:name "upgradeConstraintId" ;
+    ] ;
+    sh:property [
+      sh:path c:upgradeIdType;
+      sh:datatype xsd:string ;
+      sh:name "upgradeIdType" ;
+    ] ;
+    sh:property [
+      sh:path c:refunding;
+      sh:datatype c:Refunding ;
+      sh:name "refunding" ;
+    ] ;
+    sh:property [
+      sh:path c:exchange;
+      sh:datatype c:Exchange ;
+      sh:name "exchange" ;
+    ] ;
+    sh:property [
+      sh:path c:afterSalesConditionText;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "afterSalesConditionText" ;
+    ] ;
+    sh:property [
+      sh:path c:immediatePaymentCondition;
+      sh:datatype c:ImmediatePaymentCondition ;
+      sh:name "immediatePaymentCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:immediatePaymentAvailability;
+      sh:datatype xsd:string ;
+      sh:name "immediatePaymentAvailability" ;
+    ] ;
+.
+c:AllowedVehicles
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AllowedVehiclesShape
+    a sh:NodeShape ;
+    sh:targetClass c:AllowedVehicles ;
+    
+    sh:property [
+      sh:path c:vehicleTypeId;
+      sh:datatype xsd:string ;
+      sh:name "vehicleTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleId;
+      sh:datatype xsd:string ;
+      sh:name "vehicleId" ;
+    ] ;
+.
+c:AlternativePath
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AlternativePathShape
+    a sh:NodeShape ;
+    sh:targetClass c:AlternativePath ;
+    
+    sh:property [
+      sh:path c:stopPlace;
+      sh:datatype c:StopPlace ;
+      sh:name "stopPlace" ;
+    ] ;
+    sh:property [
+      sh:path c:pathName;
+      sh:datatype xsd:string ;
+      sh:name "pathName" ;
+    ] ;
+.
+c:Amount
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AmountShape
+    a sh:NodeShape ;
+    sh:targetClass c:Amount ;
+    
+    sh:property [
+      sh:path c:flatFeeAmount;
+      sh:datatype c:BigDecimal ;
+      sh:name "flatFeeAmount" ;
+    ] ;
+    sh:property [
+      sh:path c:percentageAmount;
+      sh:datatype c:BigDecimal ;
+      sh:name "percentageAmount" ;
+    ] ;
+.
+c:Area
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AreaShape
+    a sh:NodeShape ;
+    sh:targetClass c:Area ;
+    
+    sh:property [
+      sh:path c:region;
+      sh:datatype c:Region ;
+      sh:name "region" ;
+    ] ;
+    sh:property [
+      sh:path c:areaName;
+      sh:datatype xsd:string ;
+      sh:name "areaName" ;
+    ] ;
+    sh:property [
+      sh:path c:zoneName;
+      sh:datatype xsd:string ;
+      sh:name "zoneName" ;
+    ] ;
+.
+c:AsymmetricBinding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AsymmetricBindingShape
+    a sh:NodeShape ;
+    sh:targetClass c:AsymmetricBinding ;
+    
+    sh:property [
+      sh:path c:includeTimestamp;
+      sh:datatype c:IncludeTimestamp ;
+      sh:name "includeTimestamp" ;
+    ] ;
+    sh:property [
+      sh:path c:recipientToken;
+      sh:datatype c:UsernameToken ;
+      sh:name "recipientToken" ;
+    ] ;
+    sh:property [
+      sh:path c:initiatorToken;
+      sh:datatype c:UsernameToken ;
+      sh:name "initiatorToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaRecipientToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaRecipientToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaInitiatorSignatureToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaInitiatorSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaRecipientEncryptionToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaRecipientEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaInitiatorToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaInitiatorToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaInitiatorEncryptionToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaInitiatorEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaRecipientSignatureToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaRecipientSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosRecipientSignatureToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosRecipientSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosInitiatorSignatureToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosInitiatorSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosRecipientToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosRecipientToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosInitiatorToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosInitiatorToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosInitiatorEncryptionToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosInitiatorEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosRecipientEncryptionToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosRecipientEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509RecipientToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509RecipientToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509InitiatorSignatureToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509InitiatorSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509RecipientEncryptionToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509RecipientEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509InitiatorToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509InitiatorToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509InitiatorEncryptionToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509InitiatorEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509RecipientSignatureToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509RecipientSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:algorithmSuite;
+      sh:datatype c:Boolean ;
+      sh:name "algorithmSuite" ;
+    ] ;
+.
+c:AvailabilityIndicator
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:AvailabilityIndicatorShape
+    a sh:NodeShape ;
+    sh:targetClass c:AvailabilityIndicator ;
+    
+    sh:property [
+      sh:path c:outlookId;
+      sh:datatype xsd:string ;
+      sh:name "outlookId" ;
+    ] ;
+    sh:property [
+      sh:path c:availableItems;
+      sh:datatype c:BigInteger ;
+      sh:name "availableItems" ;
+    ] ;
+    sh:property [
+      sh:path c:managedItemTypeId;
+      sh:datatype xsd:string ;
+      sh:name "managedItemTypeId" ;
+    ] ;
+.
+c:Balance
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BalanceShape
+    a sh:NodeShape ;
+    sh:targetClass c:Balance ;
+    
+    sh:property [
+      sh:path c:rspPrice;
+      sh:datatype c:RSPPrice ;
+      sh:name "rspPrice" ;
+    ] ;
+    sh:property [
+      sh:path c:netPrice;
+      sh:datatype c:NetPrice ;
+      sh:name "netPrice" ;
+    ] ;
+    sh:property [
+      sh:path c:discount;
+      sh:datatype c:Discount ;
+      sh:name "discount" ;
+    ] ;
+    sh:property [
+      sh:path c:vat;
+      sh:datatype c:VAT ;
+      sh:name "vat" ;
+    ] ;
+    sh:property [
+      sh:path c:charge;
+      sh:datatype c:Charge ;
+      sh:name "charge" ;
+    ] ;
+.
+c:BenefitCard
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BenefitCardShape
+    a sh:NodeShape ;
+    sh:targetClass c:BenefitCard ;
+    
+    sh:property [
+      sh:path c:expirationDate;
+      sh:datatype xsd:datetime ;
+      sh:name "expirationDate" ;
+    ] ;
+    sh:property [
+      sh:path c:identifier;
+      sh:datatype xsd:string ;
+      sh:name "identifier" ;
+    ] ;
+    sh:property [
+      sh:path c:typeId;
+      sh:datatype xsd:string ;
+      sh:name "typeId" ;
+    ] ;
+    sh:property [
+      sh:path c:issuerId;
+      sh:datatype xsd:string ;
+      sh:name "issuerId" ;
+    ] ;
+    sh:property [
+      sh:path c:ownerName;
+      sh:datatype xsd:string ;
+      sh:name "ownerName" ;
+    ] ;
+.
+c:BinarySecurityToken
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BinarySecurityTokenShape
+    a sh:NodeShape ;
+    sh:targetClass c:BinarySecurityToken ;
+    
+    sh:property [
+      sh:path c:typeID;
+      sh:datatype xsd:string ;
+      sh:name "typeID" ;
+    ] ;
+    sh:property [
+      sh:path c:encoding;
+      sh:datatype xsd:string ;
+      sh:name "encoding" ;
+    ] ;
+    sh:property [
+      sh:path c:value;
+      sh:datatype xsd:string ;
+      sh:name "value" ;
+    ] ;
+.
+c:Binding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BindingShape
+    a sh:NodeShape ;
+    sh:targetClass c:Binding ;
+    
+    sh:property [
+      sh:path c:maxReceivedMessageSize;
+      sh:datatype c:Long ;
+      sh:name "maxReceivedMessageSize" ;
+    ] ;
+    sh:property [
+      sh:path c:closeTimeout;
+      sh:datatype c:Long ;
+      sh:name "closeTimeout" ;
+    ] ;
+    sh:property [
+      sh:path c:openTimeout;
+      sh:datatype c:Long ;
+      sh:name "openTimeout" ;
+    ] ;
+    sh:property [
+      sh:path c:receiveTimeout;
+      sh:datatype c:Long ;
+      sh:name "receiveTimeout" ;
+    ] ;
+    sh:property [
+      sh:path c:sendTimeout;
+      sh:datatype c:Long ;
+      sh:name "sendTimeout" ;
+    ] ;
+    sh:property [
+      sh:path c:sessionTimeout;
+      sh:datatype c:Long ;
+      sh:name "sessionTimeout" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:wsBindingTypeId;
+      sh:datatype xsd:string ;
+      sh:name "wsBindingTypeId" ;
+    ] ;
+.
+c:BindingPolicy
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BindingPolicyShape
+    a sh:NodeShape ;
+    sh:targetClass c:BindingPolicy ;
+    
+    sh:property [
+      sh:path c:symmetricBinding;
+      sh:datatype c:SymmetricBinding ;
+      sh:name "symmetricBinding" ;
+    ] ;
+    sh:property [
+      sh:path c:asymmetricBinding;
+      sh:datatype c:AsymmetricBinding ;
+      sh:name "asymmetricBinding" ;
+    ] ;
+    sh:property [
+      sh:path c:transportBinding;
+      sh:datatype c:TransportBinding ;
+      sh:name "transportBinding" ;
+    ] ;
+    sh:property [
+      sh:path c:algorithmSuite;
+      sh:datatype xsd:string ;
+      sh:name "algorithmSuite" ;
+    ] ;
+    sh:property [
+      sh:path c:algorithmSuiteName;
+      sh:datatype xsd:string ;
+      sh:name "algorithmSuiteName" ;
+    ] ;
+.
+c:BoardingPosition
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BoardingPositionShape
+    a sh:NodeShape ;
+    sh:targetClass c:BoardingPosition ;
+    
+    sh:property [
+      sh:path c:boardingPositionId;
+      sh:datatype xsd:string ;
+      sh:name "boardingPositionId" ;
+    ] ;
+    sh:property [
+      sh:path c:height;
+      sh:datatype c:BigDecimal ;
+      sh:name "height" ;
+    ] ;
+    sh:property [
+      sh:path c:displacement;
+      sh:datatype xsd:string ;
+      sh:name "displacement" ;
+    ] ;
+    sh:property [
+      sh:path c:prmSuitable;
+      sh:datatype c:Boolean ;
+      sh:name "prmSuitable" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleRampSuitable;
+      sh:datatype c:Boolean ;
+      sh:name "vehicleRampSuitable" ;
+    ] ;
+.
+c:Booking
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:BookingShape
+    a sh:NodeShape ;
+    sh:targetClass c:Booking ;
+    
+    sh:property [
+      sh:path c:bookingCommercialRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingCommercialRef" ;
+    ] ;
+    sh:property [
+      sh:path c:relatedBookingIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "relatedBookingIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:bookingTimeLimit;
+      sh:datatype xsd:datetime ;
+      sh:name "bookingTimeLimit" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierServiceItem;
+      sh:datatype c:CarrierServiceItem ;
+      sh:name "carrierServiceItem" ;
+    ] ;
+    sh:property [
+      sh:path c:itinerary;
+      sh:datatype c:Itinerary ;
+      sh:name "itinerary" ;
+    ] ;
+    sh:property [
+      sh:path c:passenger;
+      sh:datatype c:PassengerData ;
+      sh:name "passenger" ;
+    ] ;
+    sh:property [
+      sh:path c:contactInformation;
+      sh:datatype c:ContactInformation ;
+      sh:name "contactInformation" ;
+    ] ;
+    sh:property [
+      sh:path c:bookingStatus;
+      sh:datatype c:GenericStatus ;
+      sh:name "bookingStatus" ;
+    ] ;
+    sh:property [
+      sh:path c:paymentMode;
+      sh:datatype c:PaymentMode ;
+      sh:name "paymentMode" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentMethod;
+      sh:datatype c:FulfilmentMethod ;
+      sh:name "fulfilmentMethod" ;
+    ] ;
+    sh:property [
+      sh:path c:remark;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "remark" ;
+    ] ;
+.
+c:Caller
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CallerShape
+    a sh:NodeShape ;
+    sh:targetClass c:Caller ;
+    
+    sh:property [
+      sh:path c:previousCaller;
+      sh:datatype c:Caller ;
+      sh:name "previousCaller" ;
+    ] ;
+    sh:property [
+      sh:path c:addresseeId;
+      sh:datatype xsd:string ;
+      sh:name "addresseeId" ;
+    ] ;
+    sh:property [
+      sh:path c:businessRoleIdType;
+      sh:datatype xsd:string ;
+      sh:name "businessRoleIdType" ;
+    ] ;
+    sh:property [
+      sh:path c:simpleAddress;
+      sh:datatype xsd:string ;
+      sh:name "simpleAddress" ;
+    ] ;
+.
+c:CarbonFootPrint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CarbonFootPrintShape
+    a sh:NodeShape ;
+    sh:targetClass c:CarbonFootPrint ;
+    
+    sh:property [
+      sh:path c:co2Unit;
+      sh:datatype xsd:string ;
+      sh:name "co2Unit" ;
+    ] ;
+    sh:property [
+      sh:path c:co2Emission;
+      sh:datatype c:BigDecimal ;
+      sh:name "co2Emission" ;
+    ] ;
+.
+c:CarrierOffer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CarrierOfferShape
+    a sh:NodeShape ;
+    sh:targetClass c:CarrierOffer ;
+    
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:eligiblePassengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "eligiblePassengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:eligibleSegmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "eligibleSegmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:product;
+      sh:datatype c:Product ;
+      sh:name "product" ;
+    ] ;
+    sh:property [
+      sh:path c:productOwner;
+      sh:datatype c:ProductOwner ;
+      sh:name "productOwner" ;
+    ] ;
+    sh:property [
+      sh:path c:appliedBenefitRefsList;
+      sh:datatype c:Object ;
+      sh:name "appliedBenefitRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReference;
+      sh:datatype c:PlaceReference ;
+      sh:name "placeReference" ;
+    ] ;
+    sh:property [
+      sh:path c:confirmedAncillaryService;
+      sh:datatype c:ConfirmedAncillaryService ;
+      sh:name "confirmedAncillaryService" ;
+    ] ;
+    sh:property [
+      sh:path c:confirmedPRMSupport;
+      sh:datatype c:ConfirmedPRMSupport ;
+      sh:name "confirmedPRMSupport" ;
+    ] ;
+    sh:property [
+      sh:path c:availabilityIndicator;
+      sh:datatype c:AvailabilityIndicator ;
+      sh:name "availabilityIndicator" ;
+    ] ;
+    sh:property [
+      sh:path c:boundCarrierOfferRefsList;
+      sh:datatype c:Object ;
+      sh:name "boundCarrierOfferRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:combinationCriteria;
+      sh:datatype c:CombinationCriteria ;
+      sh:name "combinationCriteria" ;
+    ] ;
+    sh:property [
+      sh:path c:salesCondition;
+      sh:datatype c:SalesCondition ;
+      sh:name "salesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:afterSalesCondition;
+      sh:datatype c:AfterSalesCondition ;
+      sh:name "afterSalesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:validityArea;
+      sh:datatype c:ValidityArea ;
+      sh:name "validityArea" ;
+    ] ;
+    sh:property [
+      sh:path c:validityPeriod;
+      sh:datatype c:ValidityPeriod ;
+      sh:name "validityPeriod" ;
+    ] ;
+    sh:property [
+      sh:path c:controllingConstraint;
+      sh:datatype c:ControllingConstraint ;
+      sh:name "controllingConstraint" ;
+    ] ;
+    sh:property [
+      sh:path c:carbonFootPrint;
+      sh:datatype c:CarbonFootPrint ;
+      sh:name "carbonFootPrint" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentMethod;
+      sh:datatype c:FulfilmentMethod ;
+      sh:name "fulfilmentMethod" ;
+    ] ;
+    sh:property [
+      sh:path c:offerTimeLimit;
+      sh:datatype xsd:datetime ;
+      sh:name "offerTimeLimit" ;
+    ] ;
+    sh:property [
+      sh:path c:offerCategoryId;
+      sh:datatype xsd:string ;
+      sh:name "offerCategoryId" ;
+    ] ;
+.
+c:CarrierOfferContainer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CarrierOfferContainerShape
+    a sh:NodeShape ;
+    sh:targetClass c:CarrierOfferContainer ;
+    
+    sh:property [
+      sh:path c:passenger;
+      sh:datatype c:PassengerData ;
+      sh:name "passenger" ;
+    ] ;
+    sh:property [
+      sh:path c:itinerary;
+      sh:datatype c:Itinerary ;
+      sh:name "itinerary" ;
+    ] ;
+.
+c:CarrierServiceItem
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CarrierServiceItemShape
+    a sh:NodeShape ;
+    sh:targetClass c:CarrierServiceItem ;
+    
+    sh:property [
+      sh:path c:carrierServiceItemStatus;
+      sh:datatype c:GenericStatus ;
+      sh:name "carrierServiceItemStatus" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierServiceItemCommercialRef;
+      sh:datatype xsd:string ;
+      sh:name "carrierServiceItemCommercialRef" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:product;
+      sh:datatype c:Product ;
+      sh:name "product" ;
+    ] ;
+    sh:property [
+      sh:path c:productOwner;
+      sh:datatype c:ProductOwner ;
+      sh:name "productOwner" ;
+    ] ;
+    sh:property [
+      sh:path c:salesCondition;
+      sh:datatype c:SalesCondition ;
+      sh:name "salesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:afterSalesCondition;
+      sh:datatype c:AfterSalesCondition ;
+      sh:name "afterSalesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:validityArea;
+      sh:datatype c:ValidityArea ;
+      sh:name "validityArea" ;
+    ] ;
+    sh:property [
+      sh:path c:validityPeriod;
+      sh:datatype c:ValidityPeriod ;
+      sh:name "validityPeriod" ;
+    ] ;
+    sh:property [
+      sh:path c:controllingConstraint;
+      sh:datatype c:ControllingConstraint ;
+      sh:name "controllingConstraint" ;
+    ] ;
+    sh:property [
+      sh:path c:specialTerms;
+      sh:datatype c:SpecialTerms ;
+      sh:name "specialTerms" ;
+    ] ;
+    sh:property [
+      sh:path c:boundCarrierServiceItemRefsList;
+      sh:datatype c:Object ;
+      sh:name "boundCarrierServiceItemRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:combinationCriteria;
+      sh:datatype c:CombinationCriteria ;
+      sh:name "combinationCriteria" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReference;
+      sh:datatype c:PlaceReference ;
+      sh:name "placeReference" ;
+    ] ;
+    sh:property [
+      sh:path c:confirmedPRMSupport;
+      sh:datatype c:ConfirmedPRMSupport ;
+      sh:name "confirmedPRMSupport" ;
+    ] ;
+    sh:property [
+      sh:path c:confirmedAncillaryService;
+      sh:datatype c:ConfirmedAncillaryService ;
+      sh:name "confirmedAncillaryService" ;
+    ] ;
+    sh:property [
+      sh:path c:fare;
+      sh:datatype c:Fare ;
+      sh:name "fare" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilment;
+      sh:datatype c:Fulfilment ;
+      sh:name "fulfilment" ;
+    ] ;
+    sh:property [
+      sh:path c:carbonFootPrint;
+      sh:datatype c:CarbonFootPrint ;
+      sh:name "carbonFootPrint" ;
+    ] ;
+.
+c:ChangePoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ChangePointShape
+    a sh:NodeShape ;
+    sh:targetClass c:ChangePoint ;
+    
+    sh:property [
+      sh:path c:connectionTime;
+      sh:datatype c:ConnectionTime ;
+      sh:name "connectionTime" ;
+    ] ;
+    sh:property [
+      sh:path c:linkPath;
+      sh:datatype c:LinkPath ;
+      sh:name "linkPath" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlaceName;
+      sh:datatype xsd:string ;
+      sh:name "stopPlaceName" ;
+    ] ;
+.
+c:Charge
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ChargeShape
+    a sh:NodeShape ;
+    sh:targetClass c:Charge ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+    sh:property [
+      sh:path c:description;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "description" ;
+    ] ;
+    sh:property [
+      sh:path c:typeId;
+      sh:datatype xsd:string ;
+      sh:name "typeId" ;
+    ] ;
+    sh:property [
+      sh:path c:refundable;
+      sh:datatype c:Boolean ;
+      sh:name "refundable" ;
+    ] ;
+.
+c:ClientCertificate
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ClientCertificateShape
+    a sh:NodeShape ;
+    sh:targetClass c:ClientCertificate ;
+    
+    sh:property [
+      sh:path c:usernameToken;
+      sh:datatype c:UsernameToken ;
+      sh:name "usernameToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509Token;
+      sh:datatype c:X509Token ;
+      sh:name "x509Token" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaKeyValueToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaKeyValueToken" ;
+    ] ;
+    sh:property [
+      sh:path c:authenticationModeId;
+      sh:datatype xsd:string ;
+      sh:name "authenticationModeId" ;
+    ] ;
+    sh:property [
+      sh:path c:token;
+      sh:datatype xsd:string ;
+      sh:name "token" ;
+    ] ;
+    sh:property [
+      sh:path c:clientCertificate;
+      sh:datatype xsd:string ;
+      sh:name "clientCertificate" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceCertificate;
+      sh:datatype xsd:string ;
+      sh:name "serviceCertificate" ;
+    ] ;
+.
+c:CombinationCriteria
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CombinationCriteriaShape
+    a sh:NodeShape ;
+    sh:targetClass c:CombinationCriteria ;
+    
+    sh:property [
+      sh:path c:backwardCouplingKey;
+      sh:datatype c:CouplingKey ;
+      sh:name "backwardCouplingKey" ;
+    ] ;
+    sh:property [
+      sh:path c:forwardCouplingKey;
+      sh:datatype c:CouplingKey ;
+      sh:name "forwardCouplingKey" ;
+    ] ;
+.
+c:ConfidentialityAssertion
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfidentialityAssertionShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfidentialityAssertion ;
+    
+    sh:property [
+      sh:path c:encryptedPart;
+      sh:datatype c:Part ;
+      sh:name "encryptedPart" ;
+    ] ;
+.
+c:ConfirmBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmBookingFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ConfirmBookingRequest
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmBookingRequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmBookingRequest ;
+    
+    sh:property [
+      sh:path c:bookingIdRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingIdRef" ;
+    ] ;
+.
+c:ConfirmBookingResponse
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmBookingResponseShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmBookingResponse ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ConfirmRefundFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmRefundFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmRefundFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ConfirmedAncillaryService
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmedAncillaryServiceShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmedAncillaryService ;
+    
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:availabilityConstraintId;
+      sh:datatype xsd:string ;
+      sh:name "availabilityConstraintId" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlace;
+      sh:datatype c:StopPlace ;
+      sh:name "stopPlace" ;
+    ] ;
+    sh:property [
+      sh:path c:fare;
+      sh:datatype c:Fare ;
+      sh:name "fare" ;
+    ] ;
+    sh:property [
+      sh:path c:salesCondition;
+      sh:datatype c:SalesCondition ;
+      sh:name "salesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:afterSalesCondition;
+      sh:datatype c:AfterSalesCondition ;
+      sh:name "afterSalesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:reservable;
+      sh:datatype c:Boolean ;
+      sh:name "reservable" ;
+    ] ;
+.
+c:ConfirmedPRMSupport
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConfirmedPRMSupportShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConfirmedPRMSupport ;
+    
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:aidIdType;
+      sh:datatype xsd:string ;
+      sh:name "aidIdType" ;
+    ] ;
+    sh:property [
+      sh:path c:availabilityConstraintId;
+      sh:datatype xsd:string ;
+      sh:name "availabilityConstraintId" ;
+    ] ;
+    sh:property [
+      sh:path c:prmSupportStaffAvailabilityId;
+      sh:datatype xsd:string ;
+      sh:name "prmSupportStaffAvailabilityId" ;
+    ] ;
+    sh:property [
+      sh:path c:fare;
+      sh:datatype c:Fare ;
+      sh:name "fare" ;
+    ] ;
+    sh:property [
+      sh:path c:salesCondition;
+      sh:datatype c:SalesCondition ;
+      sh:name "salesCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:afterSalesCondition;
+      sh:datatype c:AfterSalesCondition ;
+      sh:name "afterSalesCondition" ;
+    ] ;
+.
+c:ConnectionTime
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ConnectionTimeShape
+    a sh:NodeShape ;
+    sh:targetClass c:ConnectionTime ;
+    
+    sh:property [
+      sh:path c:meanOverallChangeTime;
+      sh:datatype c:Duration ;
+      sh:name "meanOverallChangeTime" ;
+    ] ;
+    sh:property [
+      sh:path c:experiencedOverallChangeTime;
+      sh:datatype c:Duration ;
+      sh:name "experiencedOverallChangeTime" ;
+    ] ;
+    sh:property [
+      sh:path c:impairedOverallChangeTime;
+      sh:datatype c:Duration ;
+      sh:name "impairedOverallChangeTime" ;
+    ] ;
+    sh:property [
+      sh:path c:wheelchairOverallChangeTime;
+      sh:datatype c:Duration ;
+      sh:name "wheelchairOverallChangeTime" ;
+    ] ;
+.
+c:ContactInformation
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ContactInformationShape
+    a sh:NodeShape ;
+    sh:targetClass c:ContactInformation ;
+    
+    sh:property [
+      sh:path c:gender;
+      sh:datatype xsd:string ;
+      sh:name "gender" ;
+    ] ;
+    sh:property [
+      sh:path c:lastName;
+      sh:datatype xsd:string ;
+      sh:name "lastName" ;
+    ] ;
+    sh:property [
+      sh:path c:firstName;
+      sh:datatype xsd:string ;
+      sh:name "firstName" ;
+    ] ;
+    sh:property [
+      sh:path c:address1;
+      sh:datatype xsd:string ;
+      sh:name "address1" ;
+    ] ;
+    sh:property [
+      sh:path c:address2;
+      sh:datatype xsd:string ;
+      sh:name "address2" ;
+    ] ;
+    sh:property [
+      sh:path c:address3;
+      sh:datatype xsd:string ;
+      sh:name "address3" ;
+    ] ;
+    sh:property [
+      sh:path c:address4;
+      sh:datatype xsd:string ;
+      sh:name "address4" ;
+    ] ;
+    sh:property [
+      sh:path c:city;
+      sh:datatype xsd:string ;
+      sh:name "city" ;
+    ] ;
+    sh:property [
+      sh:path c:zipCode;
+      sh:datatype xsd:string ;
+      sh:name "zipCode" ;
+    ] ;
+    sh:property [
+      sh:path c:country;
+      sh:datatype xsd:string ;
+      sh:name "country" ;
+    ] ;
+    sh:property [
+      sh:path c:mobilePhoneNumber;
+      sh:datatype xsd:string ;
+      sh:name "mobilePhoneNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:landlinePhoneNumber;
+      sh:datatype xsd:string ;
+      sh:name "landlinePhoneNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:emailAddress;
+      sh:datatype xsd:string ;
+      sh:name "emailAddress" ;
+    ] ;
+    sh:property [
+      sh:path c:declineRecontact;
+      sh:datatype c:Boolean ;
+      sh:name "declineRecontact" ;
+    ] ;
+    sh:property [
+      sh:path c:mandatoryRecontact;
+      sh:datatype c:Boolean ;
+      sh:name "mandatoryRecontact" ;
+    ] ;
+.
+c:ContractualCarrier
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ContractualCarrierShape
+    a sh:NodeShape ;
+    sh:targetClass c:ContractualCarrier ;
+    
+    sh:property [
+      sh:path c:termOfConveyance;
+      sh:datatype c:TermOfConveyance ;
+      sh:name "termOfConveyance" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierName;
+      sh:datatype xsd:string ;
+      sh:name "carrierName" ;
+    ] ;
+    sh:property [
+      sh:path c:acronym;
+      sh:datatype xsd:string ;
+      sh:name "acronym" ;
+    ] ;
+.
+c:ControllingConstraint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ControllingConstraintShape
+    a sh:NodeShape ;
+    sh:targetClass c:ControllingConstraint ;
+    
+    sh:property [
+      sh:path c:proofOfIdentityId;
+      sh:datatype xsd:string ;
+      sh:name "proofOfIdentityId" ;
+    ] ;
+    sh:property [
+      sh:path c:cardIssuerId;
+      sh:datatype xsd:string ;
+      sh:name "cardIssuerId" ;
+    ] ;
+    sh:property [
+      sh:path c:identityByAccount;
+      sh:datatype xsd:string ;
+      sh:name "identityByAccount" ;
+    ] ;
+    sh:property [
+      sh:path c:accountDirectoryOwner;
+      sh:datatype xsd:string ;
+      sh:name "accountDirectoryOwner" ;
+    ] ;
+.
+c:CorporateAccount
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CorporateAccountShape
+    a sh:NodeShape ;
+    sh:targetClass c:CorporateAccount ;
+    
+    sh:property [
+      sh:path c:code;
+      sh:datatype xsd:string ;
+      sh:name "code" ;
+    ] ;
+    sh:property [
+      sh:path c:addresseeId;
+      sh:datatype xsd:string ;
+      sh:name "addresseeId" ;
+    ] ;
+    sh:property [
+      sh:path c:credentials;
+      sh:datatype xsd:string ;
+      sh:name "credentials" ;
+    ] ;
+    sh:property [
+      sh:path c:contract;
+      sh:datatype xsd:string ;
+      sh:name "contract" ;
+    ] ;
+.
+c:Correlation
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CorrelationShape
+    a sh:NodeShape ;
+    sh:targetClass c:Correlation ;
+    
+    sh:property [
+      sh:path c:messageGUID;
+      sh:datatype xsd:string ;
+      sh:name "messageGUID" ;
+    ] ;
+    sh:property [
+      sh:path c:requestTimestamp;
+      sh:datatype xsd:datetime ;
+      sh:name "requestTimestamp" ;
+    ] ;
+    sh:property [
+      sh:path c:requestGUID;
+      sh:datatype xsd:string ;
+      sh:name "requestGUID" ;
+    ] ;
+    sh:property [
+      sh:path c:retransmitted;
+      sh:datatype c:Boolean ;
+      sh:name "retransmitted" ;
+    ] ;
+    sh:property [
+      sh:path c:timeoutPreference;
+      sh:datatype c:Duration ;
+      sh:name "timeoutPreference" ;
+    ] ;
+    sh:property [
+      sh:path c:timestamp;
+      sh:datatype xsd:datetime ;
+      sh:name "timestamp" ;
+    ] ;
+.
+c:CouplingKey
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CouplingKeyShape
+    a sh:NodeShape ;
+    sh:targetClass c:CouplingKey ;
+    
+    sh:property [
+      sh:path c:offerCouplingKey;
+      sh:datatype c:OfferCouplingKey ;
+      sh:name "offerCouplingKey" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentCouplingKey;
+      sh:datatype c:TicketCouplingKey ;
+      sh:name "fulfilmentCouplingKey" ;
+    ] ;
+.
+c:Currency
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:CurrencyShape
+    a sh:NodeShape ;
+    sh:targetClass c:Currency ;
+    
+    sh:property [
+      sh:path c:currencyId;
+      sh:datatype xsd:string ;
+      sh:name "currencyId" ;
+    ] ;
+    sh:property [
+      sh:path c:exchangeRate;
+      sh:datatype c:BigDecimal ;
+      sh:name "exchangeRate" ;
+    ] ;
+.
+c:DirectBookingParameters
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:DirectBookingParametersShape
+    a sh:NodeShape ;
+    sh:targetClass c:DirectBookingParameters ;
+    
+    sh:property [
+      sh:path c:directBookingProductId;
+      sh:datatype xsd:string ;
+      sh:name "directBookingProductId" ;
+    ] ;
+    sh:property [
+      sh:path c:salesChannelTypeId;
+      sh:datatype xsd:string ;
+      sh:name "salesChannelTypeId" ;
+    ] ;
+.
+c:Discount
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:DiscountShape
+    a sh:NodeShape ;
+    sh:targetClass c:Discount ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+.
+c:Element
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ElementShape
+    a sh:NodeShape ;
+    sh:targetClass c:Element ;
+    
+    sh:property [
+      sh:path c:xPathVersion;
+      sh:datatype xsd:string ;
+      sh:name "xPathVersion" ;
+    ] ;
+    sh:property [
+      sh:path c:xPath;
+      sh:datatype xsd:string ;
+      sh:name "xPath" ;
+    ] ;
+    sh:property [
+      sh:path c:xPathFilter;
+      sh:datatype xsd:string ;
+      sh:name "xPathFilter" ;
+    ] ;
+.
+c:Endpoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:EndpointShape
+    a sh:NodeShape ;
+    sh:targetClass c:Endpoint ;
+    
+    sh:property [
+      sh:path c:authenticationModeId;
+      sh:datatype xsd:string ;
+      sh:name "authenticationModeId" ;
+    ] ;
+    sh:property [
+      sh:path c:binding;
+      sh:datatype c:Binding ;
+      sh:name "binding" ;
+    ] ;
+    sh:property [
+      sh:path c:endpointBehavior;
+      sh:datatype c:EndpointBehavior ;
+      sh:name "endpointBehavior" ;
+    ] ;
+    sh:property [
+      sh:path c:endpointReference;
+      sh:datatype c:EndpointReference ;
+      sh:name "endpointReference" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:contract;
+      sh:datatype xsd:string ;
+      sh:name "contract" ;
+    ] ;
+    sh:property [
+      sh:path c:contractVersion;
+      sh:datatype xsd:string ;
+      sh:name "contractVersion" ;
+    ] ;
+.
+c:EndpointBehavior
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:EndpointBehaviorShape
+    a sh:NodeShape ;
+    sh:targetClass c:EndpointBehavior ;
+    
+    sh:property [
+      sh:path c:maxNumberOfItemsInObjectgraph;
+      sh:datatype c:Long ;
+      sh:name "maxNumberOfItemsInObjectgraph" ;
+    ] ;
+    sh:property [
+      sh:path c:readerQuotas;
+      sh:datatype c:ReaderQuotas ;
+      sh:name "readerQuotas" ;
+    ] ;
+    sh:property [
+      sh:path c:clientCertificate;
+      sh:datatype c:ClientCertificate ;
+      sh:name "clientCertificate" ;
+    ] ;
+.
+c:EndpointReference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:EndpointReferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:EndpointReference ;
+    
+    sh:property [
+      sh:path c:from;
+      sh:datatype xsd:string ;
+      sh:name "from" ;
+    ] ;
+    sh:property [
+      sh:path c:to;
+      sh:datatype xsd:string ;
+      sh:name "to" ;
+    ] ;
+    sh:property [
+      sh:path c:action;
+      sh:datatype xsd:string ;
+      sh:name "action" ;
+    ] ;
+    sh:property [
+      sh:path c:replyTo;
+      sh:datatype xsd:string ;
+      sh:name "replyTo" ;
+    ] ;
+    sh:property [
+      sh:path c:faultTo;
+      sh:datatype xsd:string ;
+      sh:name "faultTo" ;
+    ] ;
+    sh:property [
+      sh:path c:messageId;
+      sh:datatype xsd:string ;
+      sh:name "messageId" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceLevel;
+      sh:datatype xsd:string ;
+      sh:name "serviceLevel" ;
+    ] ;
+    sh:property [
+      sh:path c:security;
+      sh:datatype xsd:string ;
+      sh:name "security" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceRequestVersion;
+      sh:datatype xsd:string ;
+      sh:name "serviceRequestVersion" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceReplyVersion;
+      sh:datatype xsd:string ;
+      sh:name "serviceReplyVersion" ;
+    ] ;
+.
+c:Exchange
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ExchangeShape
+    a sh:NodeShape ;
+    sh:targetClass c:Exchange ;
+    
+    sh:property [
+      sh:path c:handlingFee;
+      sh:datatype c:HandlingFee ;
+      sh:name "handlingFee" ;
+    ] ;
+    sh:property [
+      sh:path c:exchangeFlexibilityLevelId;
+      sh:datatype xsd:string ;
+      sh:name "exchangeFlexibilityLevelId" ;
+    ] ;
+.
+c:ExchangeConfirmBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ExchangeConfirmBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ExchangeConfirmBookingFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ExchangeOfferFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ExchangeOfferFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ExchangeOfferFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ExchangePreBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ExchangePreBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ExchangePreBookingFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ExchangeRevokeFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ExchangeRevokeFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ExchangeRevokeFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:FSMID
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FSMIDShape
+    a sh:NodeShape ;
+    sh:targetClass c:FSMID ;
+    
+    sh:property [
+      sh:path c:rspid;
+      sh:datatype xsd:string ;
+      sh:name "rspid" ;
+    ] ;
+    sh:property [
+      sh:path c:distid;
+      sh:datatype xsd:string ;
+      sh:name "distid" ;
+    ] ;
+    sh:property [
+      sh:path c:guid;
+      sh:datatype xsd:string ;
+      sh:name "guid" ;
+    ] ;
+    sh:property [
+      sh:path c:id;
+      sh:datatype xsd:string ;
+      sh:name "id" ;
+    ] ;
+    sh:property [
+      sh:path c:refids;
+      sh:datatype c:Object ;
+      sh:name "refids" ;
+    ] ;
+.
+c:Fare
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FareShape
+    a sh:NodeShape ;
+    sh:targetClass c:Fare ;
+    
+    sh:property [
+      sh:path c:rspPrice;
+      sh:datatype c:RSPPrice ;
+      sh:name "rspPrice" ;
+    ] ;
+    sh:property [
+      sh:path c:netPrice;
+      sh:datatype c:NetPrice ;
+      sh:name "netPrice" ;
+    ] ;
+    sh:property [
+      sh:path c:discount;
+      sh:datatype c:Discount ;
+      sh:name "discount" ;
+    ] ;
+    sh:property [
+      sh:path c:vat;
+      sh:datatype c:VAT ;
+      sh:name "vat" ;
+    ] ;
+    sh:property [
+      sh:path c:charge;
+      sh:datatype c:Charge ;
+      sh:name "charge" ;
+    ] ;
+    sh:property [
+      sh:path c:fareTypeId;
+      sh:datatype xsd:string ;
+      sh:name "fareTypeId" ;
+    ] ;
+.
+c:Fault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:Fault ;
+    
+.
+c:FilterCriteria
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FilterCriteriaShape
+    a sh:NodeShape ;
+    sh:targetClass c:FilterCriteria ;
+    
+    sh:property [
+      sh:path c:filterCriteriaType;
+      sh:datatype xsd:string ;
+      sh:name "filterCriteriaType" ;
+    ] ;
+    sh:property [
+      sh:path c:filterCriteriaId;
+      sh:datatype xsd:string ;
+      sh:name "filterCriteriaId" ;
+    ] ;
+.
+c:Fulfilment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FulfilmentShape
+    a sh:NodeShape ;
+    sh:targetClass c:Fulfilment ;
+    
+    sh:property [
+      sh:path c:fulfilmentStatus;
+      sh:datatype c:GenericStatus ;
+      sh:name "fulfilmentStatus" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierServiceItemRefsList;
+      sh:datatype c:Object ;
+      sh:name "carrierServiceItemRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "fulfilmentInformation" ;
+    ] ;
+.
+c:FulfilmentFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FulfilmentFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:FulfilmentFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:FulfilmentMethod
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FulfilmentMethodShape
+    a sh:NodeShape ;
+    sh:targetClass c:FulfilmentMethod ;
+    
+    sh:property [
+      sh:path c:fulfilmentMethodTypeId;
+      sh:datatype xsd:string ;
+      sh:name "fulfilmentMethodTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:supplier;
+      sh:datatype c:Supplier ;
+      sh:name "supplier" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentMethodChangeAllowedAfterBooking;
+      sh:datatype c:Boolean ;
+      sh:name "fulfilmentMethodChangeAllowedAfterBooking" ;
+    ] ;
+    sh:property [
+      sh:path c:notification;
+      sh:datatype c:FulfilmentNotification ;
+      sh:name "notification" ;
+    ] ;
+    sh:property [
+      sh:path c:additionalInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "additionalInformation" ;
+    ] ;
+.
+c:FulfilmentNotification
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FulfilmentNotificationShape
+    a sh:NodeShape ;
+    sh:targetClass c:FulfilmentNotification ;
+    
+    sh:property [
+      sh:path c:fulfilmentInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "fulfilmentInformation" ;
+    ] ;
+    sh:property [
+      sh:path c:notificationId;
+      sh:datatype xsd:string ;
+      sh:name "notificationId" ;
+    ] ;
+    sh:property [
+      sh:path c:notificationIsMandatory;
+      sh:datatype c:boolean ;
+      sh:name "notificationIsMandatory" ;
+    ] ;
+.
+c:FulfilmentNotificationFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:FulfilmentNotificationFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:FulfilmentNotificationFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:GenericStatus
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:GenericStatusShape
+    a sh:NodeShape ;
+    sh:targetClass c:GenericStatus ;
+    
+    sh:property [
+      sh:path c:status;
+      sh:datatype xsd:string ;
+      sh:name "status" ;
+    ] ;
+    sh:property [
+      sh:path c:dateTime;
+      sh:datatype xsd:string ;
+      sh:name "dateTime" ;
+    ] ;
+.
+c:GenericTextMessage
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:GenericTextMessageShape
+    a sh:NodeShape ;
+    sh:targetClass c:GenericTextMessage ;
+    
+    sh:property [
+      sh:path c:text;
+      sh:datatype xsd:string ;
+      sh:name "text" ;
+    ] ;
+    sh:property [
+      sh:path c:languageId;
+      sh:datatype xsd:string ;
+      sh:name "languageId" ;
+    ] ;
+.
+c:GeoPoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:GeoPointShape
+    a sh:NodeShape ;
+    sh:targetClass c:GeoPoint ;
+    
+    sh:property [
+      sh:path c:latitude;
+      sh:datatype c:BigDecimal ;
+      sh:name "latitude" ;
+    ] ;
+    sh:property [
+      sh:path c:longitude;
+      sh:datatype c:BigDecimal ;
+      sh:name "longitude" ;
+    ] ;
+    sh:property [
+      sh:path c:srsName;
+      sh:datatype xsd:string ;
+      sh:name "srsName" ;
+    ] ;
+.
+c:HandlingFee
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:HandlingFeeShape
+    a sh:NodeShape ;
+    sh:targetClass c:HandlingFee ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:firstSegmentStatusId;
+      sh:datatype xsd:string ;
+      sh:name "firstSegmentStatusId" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+    sh:property [
+      sh:path c:validityPeriodStart;
+      sh:datatype xsd:datetime ;
+      sh:name "validityPeriodStart" ;
+    ] ;
+    sh:property [
+      sh:path c:handlingPeriodCondition;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "handlingPeriodCondition" ;
+    ] ;
+.
+c:Host
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:HostShape
+    a sh:NodeShape ;
+    sh:targetClass c:Host ;
+    
+    sh:property [
+      sh:path c:serviceRelease;
+      sh:datatype c:ServiceRelease ;
+      sh:name "serviceRelease" ;
+    ] ;
+    sh:property [
+      sh:path c:baseAddress;
+      sh:datatype xsd:string ;
+      sh:name "baseAddress" ;
+    ] ;
+    sh:property [
+      sh:path c:hostName;
+      sh:datatype xsd:string ;
+      sh:name "hostName" ;
+    ] ;
+.
+c:Identifier
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IdentifierShape
+    a sh:NodeShape ;
+    sh:targetClass c:Identifier ;
+    
+.
+c:Identifiers
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IdentifiersShape
+    a sh:NodeShape ;
+    sh:targetClass c:Identifiers ;
+    
+    sh:property [
+      sh:path c:identifier;
+      sh:datatype c:Identifier ;
+      sh:name "identifier" ;
+    ] ;
+.
+c:Identity
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IdentityShape
+    a sh:NodeShape ;
+    sh:targetClass c:Identity ;
+    
+    sh:property [
+      sh:path c:identityCard;
+      sh:datatype xsd:string ;
+      sh:name "identityCard" ;
+    ] ;
+    sh:property [
+      sh:path c:cardName;
+      sh:datatype xsd:string ;
+      sh:name "cardName" ;
+    ] ;
+.
+c:ImmediatePaymentCondition
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ImmediatePaymentConditionShape
+    a sh:NodeShape ;
+    sh:targetClass c:ImmediatePaymentCondition ;
+    
+    sh:property [
+      sh:path c:restriction;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "restriction" ;
+    ] ;
+    sh:property [
+      sh:path c:cardType;
+      sh:datatype xsd:string ;
+      sh:name "cardType" ;
+    ] ;
+    sh:property [
+      sh:path c:termsAndConditions;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "termsAndConditions" ;
+    ] ;
+.
+c:ImmediatePaymentFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ImmediatePaymentFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ImmediatePaymentFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:ImmediatePaymentReceipt
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ImmediatePaymentReceiptShape
+    a sh:NodeShape ;
+    sh:targetClass c:ImmediatePaymentReceipt ;
+    
+    sh:property [
+      sh:path c:bookingIdRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingIdRef" ;
+    ] ;
+    sh:property [
+      sh:path c:authorisationNumber;
+      sh:datatype xsd:string ;
+      sh:name "authorisationNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:cardType;
+      sh:datatype xsd:string ;
+      sh:name "cardType" ;
+    ] ;
+    sh:property [
+      sh:path c:transactionDateTime;
+      sh:datatype xsd:string ;
+      sh:name "transactionDateTime" ;
+    ] ;
+    sh:property [
+      sh:path c:seller;
+      sh:datatype xsd:string ;
+      sh:name "seller" ;
+    ] ;
+    sh:property [
+      sh:path c:sellerCode;
+      sh:datatype xsd:string ;
+      sh:name "sellerCode" ;
+    ] ;
+    sh:property [
+      sh:path c:cardNumber;
+      sh:datatype xsd:string ;
+      sh:name "cardNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:BigDecimal ;
+      sh:name "amount" ;
+    ] ;
+    sh:property [
+      sh:path c:currencyId;
+      sh:datatype xsd:string ;
+      sh:name "currencyId" ;
+    ] ;
+    sh:property [
+      sh:path c:transactionType;
+      sh:datatype xsd:string ;
+      sh:name "transactionType" ;
+    ] ;
+    sh:property [
+      sh:path c:label;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "label" ;
+    ] ;
+.
+c:IncidentSource
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IncidentSourceShape
+    a sh:NodeShape ;
+    sh:targetClass c:IncidentSource ;
+    
+    sh:property [
+      sh:path c:locator;
+      sh:datatype xsd:string ;
+      sh:name "locator" ;
+    ] ;
+.
+c:IncludeTimestamp
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IncludeTimestampShape
+    a sh:NodeShape ;
+    sh:targetClass c:IncludeTimestamp ;
+    
+    sh:property [
+      sh:path c:expires;
+      sh:datatype xsd:datetime ;
+      sh:name "expires" ;
+    ] ;
+    sh:property [
+      sh:path c:received;
+      sh:datatype xsd:datetime ;
+      sh:name "received" ;
+    ] ;
+    sh:property [
+      sh:path c:created;
+      sh:datatype xsd:datetime ;
+      sh:name "created" ;
+    ] ;
+.
+c:IndividualError
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IndividualErrorShape
+    a sh:NodeShape ;
+    sh:targetClass c:IndividualError ;
+    
+.
+c:InitialPrice
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:InitialPriceShape
+    a sh:NodeShape ;
+    sh:targetClass c:InitialPrice ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+.
+c:InitiateRefundFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:InitiateRefundFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:InitiateRefundFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:IntegrityAssertion
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:IntegrityAssertionShape
+    a sh:NodeShape ;
+    sh:targetClass c:IntegrityAssertion ;
+    
+    sh:property [
+      sh:path c:signedPart;
+      sh:datatype c:Part ;
+      sh:name "signedPart" ;
+    ] ;
+.
+c:Itinerary
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ItineraryShape
+    a sh:NodeShape ;
+    sh:targetClass c:Itinerary ;
+    
+    sh:property [
+      sh:path c:serviceTypeId;
+      sh:datatype xsd:string ;
+      sh:name "serviceTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:segment;
+      sh:datatype c:Segment ;
+      sh:name "segment" ;
+    ] ;
+.
+c:KerberosToken
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:KerberosTokenShape
+    a sh:NodeShape ;
+    sh:targetClass c:KerberosToken ;
+    
+    sh:property [
+      sh:path c:kerberosTokenPolicy;
+      sh:datatype c:KerberosTokenPolicy ;
+      sh:name "kerberosTokenPolicy" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosTokenReference;
+      sh:datatype c:KerberosTokenReference ;
+      sh:name "kerberosTokenReference" ;
+    ] ;
+    sh:property [
+      sh:path c:includeToken;
+      sh:datatype xsd:string ;
+      sh:name "includeToken" ;
+    ] ;
+    sh:property [
+      sh:path c:issuer;
+      sh:datatype xsd:string ;
+      sh:name "issuer" ;
+    ] ;
+    sh:property [
+      sh:path c:issuerName;
+      sh:datatype xsd:string ;
+      sh:name "issuerName" ;
+    ] ;
+    sh:property [
+      sh:path c:claims;
+      sh:datatype xsd:string ;
+      sh:name "claims" ;
+    ] ;
+.
+c:KerberosTokenPolicy
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:KerberosTokenPolicyShape
+    a sh:NodeShape ;
+    sh:targetClass c:KerberosTokenPolicy ;
+    
+    sh:property [
+      sh:path c:created;
+      sh:datatype xsd:datetime ;
+      sh:name "created" ;
+    ] ;
+    sh:property [
+      sh:path c:nonce;
+      sh:datatype xsd:string ;
+      sh:name "nonce" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredKey;
+      sh:datatype xsd:string ;
+      sh:name "requiredKey" ;
+    ] ;
+.
+c:KerberosTokenReference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:KerberosTokenReferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:KerberosTokenReference ;
+    
+    sh:property [
+      sh:path c:typeID;
+      sh:datatype xsd:string ;
+      sh:name "typeID" ;
+    ] ;
+    sh:property [
+      sh:path c:encoding;
+      sh:datatype xsd:string ;
+      sh:name "encoding" ;
+    ] ;
+    sh:property [
+      sh:path c:value;
+      sh:datatype xsd:string ;
+      sh:name "value" ;
+    ] ;
+.
+c:LinkPath
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:LinkPathShape
+    a sh:NodeShape ;
+    sh:targetClass c:LinkPath ;
+    
+    sh:property [
+      sh:path c:waitingTimeTypeId;
+      sh:datatype xsd:string ;
+      sh:name "waitingTimeTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:mobilityAidTypeId;
+      sh:datatype xsd:string ;
+      sh:name "mobilityAidTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:navigationPoint;
+      sh:datatype c:NavigationPoint ;
+      sh:name "navigationPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:pathLinkTypeId;
+      sh:datatype xsd:string ;
+      sh:name "pathLinkTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:pedestrianPaceId;
+      sh:datatype xsd:string ;
+      sh:name "pedestrianPaceId" ;
+    ] ;
+    sh:property [
+      sh:path c:aidBookable;
+      sh:datatype c:Boolean ;
+      sh:name "aidBookable" ;
+    ] ;
+.
+c:LoyaltyCard
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:LoyaltyCardShape
+    a sh:NodeShape ;
+    sh:targetClass c:LoyaltyCard ;
+    
+.
+c:NavigationPoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:NavigationPointShape
+    a sh:NodeShape ;
+    sh:targetClass c:NavigationPoint ;
+    
+    sh:property [
+      sh:path c:accessEquipmentId;
+      sh:datatype xsd:string ;
+      sh:name "accessEquipmentId" ;
+    ] ;
+    sh:property [
+      sh:path c:footpathEquipmentId;
+      sh:datatype xsd:string ;
+      sh:name "footpathEquipmentId" ;
+    ] ;
+    sh:property [
+      sh:path c:safetyEquipmentId;
+      sh:datatype xsd:string ;
+      sh:name "safetyEquipmentId" ;
+    ] ;
+    sh:property [
+      sh:path c:scheduledStopPoint;
+      sh:datatype c:ScheduledStopPoint ;
+      sh:name "scheduledStopPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleAccess;
+      sh:datatype c:VehicleAccess ;
+      sh:name "vehicleAccess" ;
+    ] ;
+.
+c:NetPrice
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:NetPriceShape
+    a sh:NodeShape ;
+    sh:targetClass c:NetPrice ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+.
+c:Notification
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:NotificationShape
+    a sh:NodeShape ;
+    sh:targetClass c:Notification ;
+    
+    sh:property [
+      sh:path c:incidentSource;
+      sh:datatype c:IncidentSource ;
+      sh:name "incidentSource" ;
+    ] ;
+    sh:property [
+      sh:path c:severityId;
+      sh:datatype xsd:string ;
+      sh:name "severityId" ;
+    ] ;
+    sh:property [
+      sh:path c:actionId;
+      sh:datatype xsd:string ;
+      sh:name "actionId" ;
+    ] ;
+    sh:property [
+      sh:path c:codeId;
+      sh:datatype xsd:string ;
+      sh:name "codeId" ;
+    ] ;
+    sh:property [
+      sh:path c:reasonId;
+      sh:datatype xsd:string ;
+      sh:name "reasonId" ;
+    ] ;
+    sh:property [
+      sh:path c:action;
+      sh:datatype xsd:string ;
+      sh:name "action" ;
+    ] ;
+    sh:property [
+      sh:path c:stacktrace;
+      sh:datatype xsd:string ;
+      sh:name "stacktrace" ;
+    ] ;
+    sh:property [
+      sh:path c:message;
+      sh:datatype xsd:string ;
+      sh:name "message" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:summary;
+      sh:datatype xsd:string ;
+      sh:name "summary" ;
+    ] ;
+.
+c:ObjectFactory
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ObjectFactoryShape
+    a sh:NodeShape ;
+    sh:targetClass c:ObjectFactory ;
+    
+    sh:property [
+      sh:path c:_PreBookRequest_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_PreBookRequest_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_PreBookResponse_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_PreBookResponse_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ConfirmBookingRequest_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ConfirmBookingRequest_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ConfirmBookingResponse_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ConfirmBookingResponse_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RetrieveBookingRequest_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RetrieveBookingRequest_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RetrieveBookingResponse_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RetrieveBookingResponse_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RevokeBooking_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RevokeBooking_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_OfferRequestFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_OfferRequestFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_PreBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_PreBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ConfirmBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ConfirmBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RevokeBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RevokeBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RetrieveBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RetrieveBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ExchangeOfferFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ExchangeOfferFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ExchangePreBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ExchangePreBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ExchangeConfirmBookingFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ExchangeConfirmBookingFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ExchangeRevokeFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ExchangeRevokeFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ImmediatePaymentFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ImmediatePaymentFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_PreRefundFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_PreRefundFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_InitiateRefundFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_InitiateRefundFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ConfirmRefundFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ConfirmRefundFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_RevokeRefundRequest_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_RevokeRefundRequest_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_FulfilmentNotificationFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_FulfilmentNotificationFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_FulfilmentFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_FulfilmentFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_UpdateInformationFault_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_UpdateInformationFault_QNAME" ;
+    ] ;
+    sh:property [
+      sh:path c:_ConfirmedAncillaryServiceAfterSalesCondition_QNAME;
+      sh:datatype c:QName ;
+      sh:name "_ConfirmedAncillaryServiceAfterSalesCondition_QNAME" ;
+    ] ;
+.
+c:OfferCouplingKey
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:OfferCouplingKeyShape
+    a sh:NodeShape ;
+    sh:targetClass c:OfferCouplingKey ;
+    
+    sh:property [
+      sh:path c:key;
+      sh:datatype xsd:string ;
+      sh:name "key" ;
+    ] ;
+    sh:property [
+      sh:path c:matchingAccuracy;
+      sh:datatype xsd:string ;
+      sh:name "matchingAccuracy" ;
+    ] ;
+.
+c:OfferParameters
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:OfferParametersShape
+    a sh:NodeShape ;
+    sh:targetClass c:OfferParameters ;
+    
+    sh:property [
+      sh:path c:itinerary;
+      sh:datatype c:Itinerary ;
+      sh:name "itinerary" ;
+    ] ;
+    sh:property [
+      sh:path c:passenger;
+      sh:datatype c:PassengerData ;
+      sh:name "passenger" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentPassengerBinding;
+      sh:datatype c:SegmentPassengerBinding ;
+      sh:name "segmentPassengerBinding" ;
+    ] ;
+.
+c:OfferRequestFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:OfferRequestFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:OfferRequestFault ;
+    
+    sh:property [
+      sh:path c:carrierOffer;
+      sh:datatype c:SaleCarrierOffer ;
+      sh:name "carrierOffer" ;
+    ] ;
+.
+c:OfferingParameters
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:OfferingParametersShape
+    a sh:NodeShape ;
+    sh:targetClass c:OfferingParameters ;
+    
+    sh:property [
+      sh:path c:searchCriteria;
+      sh:datatype c:SearchCriteria ;
+      sh:name "searchCriteria" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerPreference;
+      sh:datatype c:OfferingPassengerPreference ;
+      sh:name "passengerPreference" ;
+    ] ;
+    sh:property [
+      sh:path c:oneOfferPerOfferCategory;
+      sh:datatype c:Boolean ;
+      sh:name "oneOfferPerOfferCategory" ;
+    ] ;
+    sh:property [
+      sh:path c:salesChannelTypeId;
+      sh:datatype xsd:string ;
+      sh:name "salesChannelTypeId" ;
+    ] ;
+.
+c:OfferingPassengerPreference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:OfferingPassengerPreferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:OfferingPassengerPreference ;
+    
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+.
+c:Part
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PartShape
+    a sh:NodeShape ;
+    sh:targetClass c:Part ;
+    
+    sh:property [
+      sh:path c:block;
+      sh:datatype xsd:string ;
+      sh:name "block" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:namespace;
+      sh:datatype xsd:string ;
+      sh:name "namespace" ;
+    ] ;
+.
+c:Pass
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PassShape
+    a sh:NodeShape ;
+    sh:targetClass c:Pass ;
+    
+    sh:property [
+      sh:path c:expirationDate;
+      sh:datatype xsd:datetime ;
+      sh:name "expirationDate" ;
+    ] ;
+    sh:property [
+      sh:path c:identifier;
+      sh:datatype xsd:string ;
+      sh:name "identifier" ;
+    ] ;
+    sh:property [
+      sh:path c:typeId;
+      sh:datatype xsd:string ;
+      sh:name "typeId" ;
+    ] ;
+    sh:property [
+      sh:path c:issuerId;
+      sh:datatype xsd:string ;
+      sh:name "issuerId" ;
+    ] ;
+    sh:property [
+      sh:path c:ownerName;
+      sh:datatype xsd:string ;
+      sh:name "ownerName" ;
+    ] ;
+.
+c:PassengerData
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PassengerDataShape
+    a sh:NodeShape ;
+    sh:targetClass c:PassengerData ;
+    
+    sh:property [
+      sh:path c:prmTypeId;
+      sh:datatype xsd:string ;
+      sh:name "prmTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:identityTypeId;
+      sh:datatype xsd:string ;
+      sh:name "identityTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerTypeId;
+      sh:datatype xsd:string ;
+      sh:name "passengerTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:dateOfBirth;
+      sh:datatype xsd:datetime ;
+      sh:name "dateOfBirth" ;
+    ] ;
+    sh:property [
+      sh:path c:age;
+      sh:datatype xsd:int ;
+      sh:name "age" ;
+    ] ;
+    sh:property [
+      sh:path c:identity;
+      sh:datatype c:Identity ;
+      sh:name "identity" ;
+    ] ;
+    sh:property [
+      sh:path c:mobilePhoneNumber;
+      sh:datatype xsd:string ;
+      sh:name "mobilePhoneNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:emailAddress;
+      sh:datatype xsd:string ;
+      sh:name "emailAddress" ;
+    ] ;
+    sh:property [
+      sh:path c:prmPass;
+      sh:datatype c:Pass ;
+      sh:name "prmPass" ;
+    ] ;
+    sh:property [
+      sh:path c:benefitCard;
+      sh:datatype c:BenefitCard ;
+      sh:name "benefitCard" ;
+    ] ;
+    sh:property [
+      sh:path c:pass;
+      sh:datatype c:Pass ;
+      sh:name "pass" ;
+    ] ;
+    sh:property [
+      sh:path c:corporateAccount;
+      sh:datatype c:CorporateAccount ;
+      sh:name "corporateAccount" ;
+    ] ;
+    sh:property [
+      sh:path c:voucher;
+      sh:datatype c:Voucher ;
+      sh:name "voucher" ;
+    ] ;
+    sh:property [
+      sh:path c:loyaltyCard;
+      sh:datatype c:LoyaltyCard ;
+      sh:name "loyaltyCard" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:firstName;
+      sh:datatype xsd:string ;
+      sh:name "firstName" ;
+    ] ;
+    sh:property [
+      sh:path c:gender;
+      sh:datatype xsd:string ;
+      sh:name "gender" ;
+    ] ;
+.
+c:PassengerPreference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PassengerPreferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:PassengerPreference ;
+    
+    sh:property [
+      sh:path c:specialOrder;
+      sh:datatype c:SpecialOrder ;
+      sh:name "specialOrder" ;
+    ] ;
+    sh:property [
+      sh:path c:preference;
+      sh:datatype c:Preference ;
+      sh:name "preference" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReference;
+      sh:datatype c:PlaceReference ;
+      sh:name "placeReference" ;
+    ] ;
+    sh:property [
+      sh:path c:requestedAncillaryService;
+      sh:datatype c:RequestedAncillaryService ;
+      sh:name "requestedAncillaryService" ;
+    ] ;
+    sh:property [
+      sh:path c:requestedPRMSupport;
+      sh:datatype c:RequestedPRMSupport ;
+      sh:name "requestedPRMSupport" ;
+    ] ;
+.
+c:PaymentAdditionalInformation
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PaymentAdditionalInformationShape
+    a sh:NodeShape ;
+    sh:targetClass c:PaymentAdditionalInformation ;
+    
+    sh:property [
+      sh:path c:additionalInformationText;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "additionalInformationText" ;
+    ] ;
+    sh:property [
+      sh:path c:additionalInformationType;
+      sh:datatype xsd:string ;
+      sh:name "additionalInformationType" ;
+    ] ;
+    sh:property [
+      sh:path c:additionalInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "additionalInformation" ;
+    ] ;
+.
+c:PaymentMode
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PaymentModeShape
+    a sh:NodeShape ;
+    sh:targetClass c:PaymentMode ;
+    
+    sh:property [
+      sh:path c:immediatePayment;
+      sh:datatype c:Boolean ;
+      sh:name "immediatePayment" ;
+    ] ;
+    sh:property [
+      sh:path c:immediatePaymentCondition;
+      sh:datatype c:ImmediatePaymentCondition ;
+      sh:name "immediatePaymentCondition" ;
+    ] ;
+.
+c:PlaceReference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PlaceReferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:PlaceReference ;
+    
+    sh:property [
+      sh:path c:segmentIdRef;
+      sh:datatype xsd:string ;
+      sh:name "segmentIdRef" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRef;
+      sh:datatype c:Object ;
+      sh:name "segmentRef" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerIdRef;
+      sh:datatype xsd:string ;
+      sh:name "passengerIdRef" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerRef;
+      sh:datatype c:Object ;
+      sh:name "passengerRef" ;
+    ] ;
+    sh:property [
+      sh:path c:placeTypeId;
+      sh:datatype xsd:string ;
+      sh:name "placeTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:coachId;
+      sh:datatype xsd:string ;
+      sh:name "coachId" ;
+    ] ;
+    sh:property [
+      sh:path c:compartmentId;
+      sh:datatype xsd:string ;
+      sh:name "compartmentId" ;
+    ] ;
+    sh:property [
+      sh:path c:placeId;
+      sh:datatype xsd:string ;
+      sh:name "placeId" ;
+    ] ;
+    sh:property [
+      sh:path c:floorId;
+      sh:datatype xsd:string ;
+      sh:name "floorId" ;
+    ] ;
+    sh:property [
+      sh:path c:widthPos;
+      sh:datatype c:BigDecimal ;
+      sh:name "widthPos" ;
+    ] ;
+    sh:property [
+      sh:path c:lengthPos;
+      sh:datatype c:BigDecimal ;
+      sh:name "lengthPos" ;
+    ] ;
+    sh:property [
+      sh:path c:compartmentWidthPos;
+      sh:datatype c:BigDecimal ;
+      sh:name "compartmentWidthPos" ;
+    ] ;
+    sh:property [
+      sh:path c:compartmentLengthPos;
+      sh:datatype c:BigDecimal ;
+      sh:name "compartmentLengthPos" ;
+    ] ;
+    sh:property [
+      sh:path c:neighbourPassengerIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "neighbourPassengerIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:neighbourPassengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "neighbourPassengerRefsList" ;
+    ] ;
+.
+c:PreBookRequest
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreBookRequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:PreBookRequest ;
+    
+    sh:property [
+      sh:path c:bookingIdRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingIdRef" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierOfferIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "carrierOfferIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierOfferContainer;
+      sh:datatype c:SaleCarrierOfferContainer ;
+      sh:name "carrierOfferContainer" ;
+    ] ;
+    sh:property [
+      sh:path c:fulfilmentMethod;
+      sh:datatype c:FulfilmentMethod ;
+      sh:name "fulfilmentMethod" ;
+    ] ;
+    sh:property [
+      sh:path c:paymentMode;
+      sh:datatype c:PaymentMode ;
+      sh:name "paymentMode" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerPreference;
+      sh:datatype c:PreBookingPassengerPreference ;
+      sh:name "passengerPreference" ;
+    ] ;
+    sh:property [
+      sh:path c:contactInformation;
+      sh:datatype c:ContactInformation ;
+      sh:name "contactInformation" ;
+    ] ;
+    sh:property [
+      sh:path c:directBookingParameters;
+      sh:datatype c:DirectBookingParameters ;
+      sh:name "directBookingParameters" ;
+    ] ;
+.
+c:PreBookResponse
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreBookResponseShape
+    a sh:NodeShape ;
+    sh:targetClass c:PreBookResponse ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:PreBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:PreBookingFault ;
+    
+    sh:property [
+      sh:path c:carrierOffer;
+      sh:datatype c:SaleCarrierOffer ;
+      sh:name "carrierOffer" ;
+    ] ;
+.
+c:PreBookingPassengerPreference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreBookingPassengerPreferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:PreBookingPassengerPreference ;
+    
+    sh:property [
+      sh:path c:passengerIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "passengerIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+.
+c:PreRefundFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreRefundFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:PreRefundFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:Preference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:PreferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:Preference ;
+    
+    sh:property [
+      sh:path c:preferenceTypeId;
+      sh:datatype xsd:string ;
+      sh:name "preferenceTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:preferenceValue;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "preferenceValue" ;
+    ] ;
+.
+c:Product
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ProductShape
+    a sh:NodeShape ;
+    sh:targetClass c:Product ;
+    
+    sh:property [
+      sh:path c:description;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "description" ;
+    ] ;
+    sh:property [
+      sh:path c:productInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "productInformation" ;
+    ] ;
+    sh:property [
+      sh:path c:code;
+      sh:datatype xsd:string ;
+      sh:name "code" ;
+    ] ;
+    sh:property [
+      sh:path c:displayName;
+      sh:datatype xsd:string ;
+      sh:name "displayName" ;
+    ] ;
+    sh:property [
+      sh:path c:qualityOfServiceId;
+      sh:datatype xsd:string ;
+      sh:name "qualityOfServiceId" ;
+    ] ;
+    sh:property [
+      sh:path c:volatilityIndex;
+      sh:datatype xsd:string ;
+      sh:name "volatilityIndex" ;
+    ] ;
+    sh:property [
+      sh:path c:directBookable;
+      sh:datatype c:Boolean ;
+      sh:name "directBookable" ;
+    ] ;
+.
+c:ProductOwner
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ProductOwnerShape
+    a sh:NodeShape ;
+    sh:targetClass c:ProductOwner ;
+    
+    sh:property [
+      sh:path c:contractualCarrier;
+      sh:datatype c:ContractualCarrier ;
+      sh:name "contractualCarrier" ;
+    ] ;
+    sh:property [
+      sh:path c:addresseeId;
+      sh:datatype xsd:string ;
+      sh:name "addresseeId" ;
+    ] ;
+.
+c:ProtocolFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ProtocolFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ProtocolFault ;
+    
+.
+c:RSAKeyValue
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RSAKeyValueShape
+    a sh:NodeShape ;
+    sh:targetClass c:RSAKeyValue ;
+    
+    sh:property [
+      sh:path c:modulus;
+      sh:datatype xsd:string ;
+      sh:name "modulus" ;
+    ] ;
+    sh:property [
+      sh:path c:exponent;
+      sh:datatype xsd:string ;
+      sh:name "exponent" ;
+    ] ;
+.
+c:RSAKeyValueToken
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RSAKeyValueTokenShape
+    a sh:NodeShape ;
+    sh:targetClass c:RSAKeyValueToken ;
+    
+    sh:property [
+      sh:path c:rsaKeyValue;
+      sh:datatype c:RSAKeyValue ;
+      sh:name "rsaKeyValue" ;
+    ] ;
+.
+c:RSAKeyValueTokenPolicy
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RSAKeyValueTokenPolicyShape
+    a sh:NodeShape ;
+    sh:targetClass c:RSAKeyValueTokenPolicy ;
+    
+    sh:property [
+      sh:path c:created;
+      sh:datatype xsd:datetime ;
+      sh:name "created" ;
+    ] ;
+    sh:property [
+      sh:path c:nonce;
+      sh:datatype xsd:string ;
+      sh:name "nonce" ;
+    ] ;
+.
+c:RSASignature
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RSASignatureShape
+    a sh:NodeShape ;
+    sh:targetClass c:RSASignature ;
+    
+    sh:property [
+      sh:path c:signedInfo;
+      sh:datatype xsd:string ;
+      sh:name "signedInfo" ;
+    ] ;
+    sh:property [
+      sh:path c:method;
+      sh:datatype xsd:string ;
+      sh:name "method" ;
+    ] ;
+    sh:property [
+      sh:path c:keyInfo;
+      sh:datatype xsd:string ;
+      sh:name "keyInfo" ;
+    ] ;
+.
+c:RSPPrice
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RSPPriceShape
+    a sh:NodeShape ;
+    sh:targetClass c:RSPPrice ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+.
+c:RailCarrier
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RailCarrierShape
+    a sh:NodeShape ;
+    sh:targetClass c:RailCarrier ;
+    
+.
+c:ReaderQuotas
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ReaderQuotasShape
+    a sh:NodeShape ;
+    sh:targetClass c:ReaderQuotas ;
+    
+    sh:property [
+      sh:path c:maxArrayLength;
+      sh:datatype c:Long ;
+      sh:name "maxArrayLength" ;
+    ] ;
+    sh:property [
+      sh:path c:maxBytesPerRead;
+      sh:datatype c:Long ;
+      sh:name "maxBytesPerRead" ;
+    ] ;
+    sh:property [
+      sh:path c:maxDepth;
+      sh:datatype c:Long ;
+      sh:name "maxDepth" ;
+    ] ;
+    sh:property [
+      sh:path c:maxStringContentLength;
+      sh:datatype c:Long ;
+      sh:name "maxStringContentLength" ;
+    ] ;
+.
+c:Reflection
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ReflectionShape
+    a sh:NodeShape ;
+    sh:targetClass c:Reflection ;
+    
+    sh:property [
+      sh:path c:notification;
+      sh:datatype c:Notification ;
+      sh:name "notification" ;
+    ] ;
+    sh:property [
+      sh:path c:echoToken;
+      sh:datatype c:Object ;
+      sh:name "echoToken" ;
+    ] ;
+.
+c:Refunding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RefundingShape
+    a sh:NodeShape ;
+    sh:targetClass c:Refunding ;
+    
+    sh:property [
+      sh:path c:handlingFee;
+      sh:datatype c:HandlingFee ;
+      sh:name "handlingFee" ;
+    ] ;
+    sh:property [
+      sh:path c:refundingFlexibilityLevelId;
+      sh:datatype xsd:string ;
+      sh:name "refundingFlexibilityLevelId" ;
+    ] ;
+.
+c:Region
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RegionShape
+    a sh:NodeShape ;
+    sh:targetClass c:Region ;
+    
+    sh:property [
+      sh:path c:center;
+      sh:datatype c:GeoPoint ;
+      sh:name "center" ;
+    ] ;
+    sh:property [
+      sh:path c:geoPoint;
+      sh:datatype c:GeoPoint ;
+      sh:name "geoPoint" ;
+    ] ;
+.
+c:Request
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:Request ;
+    
+    sh:property [
+      sh:path c:caller;
+      sh:datatype c:Caller ;
+      sh:name "caller" ;
+    ] ;
+.
+c:RequestedAncillaryService
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RequestedAncillaryServiceShape
+    a sh:NodeShape ;
+    sh:targetClass c:RequestedAncillaryService ;
+    
+    sh:property [
+      sh:path c:ancillaryTypeId;
+      sh:datatype xsd:string ;
+      sh:name "ancillaryTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:qualityOfServiceId;
+      sh:datatype xsd:string ;
+      sh:name "qualityOfServiceId" ;
+    ] ;
+    sh:property [
+      sh:path c:sizeId;
+      sh:datatype xsd:string ;
+      sh:name "sizeId" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "segmentIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReferenceRefsList;
+      sh:datatype c:Object ;
+      sh:name "placeReferenceRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:categoryId;
+      sh:datatype xsd:string ;
+      sh:name "categoryId" ;
+    ] ;
+    sh:property [
+      sh:path c:typeId;
+      sh:datatype xsd:string ;
+      sh:name "typeId" ;
+    ] ;
+.
+c:RequestedPRMSupport
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RequestedPRMSupportShape
+    a sh:NodeShape ;
+    sh:targetClass c:RequestedPRMSupport ;
+    
+    sh:property [
+      sh:path c:prmAssistEquipmentTypeId;
+      sh:datatype xsd:string ;
+      sh:name "prmAssistEquipmentTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:prmPersonalAssistanceTypeId;
+      sh:datatype xsd:string ;
+      sh:name "prmPersonalAssistanceTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:prmAidAtPlaceId;
+      sh:datatype xsd:string ;
+      sh:name "prmAidAtPlaceId" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentIdRefsList;
+      sh:datatype xsd:string ;
+      sh:name "segmentIdRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReferenceRefsList;
+      sh:datatype c:Object ;
+      sh:name "placeReferenceRefsList" ;
+    ] ;
+.
+c:RequiredItemsAssertion
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RequiredItemsAssertionShape
+    a sh:NodeShape ;
+    sh:targetClass c:RequiredItemsAssertion ;
+    
+    sh:property [
+      sh:path c:requiredElement;
+      sh:datatype c:Element ;
+      sh:name "requiredElement" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredPart;
+      sh:datatype c:Part ;
+      sh:name "requiredPart" ;
+    ] ;
+.
+c:Response
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ResponseShape
+    a sh:NodeShape ;
+    sh:targetClass c:Response ;
+    
+    sh:property [
+      sh:path c:reflection;
+      sh:datatype c:Reflection ;
+      sh:name "reflection" ;
+    ] ;
+.
+c:ResponseRequest
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ResponseRequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:ResponseRequest ;
+    
+    sh:property [
+      sh:path c:guid;
+      sh:datatype xsd:string ;
+      sh:name "guid" ;
+    ] ;
+.
+c:ResponseRequestHeader
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ResponseRequestHeaderShape
+    a sh:NodeShape ;
+    sh:targetClass c:ResponseRequestHeader ;
+    
+    sh:property [
+      sh:path c:timestamp;
+      sh:datatype xsd:datetime ;
+      sh:name "timestamp" ;
+    ] ;
+    sh:property [
+      sh:path c:guid;
+      sh:datatype xsd:string ;
+      sh:name "guid" ;
+    ] ;
+.
+c:RetrieveBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RetrieveBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:RetrieveBookingFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:RetrieveBookingRequest
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RetrieveBookingRequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:RetrieveBookingRequest ;
+    
+    sh:property [
+      sh:path c:bookingIdRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingIdRef" ;
+    ] ;
+    sh:property [
+      sh:path c:retrieveAllItems;
+      sh:datatype c:Boolean ;
+      sh:name "retrieveAllItems" ;
+    ] ;
+.
+c:RetrieveBookingResponse
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RetrieveBookingResponseShape
+    a sh:NodeShape ;
+    sh:targetClass c:RetrieveBookingResponse ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:RevokeBooking
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RevokeBookingShape
+    a sh:NodeShape ;
+    sh:targetClass c:RevokeBooking ;
+    
+    sh:property [
+      sh:path c:bookingIdRef;
+      sh:datatype xsd:string ;
+      sh:name "bookingIdRef" ;
+    ] ;
+.
+c:RevokeBookingFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RevokeBookingFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:RevokeBookingFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:RevokeRefundRequest
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:RevokeRefundRequestShape
+    a sh:NodeShape ;
+    sh:targetClass c:RevokeRefundRequest ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:SaleCarrierOffer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SaleCarrierOfferShape
+    a sh:NodeShape ;
+    sh:targetClass c:SaleCarrierOffer ;
+    
+    sh:property [
+      sh:path c:fare;
+      sh:datatype c:Fare ;
+      sh:name "fare" ;
+    ] ;
+.
+c:SaleCarrierOfferContainer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SaleCarrierOfferContainerShape
+    a sh:NodeShape ;
+    sh:targetClass c:SaleCarrierOfferContainer ;
+    
+    sh:property [
+      sh:path c:carrierOffer;
+      sh:datatype c:SaleCarrierOffer ;
+      sh:name "carrierOffer" ;
+    ] ;
+.
+c:SalesCondition
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SalesConditionShape
+    a sh:NodeShape ;
+    sh:targetClass c:SalesCondition ;
+    
+    sh:property [
+      sh:path c:vehicleBindingType;
+      sh:datatype c:AllowedVehicles ;
+      sh:name "vehicleBindingType" ;
+    ] ;
+    sh:property [
+      sh:path c:salesConditionText;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "salesConditionText" ;
+    ] ;
+    sh:property [
+      sh:path c:immediatePaymentCondition;
+      sh:datatype c:ImmediatePaymentCondition ;
+      sh:name "immediatePaymentCondition" ;
+    ] ;
+    sh:property [
+      sh:path c:open;
+      sh:datatype c:Boolean ;
+      sh:name "open" ;
+    ] ;
+    sh:property [
+      sh:path c:reservationRequired;
+      sh:datatype c:Boolean ;
+      sh:name "reservationRequired" ;
+    ] ;
+    sh:property [
+      sh:path c:immediatePaymentAvailability;
+      sh:datatype xsd:string ;
+      sh:name "immediatePaymentAvailability" ;
+    ] ;
+.
+c:ScheduledStopPoint
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ScheduledStopPointShape
+    a sh:NodeShape ;
+    sh:targetClass c:ScheduledStopPoint ;
+    
+    sh:property [
+      sh:path c:arrivalTime;
+      sh:datatype xsd:datetime ;
+      sh:name "arrivalTime" ;
+    ] ;
+    sh:property [
+      sh:path c:checkInTime;
+      sh:datatype xsd:datetime ;
+      sh:name "checkInTime" ;
+    ] ;
+    sh:property [
+      sh:path c:closeOfBoarding;
+      sh:datatype xsd:datetime ;
+      sh:name "closeOfBoarding" ;
+    ] ;
+    sh:property [
+      sh:path c:effectiveDeparture;
+      sh:datatype xsd:datetime ;
+      sh:name "effectiveDeparture" ;
+    ] ;
+    sh:property [
+      sh:path c:geoPoint;
+      sh:datatype c:GeoPoint ;
+      sh:name "geoPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:scheduledStopPointId;
+      sh:datatype xsd:string ;
+      sh:name "scheduledStopPointId" ;
+    ] ;
+.
+c:SearchCriteria
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SearchCriteriaShape
+    a sh:NodeShape ;
+    sh:targetClass c:SearchCriteria ;
+    
+    sh:property [
+      sh:path c:filterCriteria;
+      sh:datatype c:FilterCriteria ;
+      sh:name "filterCriteria" ;
+    ] ;
+    sh:property [
+      sh:path c:placeReservationFeasible;
+      sh:datatype c:Boolean ;
+      sh:name "placeReservationFeasible" ;
+    ] ;
+    sh:property [
+      sh:path c:product;
+      sh:datatype c:Product ;
+      sh:name "product" ;
+    ] ;
+    sh:property [
+      sh:path c:paymentMode;
+      sh:datatype c:PaymentMode ;
+      sh:name "paymentMode" ;
+    ] ;
+    sh:property [
+      sh:path c:preferenceLevel;
+      sh:datatype xsd:string ;
+      sh:name "preferenceLevel" ;
+    ] ;
+.
+c:SecuredExternalImmediatePayment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecuredExternalImmediatePaymentShape
+    a sh:NodeShape ;
+    sh:targetClass c:SecuredExternalImmediatePayment ;
+    
+    sh:property [
+      sh:path c:inputInformation;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "inputInformation" ;
+    ] ;
+.
+c:SecuredImmediatePayment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecuredImmediatePaymentShape
+    a sh:NodeShape ;
+    sh:targetClass c:SecuredImmediatePayment ;
+    
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:BigDecimal ;
+      sh:name "amount" ;
+    ] ;
+    sh:property [
+      sh:path c:paymentCardHolderName;
+      sh:datatype xsd:string ;
+      sh:name "paymentCardHolderName" ;
+    ] ;
+    sh:property [
+      sh:path c:currencyId;
+      sh:datatype xsd:string ;
+      sh:name "currencyId" ;
+    ] ;
+    sh:property [
+      sh:path c:postalAddress;
+      sh:datatype xsd:string ;
+      sh:name "postalAddress" ;
+    ] ;
+    sh:property [
+      sh:path c:additionalSecurePaymentInfo;
+      sh:datatype c:AdditionalEntry ;
+      sh:name "additionalSecurePaymentInfo" ;
+    ] ;
+.
+c:SecuredPCIDSSImmediatePayment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecuredPCIDSSImmediatePaymentShape
+    a sh:NodeShape ;
+    sh:targetClass c:SecuredPCIDSSImmediatePayment ;
+    
+    sh:property [
+      sh:path c:cardType;
+      sh:datatype xsd:string ;
+      sh:name "cardType" ;
+    ] ;
+    sh:property [
+      sh:path c:cardNumber;
+      sh:datatype xsd:string ;
+      sh:name "cardNumber" ;
+    ] ;
+    sh:property [
+      sh:path c:expirationDate;
+      sh:datatype xsd:string ;
+      sh:name "expirationDate" ;
+    ] ;
+    sh:property [
+      sh:path c:cvv;
+      sh:datatype xsd:string ;
+      sh:name "cvv" ;
+    ] ;
+.
+c:SecuredThreeDImmediatePayment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecuredThreeDImmediatePaymentShape
+    a sh:NodeShape ;
+    sh:targetClass c:SecuredThreeDImmediatePayment ;
+    
+    sh:property [
+      sh:path c:tokenProvider;
+      sh:datatype xsd:string ;
+      sh:name "tokenProvider" ;
+    ] ;
+    sh:property [
+      sh:path c:tokenId;
+      sh:datatype xsd:string ;
+      sh:name "tokenId" ;
+    ] ;
+    sh:property [
+      sh:path c:vcc;
+      sh:datatype xsd:string ;
+      sh:name "vcc" ;
+    ] ;
+.
+c:Security
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecurityShape
+    a sh:NodeShape ;
+    sh:targetClass c:Security ;
+    
+    sh:property [
+      sh:path c:integrityAssertion;
+      sh:datatype c:IntegrityAssertion ;
+      sh:name "integrityAssertion" ;
+    ] ;
+    sh:property [
+      sh:path c:confidentialityAssertion;
+      sh:datatype c:ConfidentialityAssertion ;
+      sh:name "confidentialityAssertion" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredItemsAssertion;
+      sh:datatype c:RequiredItemsAssertion ;
+      sh:name "requiredItemsAssertion" ;
+    ] ;
+    sh:property [
+      sh:path c:usernameToken;
+      sh:datatype c:UsernameToken ;
+      sh:name "usernameToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509Token;
+      sh:datatype c:X509Token ;
+      sh:name "x509Token" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaKeyValueToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaKeyValueToken" ;
+    ] ;
+    sh:property [
+      sh:path c:bindingPolicy;
+      sh:datatype c:BindingPolicy ;
+      sh:name "bindingPolicy" ;
+    ] ;
+.
+c:SecurityFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SecurityFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:SecurityFault ;
+    
+.
+c:Segment
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SegmentShape
+    a sh:NodeShape ;
+    sh:targetClass c:Segment ;
+    
+    sh:property [
+      sh:path c:serviceModeId;
+      sh:datatype xsd:string ;
+      sh:name "serviceModeId" ;
+    ] ;
+    sh:property [
+      sh:path c:routeTypeId;
+      sh:datatype xsd:string ;
+      sh:name "routeTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:trainPathTypeId;
+      sh:datatype xsd:string ;
+      sh:name "trainPathTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:serviceAvailabilityId;
+      sh:datatype xsd:string ;
+      sh:name "serviceAvailabilityId" ;
+    ] ;
+    sh:property [
+      sh:path c:origin;
+      sh:datatype c:StopPlace ;
+      sh:name "origin" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlace;
+      sh:datatype c:StopPlace ;
+      sh:name "stopPlace" ;
+    ] ;
+    sh:property [
+      sh:path c:destination;
+      sh:datatype c:StopPlace ;
+      sh:name "destination" ;
+    ] ;
+    sh:property [
+      sh:path c:connection;
+      sh:datatype c:ChangePoint ;
+      sh:name "connection" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicle;
+      sh:datatype c:Vehicle ;
+      sh:name "vehicle" ;
+    ] ;
+.
+c:SegmentPassengerBinding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SegmentPassengerBindingShape
+    a sh:NodeShape ;
+    sh:targetClass c:SegmentPassengerBinding ;
+    
+    sh:property [
+      sh:path c:passengerRefsList;
+      sh:datatype c:Object ;
+      sh:name "passengerRefsList" ;
+    ] ;
+    sh:property [
+      sh:path c:segmentRefsList;
+      sh:datatype c:Object ;
+      sh:name "segmentRefsList" ;
+    ] ;
+.
+c:ServiceBehavior
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ServiceBehaviorShape
+    a sh:NodeShape ;
+    sh:targetClass c:ServiceBehavior ;
+    
+    sh:property [
+      sh:path c:securityLevelId;
+      sh:datatype xsd:string ;
+      sh:name "securityLevelId" ;
+    ] ;
+    sh:property [
+      sh:path c:protectionLevelId;
+      sh:datatype xsd:string ;
+      sh:name "protectionLevelId" ;
+    ] ;
+    sh:property [
+      sh:path c:sessionModeId;
+      sh:datatype xsd:string ;
+      sh:name "sessionModeId" ;
+    ] ;
+    sh:property [
+      sh:path c:security;
+      sh:datatype c:Security ;
+      sh:name "security" ;
+    ] ;
+.
+c:ServiceLevelFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ServiceLevelFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:ServiceLevelFault ;
+    
+.
+c:ServiceRelease
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ServiceReleaseShape
+    a sh:NodeShape ;
+    sh:targetClass c:ServiceRelease ;
+    
+    sh:property [
+      sh:path c:releaseTypeId;
+      sh:datatype xsd:string ;
+      sh:name "releaseTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:releaseFrom;
+      sh:datatype xsd:string ;
+      sh:name "releaseFrom" ;
+    ] ;
+    sh:property [
+      sh:path c:releaseTo;
+      sh:datatype xsd:string ;
+      sh:name "releaseTo" ;
+    ] ;
+.
+c:SessionError
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SessionErrorShape
+    a sh:NodeShape ;
+    sh:targetClass c:SessionError ;
+    
+.
+c:SpecialOffer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SpecialOfferShape
+    a sh:NodeShape ;
+    sh:targetClass c:SpecialOffer ;
+    
+.
+c:SpecialOrder
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SpecialOrderShape
+    a sh:NodeShape ;
+    sh:targetClass c:SpecialOrder ;
+    
+    sh:property [
+      sh:path c:supplierId;
+      sh:datatype xsd:string ;
+      sh:name "supplierId" ;
+    ] ;
+    sh:property [
+      sh:path c:identifier;
+      sh:datatype xsd:string ;
+      sh:name "identifier" ;
+    ] ;
+.
+c:SpecialTerms
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SpecialTermsShape
+    a sh:NodeShape ;
+    sh:targetClass c:SpecialTerms ;
+    
+    sh:property [
+      sh:path c:condition;
+      sh:datatype xsd:string ;
+      sh:name "condition" ;
+    ] ;
+    sh:property [
+      sh:path c:termAsPlainText;
+      sh:datatype xsd:string ;
+      sh:name "termAsPlainText" ;
+    ] ;
+.
+c:StartAndDuration
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StartAndDurationShape
+    a sh:NodeShape ;
+    sh:targetClass c:StartAndDuration ;
+    
+    sh:property [
+      sh:path c:start;
+      sh:datatype xsd:datetime ;
+      sh:name "start" ;
+    ] ;
+    sh:property [
+      sh:path c:duration;
+      sh:datatype c:Duration ;
+      sh:name "duration" ;
+    ] ;
+.
+c:StatelessPreBookingCarrierOffer
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StatelessPreBookingCarrierOfferShape
+    a sh:NodeShape ;
+    sh:targetClass c:StatelessPreBookingCarrierOffer ;
+    
+    sh:property [
+      sh:path c:passenger;
+      sh:datatype c:PassengerData ;
+      sh:name "passenger" ;
+    ] ;
+    sh:property [
+      sh:path c:itinerary;
+      sh:datatype c:Itinerary ;
+      sh:name "itinerary" ;
+    ] ;
+    sh:property [
+      sh:path c:carrierOffer;
+      sh:datatype c:SaleCarrierOffer ;
+      sh:name "carrierOffer" ;
+    ] ;
+.
+c:StopArea
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StopAreaShape
+    a sh:NodeShape ;
+    sh:targetClass c:StopArea ;
+    
+    sh:property [
+      sh:path c:vehicleAccess;
+      sh:datatype c:VehicleAccess ;
+      sh:name "vehicleAccess" ;
+    ] ;
+    sh:property [
+      sh:path c:stopAreaId;
+      sh:datatype xsd:string ;
+      sh:name "stopAreaId" ;
+    ] ;
+.
+c:StopPlace
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:StopPlaceShape
+    a sh:NodeShape ;
+    sh:targetClass c:StopPlace ;
+    
+    sh:property [
+      sh:path c:scheduledStopPoint;
+      sh:datatype c:ScheduledStopPoint ;
+      sh:name "scheduledStopPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:stopArea;
+      sh:datatype c:StopArea ;
+      sh:name "stopArea" ;
+    ] ;
+    sh:property [
+      sh:path c:description;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "description" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlaceId;
+      sh:datatype xsd:string ;
+      sh:name "stopPlaceId" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlaceTypeId;
+      sh:datatype xsd:string ;
+      sh:name "stopPlaceTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:acronym;
+      sh:datatype xsd:string ;
+      sh:name "acronym" ;
+    ] ;
+    sh:property [
+      sh:path c:isBorderPoint;
+      sh:datatype c:Boolean ;
+      sh:name "isBorderPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:borderPointCode;
+      sh:datatype xsd:string ;
+      sh:name "borderPointCode" ;
+    ] ;
+    sh:property [
+      sh:path c:stopPlaceAccessTypeId;
+      sh:datatype xsd:string ;
+      sh:name "stopPlaceAccessTypeId" ;
+    ] ;
+.
+c:Supplier
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SupplierShape
+    a sh:NodeShape ;
+    sh:targetClass c:Supplier ;
+    
+    sh:property [
+      sh:path c:addresseeId;
+      sh:datatype xsd:string ;
+      sh:name "addresseeId" ;
+    ] ;
+    sh:property [
+      sh:path c:businessRoleIdType;
+      sh:datatype xsd:string ;
+      sh:name "businessRoleIdType" ;
+    ] ;
+.
+c:SymmetricBinding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:SymmetricBindingShape
+    a sh:NodeShape ;
+    sh:targetClass c:SymmetricBinding ;
+    
+    sh:property [
+      sh:path c:includeTimestamp;
+      sh:datatype c:IncludeTimestamp ;
+      sh:name "includeTimestamp" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaSignatureToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosSignatureToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosSignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509SignatureToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509SignatureToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaEncryptionToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:rsaProtectionToken;
+      sh:datatype c:RSAKeyValueToken ;
+      sh:name "rsaProtectionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosEncryptionToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosEncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:kerberosProtectionToken;
+      sh:datatype c:KerberosToken ;
+      sh:name "kerberosProtectionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509EncryptionToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509EncryptionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509ProtectionToken;
+      sh:datatype c:X509Token ;
+      sh:name "x509ProtectionToken" ;
+    ] ;
+    sh:property [
+      sh:path c:algorithmSuite;
+      sh:datatype c:Boolean ;
+      sh:name "algorithmSuite" ;
+    ] ;
+    sh:property [
+      sh:path c:encryptBeforeSigning;
+      sh:datatype c:Boolean ;
+      sh:name "encryptBeforeSigning" ;
+    ] ;
+    sh:property [
+      sh:path c:encryptSignature;
+      sh:datatype c:Boolean ;
+      sh:name "encryptSignature" ;
+    ] ;
+    sh:property [
+      sh:path c:protectTokens;
+      sh:datatype c:Boolean ;
+      sh:name "protectTokens" ;
+    ] ;
+.
+c:TermOfConveyance
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TermOfConveyanceShape
+    a sh:NodeShape ;
+    sh:targetClass c:TermOfConveyance ;
+    
+    sh:property [
+      sh:path c:termPlainText;
+      sh:datatype c:GenericTextMessage ;
+      sh:name "termPlainText" ;
+    ] ;
+    sh:property [
+      sh:path c:url;
+      sh:datatype xsd:string ;
+      sh:name "url" ;
+    ] ;
+.
+c:TicketCouplingKey
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TicketCouplingKeyShape
+    a sh:NodeShape ;
+    sh:targetClass c:TicketCouplingKey ;
+    
+    sh:property [
+      sh:path c:key;
+      sh:datatype xsd:string ;
+      sh:name "key" ;
+    ] ;
+.
+c:TimeRange
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TimeRangeShape
+    a sh:NodeShape ;
+    sh:targetClass c:TimeRange ;
+    
+    sh:property [
+      sh:path c:start;
+      sh:datatype xsd:datetime ;
+      sh:name "start" ;
+    ] ;
+    sh:property [
+      sh:path c:end;
+      sh:datatype xsd:datetime ;
+      sh:name "end" ;
+    ] ;
+.
+c:TransportBinding
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TransportBindingShape
+    a sh:NodeShape ;
+    sh:targetClass c:TransportBinding ;
+    
+    sh:property [
+      sh:path c:includeTimestamp;
+      sh:datatype c:IncludeTimestamp ;
+      sh:name "includeTimestamp" ;
+    ] ;
+    sh:property [
+      sh:path c:algorithmSuite;
+      sh:datatype c:Boolean ;
+      sh:name "algorithmSuite" ;
+    ] ;
+.
+c:TransportServiceProvider
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:TransportServiceProviderShape
+    a sh:NodeShape ;
+    sh:targetClass c:TransportServiceProvider ;
+    
+.
+c:UpdateInformationFault
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:UpdateInformationFaultShape
+    a sh:NodeShape ;
+    sh:targetClass c:UpdateInformationFault ;
+    
+    sh:property [
+      sh:path c:booking;
+      sh:datatype c:Booking ;
+      sh:name "booking" ;
+    ] ;
+.
+c:UsernameToken
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:UsernameTokenShape
+    a sh:NodeShape ;
+    sh:targetClass c:UsernameToken ;
+    
+    sh:property [
+      sh:path c:usernameTokenPolicy;
+      sh:datatype c:UsernameTokenPolicy ;
+      sh:name "usernameTokenPolicy" ;
+    ] ;
+    sh:property [
+      sh:path c:username;
+      sh:datatype xsd:string ;
+      sh:name "username" ;
+    ] ;
+    sh:property [
+      sh:path c:password;
+      sh:datatype xsd:string ;
+      sh:name "password" ;
+    ] ;
+    sh:property [
+      sh:path c:includeToken;
+      sh:datatype xsd:string ;
+      sh:name "includeToken" ;
+    ] ;
+    sh:property [
+      sh:path c:issuer;
+      sh:datatype xsd:string ;
+      sh:name "issuer" ;
+    ] ;
+    sh:property [
+      sh:path c:issuerName;
+      sh:datatype xsd:string ;
+      sh:name "issuerName" ;
+    ] ;
+    sh:property [
+      sh:path c:claims;
+      sh:datatype xsd:string ;
+      sh:name "claims" ;
+    ] ;
+.
+c:UsernameTokenPolicy
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:UsernameTokenPolicyShape
+    a sh:NodeShape ;
+    sh:targetClass c:UsernameTokenPolicy ;
+    
+    sh:property [
+      sh:path c:created;
+      sh:datatype xsd:datetime ;
+      sh:name "created" ;
+    ] ;
+    sh:property [
+      sh:path c:nonce;
+      sh:datatype xsd:string ;
+      sh:name "nonce" ;
+    ] ;
+    sh:property [
+      sh:path c:passwordSet;
+      sh:datatype c:Boolean ;
+      sh:name "passwordSet" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredKey;
+      sh:datatype xsd:string ;
+      sh:name "requiredKey" ;
+    ] ;
+.
+c:VAT
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:VATShape
+    a sh:NodeShape ;
+    sh:targetClass c:VAT ;
+    
+    sh:property [
+      sh:path c:currency;
+      sh:datatype c:Currency ;
+      sh:name "currency" ;
+    ] ;
+    sh:property [
+      sh:path c:countryId;
+      sh:datatype xsd:string ;
+      sh:name "countryId" ;
+    ] ;
+    sh:property [
+      sh:path c:amount;
+      sh:datatype c:Amount ;
+      sh:name "amount" ;
+    ] ;
+.
+c:ValidityArea
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ValidityAreaShape
+    a sh:NodeShape ;
+    sh:targetClass c:ValidityArea ;
+    
+    sh:property [
+      sh:path c:area;
+      sh:datatype c:Area ;
+      sh:name "area" ;
+    ] ;
+    sh:property [
+      sh:path c:alternativePath;
+      sh:datatype c:AlternativePath ;
+      sh:name "alternativePath" ;
+    ] ;
+    sh:property [
+      sh:path c:trailingArea;
+      sh:datatype c:Area ;
+      sh:name "trailingArea" ;
+    ] ;
+    sh:property [
+      sh:path c:leadingArea;
+      sh:datatype c:Area ;
+      sh:name "leadingArea" ;
+    ] ;
+.
+c:ValidityPeriod
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ValidityPeriodShape
+    a sh:NodeShape ;
+    sh:targetClass c:ValidityPeriod ;
+    
+    sh:property [
+      sh:path c:dayOfWeek;
+      sh:datatype xsd:string ;
+      sh:name "dayOfWeek" ;
+    ] ;
+    sh:property [
+      sh:path c:timeRange;
+      sh:datatype c:TimeRange ;
+      sh:name "timeRange" ;
+    ] ;
+    sh:property [
+      sh:path c:start;
+      sh:datatype xsd:datetime ;
+      sh:name "start" ;
+    ] ;
+    sh:property [
+      sh:path c:end;
+      sh:datatype xsd:datetime ;
+      sh:name "end" ;
+    ] ;
+    sh:property [
+      sh:path c:blackoutDate;
+      sh:datatype xsd:datetime ;
+      sh:name "blackoutDate" ;
+    ] ;
+.
+c:Vehicle
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:VehicleShape
+    a sh:NodeShape ;
+    sh:targetClass c:Vehicle ;
+    
+    sh:property [
+      sh:path c:serviceBrandId;
+      sh:datatype xsd:string ;
+      sh:name "serviceBrandId" ;
+    ] ;
+    sh:property [
+      sh:path c:onboardServiceCategoryId;
+      sh:datatype xsd:string ;
+      sh:name "onboardServiceCategoryId" ;
+    ] ;
+    sh:property [
+      sh:path c:externalId;
+      sh:datatype xsd:string ;
+      sh:name "externalId" ;
+    ] ;
+    sh:property [
+      sh:path c:typeId;
+      sh:datatype xsd:string ;
+      sh:name "typeId" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleId;
+      sh:datatype xsd:string ;
+      sh:name "vehicleId" ;
+    ] ;
+.
+c:VehicleAccess
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:VehicleAccessShape
+    a sh:NodeShape ;
+    sh:targetClass c:VehicleAccess ;
+    
+    sh:property [
+      sh:path c:geoPoint;
+      sh:datatype c:GeoPoint ;
+      sh:name "geoPoint" ;
+    ] ;
+    sh:property [
+      sh:path c:boardingPosition;
+      sh:datatype c:BoardingPosition ;
+      sh:name "boardingPosition" ;
+    ] ;
+    sh:property [
+      sh:path c:name;
+      sh:datatype xsd:string ;
+      sh:name "name" ;
+    ] ;
+    sh:property [
+      sh:path c:vehicleAccessAreaTypeId;
+      sh:datatype xsd:string ;
+      sh:name "vehicleAccessAreaTypeId" ;
+    ] ;
+.
+c:Voucher
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:VoucherShape
+    a sh:NodeShape ;
+    sh:targetClass c:Voucher ;
+    
+    sh:property [
+      sh:path c:effectiveDate;
+      sh:datatype xsd:datetime ;
+      sh:name "effectiveDate" ;
+    ] ;
+    sh:property [
+      sh:path c:voucherUseTypeId;
+      sh:datatype xsd:string ;
+      sh:name "voucherUseTypeId" ;
+    ] ;
+    sh:property [
+      sh:path c:reasonForIssue;
+      sh:datatype xsd:string ;
+      sh:name "reasonForIssue" ;
+    ] ;
+.
+c:X509IssuerSerial
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:X509IssuerSerialShape
+    a sh:NodeShape ;
+    sh:targetClass c:X509IssuerSerial ;
+    
+    sh:property [
+      sh:path c:issuerName;
+      sh:datatype xsd:string ;
+      sh:name "issuerName" ;
+    ] ;
+    sh:property [
+      sh:path c:serialNumber;
+      sh:datatype xsd:string ;
+      sh:name "serialNumber" ;
+    ] ;
+.
+c:X509Signature
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:X509SignatureShape
+    a sh:NodeShape ;
+    sh:targetClass c:X509Signature ;
+    
+    sh:property [
+      sh:path c:signedInfo;
+      sh:datatype xsd:string ;
+      sh:name "signedInfo" ;
+    ] ;
+    sh:property [
+      sh:path c:signatureValue;
+      sh:datatype xsd:string ;
+      sh:name "signatureValue" ;
+    ] ;
+    sh:property [
+      sh:path c:keyName;
+      sh:datatype xsd:string ;
+      sh:name "keyName" ;
+    ] ;
+.
+c:X509Token
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:X509TokenShape
+    a sh:NodeShape ;
+    sh:targetClass c:X509Token ;
+    
+    sh:property [
+      sh:path c:x509TokenPolicy;
+      sh:datatype c:X509TokenPolicy ;
+      sh:name "x509TokenPolicy" ;
+    ] ;
+    sh:property [
+      sh:path c:x509TokenReference;
+      sh:datatype c:X509TokenReference ;
+      sh:name "x509TokenReference" ;
+    ] ;
+    sh:property [
+      sh:path c:includeToken;
+      sh:datatype xsd:string ;
+      sh:name "includeToken" ;
+    ] ;
+    sh:property [
+      sh:path c:issuer;
+      sh:datatype xsd:string ;
+      sh:name "issuer" ;
+    ] ;
+    sh:property [
+      sh:path c:issuerName;
+      sh:datatype xsd:string ;
+      sh:name "issuerName" ;
+    ] ;
+    sh:property [
+      sh:path c:claims;
+      sh:datatype xsd:string ;
+      sh:name "claims" ;
+    ] ;
+.
+c:X509TokenPolicy
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:X509TokenPolicyShape
+    a sh:NodeShape ;
+    sh:targetClass c:X509TokenPolicy ;
+    
+    sh:property [
+      sh:path c:created;
+      sh:datatype xsd:datetime ;
+      sh:name "created" ;
+    ] ;
+    sh:property [
+      sh:path c:nonce;
+      sh:datatype xsd:string ;
+      sh:name "nonce" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredKey;
+      sh:datatype xsd:string ;
+      sh:name "requiredKey" ;
+    ] ;
+    sh:property [
+      sh:path c:requiredReference;
+      sh:datatype xsd:string ;
+      sh:name "requiredReference" ;
+    ] ;
+.
+c:X509TokenReference
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:X509TokenReferenceShape
+    a sh:NodeShape ;
+    sh:targetClass c:X509TokenReference ;
+    
+    sh:property [
+      sh:path c:binarySecurityToken;
+      sh:datatype c:BinarySecurityToken ;
+      sh:name "binarySecurityToken" ;
+    ] ;
+    sh:property [
+      sh:path c:x509IssuerSerial;
+      sh:datatype c:X509IssuerSerial ;
+      sh:name "x509IssuerSerial" ;
+    ] ;
+    sh:property [
+      sh:path c:x509Signature;
+      sh:datatype c:X509Signature ;
+      sh:name "x509Signature" ;
+    ] ;
+.
+c:package-info
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:package-infoShape
+    a sh:NodeShape ;
+    sh:targetClass c:package-info ;
+    
+.
+c:Equals
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:EqualsShape
+    a sh:NodeShape ;
+    sh:targetClass c:Equals ;
+    
+.
+c:HashCode
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:HashCodeShape
+    a sh:NodeShape ;
+    sh:targetClass c:HashCode ;
+    
+.
+c:ToString
+    rdf:type rdfs:Class ;
+    rdfs:subClassOf rdfs:Resource ;
+.
+
+c:ToStringShape
+    a sh:NodeShape ;
+    sh:targetClass c:ToString ;
+    
+.
