@@ -16,7 +16,6 @@
 
 package it.cefriel.chimera.processor.rdf4j;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.apache.camel.Exchange;
@@ -41,19 +40,17 @@ public class TurtleDataParser implements Processor{
 	public void process(Exchange exchange) throws Exception {
 		Repository repo=null;
         RDFParser rdfParser = null;
-        InputStream inStream = null;
     	Model model = new LinkedHashModel();
 		ValueFactory vf = SimpleValueFactory.getInstance();
 
 		Message in = exchange.getIn();
-		String input_msg=in.getBody(String.class);
+		InputStream input_msg=in.getBody(InputStream.class);
 		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		try (RepositoryConnection con = repo.getConnection()) {
         	rdfParser=Rio.createParser(RDFFormat.TURTLE);
         	rdfParser.setRDFHandler(new StatementCollector(model));
-        	inStream=new ByteArrayInputStream(input_msg.getBytes());
-        	rdfParser.parse(inStream, "http://www.cefriel.com/knowledgetech");
+        	rdfParser.parse(input_msg, "http://www.cefriel.com/knowledgetech");
 			con.add(model, vf.createIRI("http://www.cefriel.com/knowledgetech"));
 		
 		}

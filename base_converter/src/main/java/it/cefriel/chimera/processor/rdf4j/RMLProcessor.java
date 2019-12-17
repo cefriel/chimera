@@ -55,7 +55,7 @@ public class RMLProcessor implements Processor{
     public void process(Exchange exchange) throws Exception {
         Repository repo=null;
         Message in = exchange.getIn();
-        String incoming_message = in.getBody(String.class);
+        InputStream incoming_message = in.getBody(InputStream.class);
         String stream_label=null;
         
         // RML Processor configuration
@@ -73,7 +73,7 @@ public class RMLProcessor implements Processor{
         log.info("RML label: "+stream_label);
         repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
-        streamsMap.put("stream://"+stream_label, new ByteArrayInputStream(incoming_message.getBytes()));
+        streamsMap.put("stream://"+stream_label, incoming_message);
         
         // RML mappings execution
         try (RepositoryConnection con = repo.getConnection()) {
