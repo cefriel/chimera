@@ -1,2 +1,4 @@
 .idea
 **.iml
+.idea/chimera.iml
+**/target
