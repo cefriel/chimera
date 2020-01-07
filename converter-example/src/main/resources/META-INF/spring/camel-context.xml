@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
   xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd     http://camel.apache.org/schema/spring     http://camel.apache.org/schema/spring/camel-spring.xsd     http://www.springframework.org/schema/util      http://www.springframework.org/schema/util/spring-util.xsd     ">
-  <bean class="it.cefriel.chimera.processor.rdf4j.RMLProcessor" id="rmlLifter">
+  <bean class="com.cefriel.chimera.processor.rdf4j.RMLProcessor" id="rmlLifter">
     <property name="rmlMappings">
       <util:list id="mappingsArray">
         <value>classpath://gtfs/mapping.ttl</value>
       </util:list>
     </property>
   </bean>
-  <bean class="it.cefriel.chimera.processor.rdf4j.TemplateLowererProcessor" id="templateLower">
+  <bean class="com.cefriel.chimera.processor.rdf4j.TemplateLowererProcessor" id="templateLower">
     <property name="templatePath">
       <value>mapping/NeTEx/template.vm</value>
     </property>
   </bean>
-  <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit"/>
-  <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin"/>
-  <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
-  <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLiftingProcessor" id="st4rtLifter"/>
-  <bean class="it.cefriel.chimera.processor.rdf4j.St4rtLoweringProcessor" id="st4rtLower"/>
+  <bean class="com.cefriel.chimera.processor.StopProcessor" id="quit"/>
+  <bean class="com.cefriel.chimera.processor.AttachGraph" id="begin"/>
+  <bean class="com.cefriel.chimera.processor.DumpGraph" id="graphDumper"/>
+  <bean class="com.cefriel.chimera.processor.rdf4j.St4rtLiftingProcessor" id="st4rtLifter"/>
+  <bean class="com.cefriel.chimera.processor.rdf4j.St4rtLoweringProcessor" id="st4rtLower"/>
   <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zipSplitter"/>
   <camelContext id="GTFS_Conversion_Context" trace="false" xmlns="http://camel.apache.org/schema/spring">
     <!-- Data format for marshalling/unmarshalling -->

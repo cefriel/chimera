@@ -2,11 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
   xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd     http://camel.apache.org/schema/spring     http://camel.apache.org/schema/spring/camel-spring.xsd     http://www.springframework.org/schema/util      http://www.springframework.org/schema/util/spring-util.xsd     ">
-  <bean class="it.cefriel.chimera.processor.StopProcessor" id="quit" />
-  <bean class="it.cefriel.chimera.processor.AttachGraph" id="begin" />
-  <bean class="it.cefriel.chimera.processor.DumpGraph" id="graphDumper" />
-  <bean id="addJWT" class="it.cefriel.chimera.assetmanager.JWTHeaderAggregationStrategy" />
-  <bean class="it.cefriel.chimera.processor.rdf4j.SecuredDataEnricher" id="dataEnricher">
+  <bean class="com.cefriel.chimera.processor.StopProcessor" id="quit" />
+  <bean class="com.cefriel.chimera.processor.AttachGraph" id="begin" />
+  <bean class="com.cefriel.chimera.processor.DumpGraph" id="graphDumper" />
+  <bean id="addJWT" class="com.cefriel.chimera.assetmanager.JWTHeaderAggregationStrategy" />
+  <bean class="com.cefriel.chimera.processor.rdf4j.SecuredDataEnricher" id="dataEnricher">
     <property name="masterDataUrls">
       <util:list>
         <value>http://localhost:8000/publisher/media/assets_media/ontology/IT2Rail%20Ontology/it2r_onto_current.owl</value>
@@ -56,7 +56,7 @@
         <camel:when id="_when1">
           <camel:simple>${header.CamelHttpResponseCode} == 200</camel:simple>
           <camel:unmarshal id="_unmarshal1">
-            <camel:json library="Jackson" unmarshalTypeName="it.cefriel.chimera.assetmanager.AccessResponseToken" />
+            <camel:json library="Jackson" unmarshalTypeName="com.cefriel.chimera.assetmanager.AccessResponseToken" />
           </camel:unmarshal>
           <!-- <camel:setHeader headerName="JWT_TOKEN" id="_setHeader3"> <camel:simple>${body.access}</camel:simple> </camel:setHeader> -->
         </camel:when>

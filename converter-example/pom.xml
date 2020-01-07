@@ -22,26 +22,11 @@
     <jetty.version>9.4.12.v20180830</jetty.version>
   </properties>
 
-  <modules>
-    <module>./libs/rmlmapper-cefriel</module>
-    <module>./libs/rdf-lowerer</module>
-  </modules>
-
   <dependencies>
     <dependency>
       <groupId>eu.sprint</groupId>
       <artifactId>chimera-converter</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cefriel.mapping</groupId>
-      <artifactId>velocity-lowerer</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.sprint</groupId>
-      <artifactId>st4rt-blocks</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -68,38 +53,6 @@
       <artifactId>camel-http</artifactId>
       <version>${camel.version}</version>
     </dependency>
-    
-    <!-- TRAIN STANDARDS -->
-    <dependency>
-      <groupId>eu.st4rt.converter.standards</groupId>
-      <artifactId>gtfs</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <!-- <dependency>
-      <groupId>eu.st4rt.converter.standards</groupId>
-      <artifactId>918-messages</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency> -->
-    <dependency>
-      <groupId>eu.st4rt</groupId>
-      <artifactId>st4rt-918-messages</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <!-- <dependency>
-      <groupId>eu.st4rt.converter.standards</groupId>
-      <artifactId>fsm-messages</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency> -->
-    <dependency>
-      <groupId>eu.st4rt</groupId>
-      <artifactId>st4rt-fsm-messages</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <!-- <dependency>
-      <groupId>org.entur</groupId>
-      <artifactId>netex-java-model</artifactId>
-      <version>1.0.8-SNAPSHOT</version>
-    </dependency>-->
   </dependencies>
 
   <build>

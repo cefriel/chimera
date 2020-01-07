@@ -7,10 +7,11 @@ public class ConverterApplication {
 
 	public static void main(String[] args) throws Exception { 
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("META-INF/spring/camel-context.xml");
-		CamelContext camelContext = SpringCamelContext.springCamelContext(appContext, false);
+		CamelContext camelContext = new SpringCamelContext(appContext);
 //		try {            
 			camelContext.start();
-	/*	} finally {
+/*
+		} finally {
 			camelContext.stop();
 		}
 */
