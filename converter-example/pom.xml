@@ -22,6 +22,11 @@
     <jetty.version>9.4.12.v20180830</jetty.version>
   </properties>
 
+  <modules>
+    <module>./libs/rmlmapper-cefriel</module>
+    <module>./libs/rdf-lowerer</module>
+  </modules>
+
   <dependencies>
     <dependency>
       <groupId>eu.sprint</groupId>
