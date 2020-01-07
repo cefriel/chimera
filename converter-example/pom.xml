@@ -25,7 +25,7 @@
   <dependencies>
     <dependency>
       <groupId>eu.sprint</groupId>
-      <artifactId>chimera-converter</artifactId>
+      <artifactId>chimera-blocks</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
