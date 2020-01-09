@@ -4,7 +4,7 @@
   <artifactId>chimera-blocks</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>chimera</name>
+  <name>chimera-blocks</name>
 
   <properties>
     <slf4j.version>1.7.25</slf4j.version>
@@ -86,7 +86,7 @@
     <dependency>
       <groupId>com.cefriel</groupId>
       <artifactId>rdf-lowerer</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 
