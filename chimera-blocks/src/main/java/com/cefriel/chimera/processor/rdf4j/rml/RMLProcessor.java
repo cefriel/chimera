@@ -33,7 +33,7 @@ public class RMLProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
-    private String rmlConfig;
+    private RMLOptions rmlOptions;
     private Map<String, InputStream> streamsMap = new HashMap<String, InputStream>();
     private String label;
     
@@ -43,15 +43,14 @@ public class RMLProcessor implements Processor {
         streamsMap = in.getBody(Map.class);
         
         // RML Processor configuration
-        if (rmlConfig==null)
-            rmlConfig = exchange.getProperty(ProcessorConstants.RML_CONFIG, String.class);
+        if (rmlOptions ==null)
+            rmlOptions = exchange.getProperty(ProcessorConstants.RML_CONFIG, RMLOptions.class);
 
-        String[] options = rmlConfig.split(" ");
         repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 
         String context = ProcessorConstants.BASE_CONVERSION_IRI
                 + exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
-        Executor executor = RMLConfigurator.configure(repo, context, streamsMap, options);
+        Executor executor = RMLConfigurator.configure(repo, context, streamsMap, rmlOptions);
 
         if(executor != null) {
             RDF4JRemoteStore outputStore = (RDF4JRemoteStore) executor.execute(null);
@@ -75,20 +74,20 @@ public class RMLProcessor implements Processor {
 		this.label = label;
 	}
 
-    public String getRmlConfig() {
-        return rmlConfig;
-    }
-
-    public void setRmlConfig(String rmlConfig) {
-        this.rmlConfig = rmlConfig;
-    }
-
     public Map<String, InputStream> getStreamsMap() {
         return streamsMap;
     }
 
     public void setStreamsMap(Map<String, InputStream> streamsMap) {
         this.streamsMap = streamsMap;
+    }
+
+    public RMLOptions getRmlOptions() {
+        return rmlOptions;
+    }
+
+    public void setRmlOptions(RMLOptions rmlOptions) {
+        this.rmlOptions = rmlOptions;
     }
     
 }
