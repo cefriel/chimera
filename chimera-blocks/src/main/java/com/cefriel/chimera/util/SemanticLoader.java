@@ -33,69 +33,54 @@ import org.eclipse.rdf4j.rio.helpers.ContextStatementCollector;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class SemanticLoader {
+
+    private static ValueFactory vf = SimpleValueFactory.getInstance();
+
     public static Model load_data(String url) throws RDFParseException, RDFHandlerException, IOException {
-    	Model model = new LinkedHashModel();
-        
-        RDFParser rdfParser = null;
-        ValueFactory vf = SimpleValueFactory.getInstance();
-
-        if (url.startsWith("classpath://")){
-        	rdfParser=Rio.createParser(RDFFormat.TURTLE);
-        	rdfParser.setRDFHandler(new StatementCollector(model));
-        	url=url.replaceAll("classpath://", "");
-        	rdfParser.parse(SemanticLoader.class.getClassLoader().getResourceAsStream(url),url);
-        	return model;
-        }
-        
-        if (url.startsWith("/")) {
-        	url="file://"+url;
-        }
-        RDFFormat format = Rio.getParserFormatForFileName(url.toString()).orElse(RDFFormat.RDFXML);
-        rdfParser=Rio.createParser(format);
-        rdfParser.setRDFHandler(new ContextStatementCollector(model, vf, vf.createIRI(url)));
-        java.net.URL documentUrl = new URL(url);
-        InputStream inputStream = documentUrl.openStream();
-        rdfParser.parse(inputStream,url);
-
-        return model;
-        
+    	return load_data(url, null);
     }
-
     
     public static Model load_data(String url, String token) throws RDFParseException, RDFHandlerException, IOException {
-    	Model model = new LinkedHashModel();
-        
-        RDFParser rdfParser = null;
-        ValueFactory vf = SimpleValueFactory.getInstance();
 
-        if (url.startsWith("classpath://")){
-        	rdfParser=Rio.createParser(RDFFormat.TURTLE);
-        	rdfParser.setRDFHandler(new StatementCollector(model));
-        	url=url.replaceAll("classpath://", "");
-        	rdfParser.parse(SemanticLoader.class.getClassLoader().getResourceAsStream(url),url);
-        	return model;
-        }
+    	Model model = new LinkedHashModel();
+        if (checkClassPath(url,model))
+            return model;
         
-        if (url.startsWith("/")) {
-        	url="file://"+url;
-        }
-        RDFFormat format = Rio.getParserFormatForFileName(url.toString()).orElse(RDFFormat.RDFXML);
-        rdfParser=Rio.createParser(format);
+        if (url.startsWith("/"))
+        	url="file://" + url;
+        RDFFormat format = Rio.getParserFormatForFileName(url).orElse(RDFFormat.RDFXML);
+        RDFParser rdfParser = Rio.createParser(format);
         rdfParser.setRDFHandler(new ContextStatementCollector(model, vf, vf.createIRI(url)));
         java.net.URL documentUrl = new URL(url);
+
+        if (token == null) {
+            InputStream inputStream = documentUrl.openStream();
+            rdfParser.parse(inputStream,url);
+            return model;
+        }
+
         HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
 
-        // set up url connection to get retrieve information back
-        con.setRequestMethod( "GET" );
-        con.setRequestProperty( "Authorization", "Bearer " + token );
-        con.setRequestProperty( "Accept", "application/x-turtle, application/rdf+xml");
+        // Set up URL connection to get retrieve information back
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Authorization", "Bearer " + token);
+        con.setRequestProperty("Accept", "application/x-turtle, application/rdf+xml");
 
-        // pull the information back from the URL
+        // Pull the information back from the URL
         InputStream inputStream = con.getInputStream();
-        rdfParser.parse(inputStream,url);
+        rdfParser.parse(inputStream, url);
 
         return model;
-        
     }
-    
+
+    private static boolean checkClassPath(String url, Model model) throws IOException {
+        if (url.startsWith("classpath://")){
+            RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
+            rdfParser.setRDFHandler(new StatementCollector(model));
+            url = url.replaceAll("classpath://", "");
+            rdfParser.parse(SemanticLoader.class.getClassLoader().getResourceAsStream(url), url);
+            return true;
+        }
+        return false;
+    }
 }
