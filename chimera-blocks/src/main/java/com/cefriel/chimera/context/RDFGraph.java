@@ -19,4 +19,5 @@ import org.eclipse.rdf4j.repository.Repository;
 
 public interface RDFGraph {
     public Repository getRepository();
+    public boolean isRemote();
 }

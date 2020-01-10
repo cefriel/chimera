@@ -36,6 +36,11 @@ public class HTTPRDFGraph implements RDFGraph {
         return repo;
     }
 
+    @Override
+    public boolean isRemote() {
+        return true;
+    }
+
     public String getAddress() {
         return DB_ADDRESS;
     }

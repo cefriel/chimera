@@ -53,4 +53,9 @@ public class MemoryRDFGraph implements RDFGraph {
 		return repository;
 	}
 
+	@Override
+	public boolean isRemote() {
+		return false;
+	}
+
 }
