@@ -16,6 +16,7 @@
 package com.cefriel.chimera.assetmanager;
 
 public class AccessResponseToken {
+
 	private String access;
 	private String refresh;
 	
@@ -31,6 +32,5 @@ public class AccessResponseToken {
 	public void setRefresh(String refreshToken) {
 		this.refresh = refreshToken;
 	}
-	
 	
 }

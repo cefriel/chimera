@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
 import java.util.List;
 
@@ -30,11 +30,12 @@ import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
+import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
 
-public class InferenceEnricher implements Processor{
+public class InferenceEnricher implements Processor {
+
 	private List<String> ontologyUrls=null;
 
 	public void process(Exchange exchange) throws Exception {

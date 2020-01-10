@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
-import com.cefriel.chimera.context.HTTPRDFGraph;
-import com.cefriel.chimera.context.RDFGraph;
+import com.cefriel.chimera.graph.HTTPRDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
+import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,16 +28,17 @@ import org.slf4j.LoggerFactory;
 
 public class AttachGraph implements Processor {
 
-    private Logger log = LoggerFactory.getLogger(AttachGraph.class);
+    private Logger logger = LoggerFactory.getLogger(AttachGraph.class);
 
     private String DB_ADDRESS;
     private String REPOSITORY_ID;
 
     public void process(Exchange exchange) throws Exception {
         RDFGraph graph;
-        if (DB_ADDRESS != null && REPOSITORY_ID != null)
+        if (DB_ADDRESS != null && REPOSITORY_ID != null) {
+            logger.info("Connecting to remote repository " + REPOSITORY_ID);
             graph = new HTTPRDFGraph(DB_ADDRESS, REPOSITORY_ID);
-        else
+        } else
             graph = new MemoryRDFGraph();
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
     }

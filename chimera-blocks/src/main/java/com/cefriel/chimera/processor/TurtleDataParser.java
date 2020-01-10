@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
 import java.io.InputStream;
 
@@ -31,7 +31,7 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
+import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 
 public class TurtleDataParser implements Processor{
@@ -46,12 +46,12 @@ public class TurtleDataParser implements Processor{
 		InputStream input_msg=in.getBody(InputStream.class);
 		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class).getRepository();
 
+		// Add context
 		try (RepositoryConnection con = repo.getConnection()) {
         	rdfParser=Rio.createParser(RDFFormat.TURTLE);
         	rdfParser.setRDFHandler(new StatementCollector(model));
         	rdfParser.parse(input_msg, "http://www.cefriel.com/knowledgetech");
 			con.add(model, vf.createIRI("http://www.cefriel.com/knowledgetech"));
-		
 		}
 	}
 

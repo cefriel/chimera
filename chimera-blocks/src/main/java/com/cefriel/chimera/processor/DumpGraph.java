@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 import java.nio.charset.StandardCharsets;
 
-import com.cefriel.chimera.context.RDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -52,9 +52,6 @@ public class DumpGraph implements Processor {
 				+ exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
 		ValueFactory vf = SimpleValueFactory.getInstance();
 		IRI contextIRI = vf.createIRI(context);
-
-        logger.info("CONTEXT " + context);
-        logger.info("MESSAGE_ID " + exchange.getMessage().getMessageId());
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			RepositoryResult<Statement> dump = con.getStatements(null, null, null, contextIRI);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
 import java.io.FileOutputStream;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
+import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 
 public class PintoLiftingProcessor  implements Processor{

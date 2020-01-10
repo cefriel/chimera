@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor.enrich;
 
 import java.util.List;
 
+import com.cefriel.chimera.graph.MemoryRDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -27,40 +28,37 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
 
-public class SecuredDataEnricher implements Processor{
+public class DataEnricher implements Processor{
 
-	private List<String> masterDataUrls=null;
+	private List<String> additionalSourcesUrls;
 
 	public void process(Exchange exchange) throws Exception {
-		Model current_dataset=null;
-		Repository repo=null;
+		Model additionalDataset;
+		Repository repo;
 		ValueFactory vf = SimpleValueFactory.getInstance();
-		Message in = exchange.getIn();
-		
-		if (masterDataUrls==null)
-			masterDataUrls=exchange.getProperty(ProcessorConstants.MASTER_DATA, List.class);
+	
+		if (additionalSourcesUrls ==null)
+			additionalSourcesUrls =exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
 
-		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class).getRepository();
-		String token=exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
+		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
-
-			for (String url: masterDataUrls) {
-				current_dataset=SemanticLoader.load_data(url, token);    
-				con.add(current_dataset, vf.createIRI(url));
+			for (String url: additionalSourcesUrls) {
+				additionalDataset = SemanticLoader.load_data(url, token);
+				con.add(additionalDataset, vf.createIRI(url));
 			}
 		}
 	}
 
-	public List<String> getMasterDataUrls() {
-		return masterDataUrls;
+	public List<String> getAdditionalSourcesUrls() {
+		return additionalSourcesUrls;
 	}
 
-	public void setMasterDataUrls(List<String> masterDataUrls) {
-		this.masterDataUrls = masterDataUrls;
+	public void setAdditionalSourcesUrls(List<String> additionalSourcesUrls) {
+		this.additionalSourcesUrls = additionalSourcesUrls;
 	}
 }

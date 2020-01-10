@@ -1,4 +1,4 @@
-package com.cefriel.chimera.processor.rdf4j.rml;
+package com.cefriel.chimera.processor.rml;
 
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
@@ -8,8 +8,7 @@ import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JRemoteStore;
 import be.ugent.rml.store.RDF4JStore;
-import ch.qos.logback.classic.Level;
-import com.cefriel.chimera.context.RDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;

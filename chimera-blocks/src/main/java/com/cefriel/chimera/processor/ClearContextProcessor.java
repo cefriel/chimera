@@ -1,6 +1,6 @@
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
-import com.cefriel.chimera.context.RDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -9,8 +9,12 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClearContextProcessor implements Processor {
+
+    private Logger logger = LoggerFactory.getLogger(ClearContextProcessor.class);
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -25,5 +29,6 @@ public class ClearContextProcessor implements Processor {
         try (RepositoryConnection con = repo.getConnection()) {
             con.clear(contextIRI);
         }
+        logger.info("Cleared named graph " + context);
     }
 }

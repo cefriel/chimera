@@ -1,4 +1,4 @@
-package com.cefriel.chimera.processor.rdf4j.rml;
+package com.cefriel.chimera.processor.rml;
 
 import java.util.List;
 

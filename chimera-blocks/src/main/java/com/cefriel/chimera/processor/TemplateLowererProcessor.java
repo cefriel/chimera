@@ -1,7 +1,9 @@
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
 import java.io.StringWriter;
 
+import com.cefriel.chimera.graph.MemoryRDFGraph;
+import com.cefriel.utils.rdf.RDFReader;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -15,12 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
-import com.cefriel.chimera.context.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.RDFReader;
 
-public class TemplateLowererProcessor  implements Processor{ 
-	private String templatePath=null;
+public class TemplateLowererProcessor implements Processor {
+
+	private String templatePath = null;
 	private VelocityEngine velocityEngine = null;
     private Logger log = LoggerFactory.getLogger(TemplateLowererProcessor.class); 
 

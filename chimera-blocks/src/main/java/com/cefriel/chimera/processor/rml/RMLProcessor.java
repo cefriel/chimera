@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j.rml;
+package com.cefriel.chimera.processor.rml;
 
 import java.io.InputStream;
 import java.util.*;
 
 import be.ugent.rml.store.RDF4JRemoteStore;
-import com.cefriel.chimera.context.RDFGraph;
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;

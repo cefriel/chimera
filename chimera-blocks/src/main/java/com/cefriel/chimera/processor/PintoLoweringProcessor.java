@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.rdf4j;
+package com.cefriel.chimera.processor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,43 +44,47 @@ import org.slf4j.LoggerFactory;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import com.cefriel.chimera.util.ProcessorConstants;
 
-public class PintoLoweringProcessor  implements Processor{
-    private HashMap<String, List<String>> standards=null;
+public class PintoLoweringProcessor implements Processor {
+
+    private HashMap<String, List<String>> standards;
     private Logger log = LoggerFactory.getLogger(PintoLoweringProcessor.class); 
 
     @SuppressWarnings("unchecked")
     public void process(Exchange exchange) throws Exception {
-        String dest_standard=null;
-        String obj_id=null;
-        String namespace=null;
-        Message msg=exchange.getIn();
-        Object result=null;
-        List<String> classNames=null;
-        Repository repo=null;
+        String dest_standard;
+        String obj_id;
+        String namespace;
+        Message msg = exchange.getIn();
+        Object result = null;
+        List<String> classNames;
+        Repository repo;
 
         ValueFactory vf = SimpleValueFactory.getInstance();
 
-        obj_id=(String) exchange.getProperty(ProcessorConstants.OBJ_ID, obj_id);
-        dest_standard=exchange.getProperty(ProcessorConstants.DEST_STD, String.class);
-        addDestinationStandard(dest_standard);    
-        classNames=standards.get(exchange.getProperty(ProcessorConstants.DEST_STD, String.class));
-        namespace=exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
+        obj_id = exchange.getProperty(ProcessorConstants.OBJ_ID, String.class);
+        dest_standard = exchange.getProperty(ProcessorConstants.DEST_STD, String.class);
+        addDestinationStandard(dest_standard);
 
-        repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, Repository.class);
+        // TODO Use me!
+        classNames = standards.get(exchange.getProperty(ProcessorConstants.DEST_STD, String.class));
 
-        List<Object> outputs=new ArrayList<Object>();
+        namespace = exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
+
+        repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, Repository.class);
+
+        List<Object> outputs = new ArrayList<Object>();
 
         try (RepositoryConnection con = repo.getConnection()) {
             Set<Value> output_classes = new HashSet<Value>(); 
            
-            for (Statement s: QueryResults.asModel(con.getStatements(vf.createIRI(obj_id), RDF.TYPE, null))) {
+            for (Statement s : QueryResults.asModel(con.getStatements(vf.createIRI(obj_id), RDF.TYPE, null))) {
             	output_classes.add(s.getObject());
             }
             
             for (Value output_rdf_class: output_classes) {
-                String output_class=dest_standard+"."+(output_rdf_class.stringValue()).replaceAll(namespace, "");
-                log.info("[TARGET] "+output_class);
-                Class c=Class.forName(output_class);
+                String output_class = dest_standard + "." + (output_rdf_class.stringValue()).replaceAll(namespace, "");
+                log.info("[TARGET] " + output_class);
+                Class c = Class.forName(output_class);
 
                 RDFMapper aMapper = RDFMapper.builder()
                         .namespace("", namespace)
@@ -88,15 +92,15 @@ public class PintoLoweringProcessor  implements Processor{
                         .build();
 
                 Model rdfList = Connections.getRDFCollection(con, SimpleValueFactory.getInstance().createIRI(obj_id), new LinkedHashModel());
-                result =aMapper.readValue(rdfList, c, SimpleValueFactory.getInstance().createIRI(obj_id));
+                result = aMapper.readValue(rdfList, c, SimpleValueFactory.getInstance().createIRI(obj_id));
                 log.info(ToStringBuilder.reflectionToString(result));
 
                 outputs.add(result);
             }
 
-            if (outputs.size()>1)
+            if (outputs.size() > 1)
                 System.err.println("Multiple outputs found!");
-            if (outputs.size()>0) {
+            if (outputs.size() > 0) {
                 result= outputs.get(0);
             }
         } catch (ClassNotFoundException e) {
@@ -110,8 +114,8 @@ public class PintoLoweringProcessor  implements Processor{
 
 
     private void addDestinationStandard(String destinationStandard) {
-        if (standards==null) {
-            standards=new HashMap<String, List<String>>();
+        if (standards == null) {
+            standards = new HashMap<>();
         }
         standards.put(destinationStandard, new FastClasspathScanner(destinationStandard).scan().getNamesOfAllClasses());
     }

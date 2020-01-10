@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.context;
+package com.cefriel.chimera.graph;
 
 import org.eclipse.rdf4j.repository.Repository;
 
