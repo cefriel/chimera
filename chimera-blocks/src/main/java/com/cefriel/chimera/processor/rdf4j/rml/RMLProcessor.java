@@ -33,24 +33,26 @@ public class RMLProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
-    private RMLOptions rmlOptions;
-    private Map<String, InputStream> streamsMap = new HashMap<String, InputStream>();
-    private String label;
+    RMLOptions rmlOptions;
     
     public void process(Exchange exchange) throws Exception {
-        RDFGraph repo;
         Message in = exchange.getIn();
-        streamsMap = in.getBody(Map.class);
+        Map<String, InputStream> streamsMap = in.getBody(Map.class);
         
         // RML Processor configuration
         if (rmlOptions ==null)
             rmlOptions = exchange.getProperty(ProcessorConstants.RML_CONFIG, RMLOptions.class);
 
-        repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+        processRML(streamsMap,exchange);
+    }
+
+    public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
+        RDFGraph graph;
+        graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 
         String context = ProcessorConstants.BASE_CONVERSION_IRI
                 + exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
-        Executor executor = RMLConfigurator.configure(repo, context, streamsMap, rmlOptions);
+        Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
 
         if(executor != null) {
             RDF4JRemoteStore outputStore = (RDF4JRemoteStore) executor.execute(null);
@@ -64,22 +66,6 @@ public class RMLProcessor implements Processor {
             outputStore.writeToDB();
             outputStore.shutDown();
         }
-    }
-
-    public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-    public Map<String, InputStream> getStreamsMap() {
-        return streamsMap;
-    }
-
-    public void setStreamsMap(Map<String, InputStream> streamsMap) {
-        this.streamsMap = streamsMap;
     }
 
     public RMLOptions getRmlOptions() {
