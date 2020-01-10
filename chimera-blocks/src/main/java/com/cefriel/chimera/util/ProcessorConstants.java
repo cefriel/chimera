@@ -18,12 +18,15 @@ package com.cefriel.chimera.util;
 public class ProcessorConstants {
     public static final String ONTOLOGIES = "ontologies_model";
     public static final String DATASET = "datasets_model";
-	public static final String RML_MAPPINGS = "rml_mappings";
+	public static final String RML_CONFIG = "rml_config";
 	public static final String RML_LABEL = "rml_label";
+    public static final String CONTEXT_ID = "context_id";
 	public static final String MSG_ID = "message_id";
 	public static final String LOWERING_TEMPLATE = "lowering_template_url";
 	public static final String JWT_TOKEN = "JWT_TOKEN";
-    
+    public static final String DB_ADDRESS = "db_address";
+    public static final String REPOSITORY_ID = "repo_id";
+
     public static String SHACL_RULES="shacl_rules";
     public static String MASTER_DATA="master_data";
     public static String OBJ_ID="object_id";
@@ -35,5 +38,5 @@ public class ProcessorConstants {
     public static String DEST_STD="destination_standard";
     public static String CONTEXT_GRAPH="context_graph";
     
-    public static String BASE_CONVERSION_IRI="http://sprint-transport.eu/messsage/";
+    public static String BASE_CONVERSION_IRI="http://sprint-transport.eu/message/";
 }
