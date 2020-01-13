@@ -21,43 +21,45 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.rio.helpers.ContextStatementCollector;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class SemanticLoader {
 
-    private static ValueFactory vf = SimpleValueFactory.getInstance();
-
     public static Model load_data(String url) throws RDFParseException, RDFHandlerException, IOException {
-    	return load_data(url, null);
+    	return secure_load_data(url, null, null);
+    }
+
+    public static Model load_data(String url, String format) throws RDFParseException, RDFHandlerException, IOException {
+        return secure_load_data(url, format, null);
+    }
+
+    public static Model secure_load_data(String url, String token) throws RDFParseException, RDFHandlerException, IOException {
+        return secure_load_data(url, null, token);
     }
     
-    public static Model load_data(String url, String token) throws RDFParseException, RDFHandlerException, IOException {
+    public static Model secure_load_data(String url, String format, String token) throws RDFParseException, RDFHandlerException, IOException {
     	Model model = new LinkedHashModel();
-        if (checkClassPath(url,model))
-            return model;
-        
-        if (url.startsWith("/"))
-        	url = "file://" + url;
-        RDFFormat format = Rio.getParserFormatForFileName(url).orElse(RDFFormat.RDFXML);
-        RDFParser rdfParser = Rio.createParser(format);
-        rdfParser.setRDFHandler(new ContextStatementCollector(model, vf, vf.createIRI(url)));
-        java.net.URL documentUrl = new URL(url);
+
+        RDFFormat rdfFormat = Rio.getParserFormatForFileName(url).orElse(RDFFormat.RDFXML);
+    	if (format != null)
+    	    rdfFormat = Utils.getRDFFormat(format);
+        RDFParser rdfParser = Rio.createParser(rdfFormat);
+        rdfParser.setRDFHandler(new StatementCollector(model));
 
         if (token == null) {
-            InputStream inputStream = documentUrl.openStream();
-            rdfParser.parse(inputStream,url);
+            InputStream inputStream = UniLoader.open(url);
+            rdfParser.parse(inputStream, url);
             return model;
         }
 
+        // TODO Move token-based access to UniLoader
+        java.net.URL documentUrl = new URL(url);
         HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
 
         // Set up URL connection to get retrieve information back
@@ -72,14 +74,4 @@ public class SemanticLoader {
         return model;
     }
 
-    private static boolean checkClassPath(String url, Model model) throws IOException {
-        if (url.startsWith("classpath://")){
-            RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
-            rdfParser.setRDFHandler(new StatementCollector(model));
-            url = url.replaceAll("classpath://", "");
-            rdfParser.parse(SemanticLoader.class.getClassLoader().getResourceAsStream(url), url);
-            return true;
-        }
-        return false;
-    }
 }

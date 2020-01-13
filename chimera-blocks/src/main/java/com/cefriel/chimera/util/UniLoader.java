@@ -23,12 +23,12 @@ public class UniLoader {
         }
         if (resource.startsWith("file://")) {
         	res = resource.replace("file://", "");
-            log.warn("Loading classpath resource "+res);
+            log.warn("Loading file resource " + res);
             InputStream is = new FileInputStream(res);
             return is;
         }
         else {
-            log.warn("Loading resource "+resource);
+            log.warn("Loading resource " + resource);
             return new URL(resource).openStream();
         }
     }

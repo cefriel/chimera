@@ -30,7 +30,6 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailValidationException;
-import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 
 import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
@@ -40,31 +39,22 @@ public class ShaclValidationProcessor implements Processor {
 
 	private List<String> shaclRulesUrls;
 
+	// Works only for IN-MEMORY Repositories
 	public void process(Exchange exchange) throws Exception {
-
 		Model current_ruleset;
 		ValueFactory vf = SimpleValueFactory.getInstance();
 
-		//Logger root = (Logger) LoggerFactory.getLogger(ShaclSail.class.getName());
-		//root.setLevel(Level.INFO);
-
-		//shaclSail.setLogValidationPlans(true);
-		//shaclSail.setGlobalLogValidationExecution(true);
-		//shaclSail.setLogValidationViolations(true);
-
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
-		NotifyingSail data = (NotifyingSail)graph.getData();
+		NotifyingSail data = (NotifyingSail) graph.getData();
 		ShaclSail shaclSail = new ShaclSail(data);
 		shaclSail.setIgnoreNoShapesLoadedException(true);
 		SailRepository sailRepository = new SailRepository(shaclSail);
 		sailRepository.init();
 
-
 		if (shaclRulesUrls == null)
 			shaclRulesUrls = exchange.getProperty(ProcessorConstants.SHACL_RULES, List.class);
 
 		try (SailRepositoryConnection connection = sailRepository.getConnection()) {
-
 			try {
 				connection.begin();
 				for (String url : shaclRulesUrls) {
@@ -72,12 +62,12 @@ public class ShaclValidationProcessor implements Processor {
 					connection.add(current_ruleset, vf.createIRI(url));
 				}
 				connection.commit();
-
 			} catch (RepositoryException exception) {
 				Throwable cause = exception.getCause();
 				if (cause instanceof ShaclSailValidationException) {
 					// Use validationReport or validationReportModel to understand validation violations
 					Model validationReportModel = ((ShaclSailValidationException) cause).validationReportAsModel();
+					// TODO Add to the message body or to the header
 					Rio.write(validationReportModel, System.out, RDFFormat.TURTLE);
 				}
 				throw exception;

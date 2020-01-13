@@ -23,13 +23,12 @@ import org.apache.camel.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A Camel processor which stop routes.
+ */
 public class StopProcessor implements Processor {
 
-    private Logger log = LoggerFactory.getLogger(StopProcessor.class); 
-
-    /**
-     * A Camel processor which stop routes.
-     */
+    private Logger log = LoggerFactory.getLogger(StopProcessor.class);
     private String routeId;
 
     public void process(Exchange exchange) throws Exception {
