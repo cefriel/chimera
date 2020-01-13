@@ -2,10 +2,12 @@ package com.cefriel.chimera.processor;
 
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.SemanticLoader;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -13,11 +15,14 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 public class ClearContextProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(ClearContextProcessor.class);
 
-    private boolean removeNamespaces;
+    // TODO Use a List<String>
+    private String removeNamespacesPath;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -29,22 +34,24 @@ public class ClearContextProcessor implements Processor {
         try (RepositoryConnection con = repo.getConnection()) {
             if (contextIRI != null)
                 con.clear(contextIRI);
-            if (removeNamespaces) {
-                RepositoryResult<Namespace> namespaces = con.getNamespaces();
-                while (namespaces.hasNext()) {
-                    Namespace ns = namespaces.next();
-                    con.removeNamespace(ns.getName());
-                }
+
+            if (removeNamespacesPath != null) {
+                Model l = SemanticLoader.load_data(removeNamespacesPath);
+                Set<Namespace> namespaces = l.getNamespaces();
+                for(Namespace n : namespaces)
+                    con.removeNamespace(n.getPrefix());
             }
         }
         logger.info("Cleared named graph " + contextIRI.stringValue());
     }
 
-    public boolean isRemoveNamespaces() {
-        return removeNamespaces;
+    public String getRemoveNamespacesPath() {
+        return removeNamespacesPath;
     }
 
-    public void setRemoveNamespaces(boolean removeNamespaces) {
-        this.removeNamespaces = removeNamespaces;
+    public void setRemoveNamespacesPath(String removeNamespacesPath) {
+        this.removeNamespacesPath = removeNamespacesPath;
     }
+
+
 }
