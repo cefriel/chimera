@@ -20,9 +20,11 @@ import java.util.*;
 
 import be.ugent.rml.store.RDF4JRemoteStore;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +52,7 @@ public class RMLProcessor implements Processor {
         RDFGraph graph;
         graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 
-        String context = ProcessorConstants.BASE_CONVERSION_IRI
-                + exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
+        IRI context =  Utils.getContextIRI(exchange);
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
 
         if(executor != null) {

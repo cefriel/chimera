@@ -19,37 +19,39 @@ import java.util.List;
 
 import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
 
-public class DataEnricher implements Processor{
+public class UrlDataEnricher implements Processor{
 
 	private List<String> additionalSourcesUrls;
 
 	public void process(Exchange exchange) throws Exception {
 		Model additionalDataset;
 		Repository repo;
-		ValueFactory vf = SimpleValueFactory.getInstance();
 	
-		if (additionalSourcesUrls ==null)
-			additionalSourcesUrls =exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
+		if (additionalSourcesUrls == null)
+			additionalSourcesUrls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
 
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
-			for (String url: additionalSourcesUrls) {
+			for (String url : additionalSourcesUrls) {
 				additionalDataset = SemanticLoader.load_data(url, token);
-				con.add(additionalDataset, vf.createIRI(url));
+				IRI contextIRI = Utils.getContextIRI(exchange);
+				if (contextIRI != null)
+					con.add(additionalDataset, contextIRI);
+				else
+					con.add(additionalDataset);
 			}
 		}
 	}

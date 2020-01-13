@@ -17,6 +17,7 @@ package com.cefriel.chimera.processor;
 import java.nio.charset.StandardCharsets;
 
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -48,13 +49,14 @@ public class DumpGraph implements Processor {
 
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
-		String context = ProcessorConstants.BASE_CONVERSION_IRI
-				+ exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
-		ValueFactory vf = SimpleValueFactory.getInstance();
-		IRI contextIRI = vf.createIRI(context);
+		IRI contextIRI = Utils.getContextIRI(exchange);
 
 		try (RepositoryConnection con = repo.getConnection()) {
-			RepositoryResult<Statement> dump = con.getStatements(null, null, null, contextIRI);
+			RepositoryResult<Statement> dump;
+			if (contextIRI != null)
+				dump = con.getStatements(null, null, null, contextIRI);
+			else
+				dump = con.getStatements(null, null, null);
 			Model dump_model = QueryResults.asModel(dump);
 
 			Rio.write(dump_model, outstream, RDFFormat.TURTLE);

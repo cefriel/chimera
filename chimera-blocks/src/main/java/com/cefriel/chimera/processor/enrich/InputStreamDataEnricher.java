@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor;
+package com.cefriel.chimera.processor.enrich;
 
 import java.io.InputStream;
 
+import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
@@ -31,28 +35,48 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
-import com.cefriel.chimera.graph.MemoryRDFGraph;
-import com.cefriel.chimera.util.ProcessorConstants;
+public class InputStreamDataEnricher implements Processor {
 
-public class TurtleDataParser implements Processor{
+	private String format = "turtle";
+	private String baseIRI = ProcessorConstants.BASE_CONVERSION_IRI;
 
 	public void process(Exchange exchange) throws Exception {
-		Repository repo=null;
-        RDFParser rdfParser = null;
+		Repository repo;
+        RDFParser rdfParser;
     	Model model = new LinkedHashModel();
-		ValueFactory vf = SimpleValueFactory.getInstance();
 
 		Message in = exchange.getIn();
-		InputStream input_msg=in.getBody(InputStream.class);
-		repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class).getRepository();
+		InputStream input_msg = in.getBody(InputStream.class);
+		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
-		// Add context
 		try (RepositoryConnection con = repo.getConnection()) {
-        	rdfParser=Rio.createParser(RDFFormat.TURTLE);
+			RDFFormat rdfFormat = Utils.getRDFFormat(format);
+        	rdfParser = Rio.createParser(rdfFormat);
         	rdfParser.setRDFHandler(new StatementCollector(model));
-        	rdfParser.parse(input_msg, "http://www.cefriel.com/knowledgetech");
-			con.add(model, vf.createIRI("http://www.cefriel.com/knowledgetech"));
+        	rdfParser.parse(input_msg, baseIRI);
+
+			IRI contextIRI = Utils.getContextIRI(exchange);
+			if (contextIRI != null)
+				con.add(model, contextIRI);
+			else
+				con.add(model);
 		}
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public String getBaseIRI() {
+		return baseIRI;
+	}
+
+	public void setBaseIRI(String baseIRI) {
+		this.baseIRI = baseIRI;
 	}
 
 }

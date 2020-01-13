@@ -41,13 +41,12 @@ public class SemanticLoader {
     }
     
     public static Model load_data(String url, String token) throws RDFParseException, RDFHandlerException, IOException {
-
     	Model model = new LinkedHashModel();
         if (checkClassPath(url,model))
             return model;
         
         if (url.startsWith("/"))
-        	url="file://" + url;
+        	url = "file://" + url;
         RDFFormat format = Rio.getParserFormatForFileName(url).orElse(RDFFormat.RDFXML);
         RDFParser rdfParser = Rio.createParser(format);
         rdfParser.setRDFHandler(new ContextStatementCollector(model, vf, vf.createIRI(url)));

@@ -25,7 +25,7 @@ public class RMLConfigurator {
 
     private static final Logger logger = LoggerFactory.getLogger(RMLConfigurator.class);
 
-    static Executor configure(RDFGraph graph, String context, Map<String, InputStream> streams, RMLOptions options) {
+    static Executor configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, RMLOptions options) {
 
         try {
             // parse the command line arguments
@@ -42,9 +42,6 @@ public class RMLConfigurator {
             rmlStore.read(is, null, RDFFormat.TURTLE);
 
             RecordsFactory factory = new RecordsFactory(basePath, streams);
-
-            ValueFactory vf = SimpleValueFactory.getInstance();
-            IRI contextIRI = vf.createIRI(context);
 
             RDF4JRemoteStore outputStore;
             if (graph.isRemote() && options.getBatchSize() > 0) {
