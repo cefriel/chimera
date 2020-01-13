@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor;
+package com.cefriel.chimera.processor.enrich;
 
 import java.util.List;
 
@@ -36,22 +36,25 @@ import com.cefriel.chimera.util.SemanticLoader;
 
 public class InferenceEnricher implements Processor {
 
-	private List<String> ontologyUrls=null;
+	//TODO Add possibility to set a TOKEN
 
+	private List<String> ontologyUrls;
+
+	// Works only for IN-MEMORY Repositories
 	public void process(Exchange exchange) throws Exception {
 		Message in = exchange.getIn();
 		
-		List<String> ontology_urls=null;
+		List<String> ontology_urls = null;
         ValueFactory vf = SimpleValueFactory.getInstance();
 
-		MemoryRDFGraph graph=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
+		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
 		
-		Sail data=graph.getData();
+		Sail data = graph.getData();
 		
-		Repository schema_repo = new SailRepository( new MemoryStore());
+		Repository schema_repo = new SailRepository(new MemoryStore());
 		schema_repo.init();
-		if (ontology_urls==null)
-			ontologyUrls=exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
+		if (ontology_urls == null)
+			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
 		
 		try (RepositoryConnection con = schema_repo.getConnection()) {
         	for (String url: ontologyUrls) {
@@ -59,11 +62,9 @@ public class InferenceEnricher implements Processor {
         	}
         }
 
-		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer((NotifyingSail)data, schema_repo, false);
+		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer((NotifyingSail) data, schema_repo, false);
 		inferencer.initialize();
 		graph.setData(inferencer);
-		in.setHeader(ProcessorConstants.CONTEXT_GRAPH, graph);
-
 	}
 
 	public List<String> getOntologyUrls() {
