@@ -21,9 +21,7 @@ import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class MemoryRDFGraph implements RDFGraph {
-
 	private Sail data;
-	private Sail schema;
 	private SailRepository repository;
 	
 	public MemoryRDFGraph() {
@@ -40,14 +38,6 @@ public class MemoryRDFGraph implements RDFGraph {
 		this.data = data;
 	}
 
-	public Sail getSchema() {
-		return schema;
-	}
-
-	public void setSchema(Sail schema) {
-		this.schema = schema;
-	}
-
 	@Override
 	public Repository getRepository() {
 		return repository;
@@ -57,5 +47,4 @@ public class MemoryRDFGraph implements RDFGraph {
 	public boolean isRemote() {
 		return false;
 	}
-
 }

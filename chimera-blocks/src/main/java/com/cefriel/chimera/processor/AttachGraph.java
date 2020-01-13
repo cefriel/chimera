@@ -35,7 +35,7 @@ public class AttachGraph implements Processor {
 
     public void process(Exchange exchange) throws Exception {
         RDFGraph graph;
-        if (DB_ADDRESS != null && REPOSITORY_ID != null) {
+        if (DB_ADDRESS != null) {
             logger.info("Connecting to remote repository " + REPOSITORY_ID);
             graph = new HTTPRDFGraph(DB_ADDRESS, REPOSITORY_ID);
         } else
