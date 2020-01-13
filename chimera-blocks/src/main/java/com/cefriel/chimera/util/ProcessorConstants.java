@@ -16,27 +16,30 @@
 package com.cefriel.chimera.util;
 
 public class ProcessorConstants {
-    public static String BASE_CONVERSION_IRI = "http://sprint-transport.eu/message/";
+
+    public static final String BASE_CONVERSION_IRI = "http://sprint-transport.eu/data/";
+    public static final String DEFAULT_REPOSITORY_ID = "chimera-repo";
+    public static final String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
     public static final String CONTEXT_ID = "context_id";
-    public static String CONTEXT_GRAPH = "context_graph";
+    public static final String CONTEXT_GRAPH = "context_graph";
 
     // RML
     public static final String RML_CONFIG = "rml_config";
 	public static final String RML_LABEL = "rml_label";
 
-    public static String SHACL_RULES = "shacl_rules";
-    public static String ADDITIONAL_SOURCES = "additional_sources";
-    public static String ONTOLOGY_URLS = "ontologies";
+    public static final String SHACL_RULES = "shacl_rules";
+    public static final String ADDITIONAL_SOURCES = "additional_sources";
+    public static final String ONTOLOGY_URLS = "ontologies";
 
 	public static final String LOWERING_TEMPLATE = "lowering_template";
 
-    public static String SOURCE_STD = "source_standard";
-    public static String DEST_STD = "destination_standard";
+    public static final String SOURCE_STD = "source_standard";
+    public static final String DEST_STD = "destination_standard";
 
     // Pinto
-    public static String OBJ_ID="object_id";
-    public static String OBJ_CLASS="object_class";
-    public static String DEFAULT_NS="default_ns";
+    public static final String OBJ_ID="object_id";
+    public static final String OBJ_CLASS="object_class";
+    public static final String DEFAULT_NS="default_ns";
 
     public static final String JWT_TOKEN = "JWT_TOKEN";
 }

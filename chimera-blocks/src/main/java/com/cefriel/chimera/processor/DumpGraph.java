@@ -21,10 +21,8 @@ import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.common.iteration.Iterations;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
@@ -58,6 +56,10 @@ public class DumpGraph implements Processor {
 			else
 				dump = con.getStatements(null, null, null);
 			Model dump_model = QueryResults.asModel(dump);
+
+			RepositoryResult<Namespace> namespaces = con.getNamespaces();
+			for(Namespace n : Iterations.asList(namespaces))
+				dump_model.setNamespace(n);
 
 			Rio.write(dump_model, outstream, RDFFormat.TURTLE);
 			output = new String(outstream.toByteArray(), StandardCharsets.UTF_8);
