@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor;
+package com.cefriel.chimera.processor.pinto;
 
 import java.io.FileOutputStream;
 import java.util.List;
@@ -38,50 +38,49 @@ import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 
 public class PintoLiftingProcessor  implements Processor{
-    private String defaultNS=null;
     
-    private Logger log = LoggerFactory.getLogger(PintoLiftingProcessor.class); 
+    private Logger logger = LoggerFactory.getLogger(PintoLiftingProcessor.class);
+
+    private String defaultNS = null;
 
     public void process(Exchange exchange) throws Exception {
         int obj_suffix;
-        String obj_id=null; 
-        Repository repo=null;
-        Model tmp_model=null;
+        String obj_id = null;
+        Repository repo;
+        Model tmp_model;
         Model output = new LinkedHashModel();
 
-        String namespace=null;
-        Message msg=exchange.getIn();
-        Object raw_input=msg.getBody();
+        String namespace;
+        Message msg = exchange.getIn();
+        Object raw_input = msg.getBody();
 
-        namespace=exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
-        repo=exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class).getRepository();
+        namespace = exchange.getProperty(ProcessorConstants.DEFAULT_NS, String.class);
+        repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class).getRepository();
 
-        if (namespace==null)
-        	namespace=defaultNS;
+        if (namespace == null)
+        	namespace = defaultNS;
 
         try (RepositoryConnection con = repo.getConnection()) {
-
-        	log.debug("Conversion of "+raw_input.getClass().getTypeName());
+        	logger.debug("Conversion of " + raw_input.getClass().getTypeName());
         	if (raw_input instanceof List) {
-        		List objects=(List) raw_input;
-        		for (Object o: objects) {
-        			obj_suffix=System.identityHashCode(raw_input);
-        			obj_id=namespace+raw_input.getClass().getTypeName()+"_"+obj_suffix;
+        		List objects = (List) raw_input;
+        		for (Object o : objects) {
+        			obj_suffix = System.identityHashCode(raw_input);
+        			obj_id = namespace + raw_input.getClass().getTypeName() + "_" + obj_suffix;
 
-        			tmp_model=lift_data(obj_id, o, namespace);
+        			tmp_model = lift_data(obj_id, o, namespace);
         			con.add(tmp_model);
         		}
         	}
         	else {
-        		obj_suffix=System.identityHashCode(raw_input);
-        		obj_id=namespace+raw_input.getClass().getTypeName()+"_"+obj_suffix;
-        		output=lift_data(obj_id, raw_input, namespace);
+        		obj_suffix = System.identityHashCode(raw_input);
+        		obj_id = namespace + raw_input.getClass().getTypeName() + "_" + obj_suffix;
+        		output = lift_data(obj_id, raw_input, namespace);
     			con.add(output);
-
         	}
         	msg.setHeader(ProcessorConstants.OBJ_ID, obj_id);
 
-        	FileOutputStream of=new FileOutputStream("/tmp/"+raw_input.getClass().getTypeName()+"-instances.ttl");
+        	FileOutputStream of = new FileOutputStream("/tmp/" + raw_input.getClass().getTypeName() + "-instances.ttl");
         	Rio.write(output, of, RDFFormat.TURTLE);
         	of.close();
         }

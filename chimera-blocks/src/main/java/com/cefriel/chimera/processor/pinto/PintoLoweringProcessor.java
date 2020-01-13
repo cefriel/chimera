@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor;
+package com.cefriel.chimera.processor.pinto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,8 +46,9 @@ import com.cefriel.chimera.util.ProcessorConstants;
 
 public class PintoLoweringProcessor implements Processor {
 
+    private Logger logger = LoggerFactory.getLogger(PintoLoweringProcessor.class);
+
     private HashMap<String, List<String>> standards;
-    private Logger log = LoggerFactory.getLogger(PintoLoweringProcessor.class); 
 
     @SuppressWarnings("unchecked")
     public void process(Exchange exchange) throws Exception {
@@ -83,7 +84,7 @@ public class PintoLoweringProcessor implements Processor {
             
             for (Value output_rdf_class: output_classes) {
                 String output_class = dest_standard + "." + (output_rdf_class.stringValue()).replaceAll(namespace, "");
-                log.info("[TARGET] " + output_class);
+                logger.info("[TARGET] " + output_class);
                 Class c = Class.forName(output_class);
 
                 RDFMapper aMapper = RDFMapper.builder()
@@ -93,7 +94,7 @@ public class PintoLoweringProcessor implements Processor {
 
                 Model rdfList = Connections.getRDFCollection(con, SimpleValueFactory.getInstance().createIRI(obj_id), new LinkedHashModel());
                 result = aMapper.readValue(rdfList, c, SimpleValueFactory.getInstance().createIRI(obj_id));
-                log.info(ToStringBuilder.reflectionToString(result));
+                logger.info(ToStringBuilder.reflectionToString(result));
 
                 outputs.add(result);
             }
@@ -104,7 +105,7 @@ public class PintoLoweringProcessor implements Processor {
                 result= outputs.get(0);
             }
         } catch (ClassNotFoundException e) {
-            log.info("Class not found in destination standard package");
+            logger.info("Class not found in destination standard package");
             //e.printStackTrace();
         }
 
