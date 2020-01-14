@@ -11,18 +11,17 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Set;
 
 public class ClearContextProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(ClearContextProcessor.class);
 
-    // TODO Use a List<String>
-    private String removeNamespacesPath;
+    private List<String> removeNamespacesPaths;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -34,23 +33,24 @@ public class ClearContextProcessor implements Processor {
         try (RepositoryConnection con = repo.getConnection()) {
             if (contextIRI != null)
                 con.clear(contextIRI);
-
-            if (removeNamespacesPath != null) {
-                Model l = SemanticLoader.load_data(removeNamespacesPath);
-                Set<Namespace> namespaces = l.getNamespaces();
-                for(Namespace n : namespaces)
-                    con.removeNamespace(n.getPrefix());
-            }
+            logger.info("Cleared named graph " + contextIRI.stringValue());
+            if (removeNamespacesPaths != null)
+                for(String path : removeNamespacesPaths)  {
+                    Model l = SemanticLoader.load_data(path);
+                    Set<Namespace> namespaces = l.getNamespaces();
+                    for(Namespace n : namespaces)
+                        con.removeNamespace(n.getPrefix());
+                    logger.info("Removed namespaces listed in file " + path);
+                }
         }
-        logger.info("Cleared named graph " + contextIRI.stringValue());
     }
 
-    public String getRemoveNamespacesPath() {
-        return removeNamespacesPath;
+    public List<String> getRemoveNamespacesPaths() {
+        return removeNamespacesPaths;
     }
 
-    public void setRemoveNamespacesPath(String removeNamespacesPath) {
-        this.removeNamespacesPath = removeNamespacesPath;
+    public void setRemoveNamespacesPaths(List<String> removeNamespacesPaths) {
+        this.removeNamespacesPaths = removeNamespacesPaths;
     }
 
 
