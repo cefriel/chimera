@@ -40,6 +40,8 @@ public class DumpGraph implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(DumpGraph.class);
 
+    // TODO Add the possibility of configuring the RDFFormat
+
     public void process(Exchange exchange) throws Exception {
 		Repository repo;
 		String output;

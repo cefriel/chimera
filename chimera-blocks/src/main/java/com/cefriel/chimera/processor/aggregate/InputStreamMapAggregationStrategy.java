@@ -1,6 +1,5 @@
 package com.cefriel.chimera.processor.aggregate;
 
-import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 

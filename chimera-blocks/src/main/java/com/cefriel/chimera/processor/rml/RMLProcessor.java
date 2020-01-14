@@ -42,7 +42,7 @@ public class RMLProcessor implements Processor {
         Map<String, InputStream> streamsMap = in.getBody(Map.class);
         
         // RML Processor configuration
-        if (rmlOptions ==null)
+        if (rmlOptions == null)
             rmlOptions = exchange.getProperty(ProcessorConstants.RML_CONFIG, RMLOptions.class);
 
         processRML(streamsMap,exchange);

@@ -31,7 +31,8 @@ public class ProcessorConstants {
     public static final String ADDITIONAL_SOURCES = "additional_sources";
     public static final String ONTOLOGY_URLS = "ontologies";
 
-	public static final String LOWERING_TEMPLATE = "lowering_template";
+    // TEMPLATE
+    public static final String TEMPLATE_CONFIG = "template_config";
 
     public static final String SOURCE_STD = "source_standard";
     public static final String DEST_STD = "destination_standard";
