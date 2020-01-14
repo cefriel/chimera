@@ -31,6 +31,8 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class SemanticLoader {
 
+    private static String baseIRI = ProcessorConstants.BASE_CONVERSION_IRI;
+
     public static Model load_data(String url) throws RDFParseException, RDFHandlerException, IOException {
     	return secure_load_data(url, null, null);
     }
@@ -52,26 +54,17 @@ public class SemanticLoader {
         RDFParser rdfParser = Rio.createParser(rdfFormat);
         rdfParser.setRDFHandler(new StatementCollector(model));
 
-        if (token == null) {
-            InputStream inputStream = UniLoader.open(url);
-            rdfParser.parse(inputStream, url);
-            return model;
-        }
-
-        // TODO Move token-based access to UniLoader
-        java.net.URL documentUrl = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
-
-        // Set up URL connection to get retrieve information back
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Authorization", "Bearer " + token);
-        con.setRequestProperty("Accept", "application/x-turtle, application/rdf+xml");
-
-        // Pull the information back from the URL
-        InputStream inputStream = con.getInputStream();
-        rdfParser.parse(inputStream, url);
-
+        InputStream inputStream = UniLoader.open(url, token);
+        rdfParser.parse(inputStream, baseIRI);
         return model;
+    }
+
+    public static String getBaseIRI() {
+        return baseIRI;
+    }
+
+    public static void setBaseIRI(String baseIRI) {
+        SemanticLoader.baseIRI = baseIRI;
     }
 
 }
