@@ -42,20 +42,20 @@ public class InputStreamDataEnricher implements Processor {
 
 	public void process(Exchange exchange) throws Exception {
 		Repository repo;
-        RDFParser rdfParser;
-    	Model model = new LinkedHashModel();
-
 		Message in = exchange.getIn();
 		InputStream input_msg = in.getBody(InputStream.class);
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
-		try (RepositoryConnection con = repo.getConnection()) {
-			RDFFormat rdfFormat = Utils.getRDFFormat(format);
-        	rdfParser = Rio.createParser(rdfFormat);
-        	rdfParser.setRDFHandler(new StatementCollector(model));
-        	rdfParser.parse(input_msg, baseIRI);
 
-			IRI contextIRI = Utils.getContextIRI(exchange);
+		Model model = new LinkedHashModel();
+		RDFFormat rdfFormat = Utils.getRDFFormat(format);
+		RDFParser rdfParser = Rio.createParser(rdfFormat);
+		rdfParser.setRDFHandler(new StatementCollector(model));
+		rdfParser.parse(input_msg, baseIRI);
+
+		IRI contextIRI = Utils.getContextIRI(exchange);
+
+		try (RepositoryConnection con = repo.getConnection()) {
 			if (contextIRI != null)
 				con.add(model, contextIRI);
 			else
