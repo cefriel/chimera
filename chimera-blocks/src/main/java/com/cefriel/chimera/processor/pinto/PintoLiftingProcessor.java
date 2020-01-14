@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 
+// TODO To be reviewed
 public class PintoLiftingProcessor  implements Processor{
     
     private Logger logger = LoggerFactory.getLogger(PintoLiftingProcessor.class);

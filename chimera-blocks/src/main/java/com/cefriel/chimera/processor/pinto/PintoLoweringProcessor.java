@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import com.cefriel.chimera.util.ProcessorConstants;
 
+// TODO To be reviewed
 public class PintoLoweringProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(PintoLoweringProcessor.class);
