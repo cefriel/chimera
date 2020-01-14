@@ -68,20 +68,9 @@
       <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.jena</groupId>
-      <artifactId>jena-core</artifactId>
-      <version>3.8.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.cefriel</groupId>
       <artifactId>rmlmapper</artifactId>
       <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cefriel</groupId>
-      <artifactId>pinto</artifactId>
-      <version>2.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.cefriel</groupId>
