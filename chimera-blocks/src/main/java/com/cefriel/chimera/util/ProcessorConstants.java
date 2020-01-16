@@ -23,6 +23,9 @@ public class ProcessorConstants {
     public static final String CONTEXT_ID = "context_id";
     public static final String CONTEXT_GRAPH = "context_graph";
 
+    public static final String SOURCE_STD = "source_standard";
+    public static final String DEST_STD = "destination_standard";
+
     // RML
     public static final String RML_CONFIG = "rml_config";
 	public static final String RML_LABEL = "rml_label";
