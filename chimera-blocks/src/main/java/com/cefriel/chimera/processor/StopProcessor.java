@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StopProcessor implements Processor {
 
-    private Logger log = LoggerFactory.getLogger(StopProcessor.class);
+    private Logger logger = LoggerFactory.getLogger(StopProcessor.class);
     private String routeId;
 
     public void process(Exchange exchange) throws Exception {
@@ -36,7 +36,7 @@ public class StopProcessor implements Processor {
         // Remove myself from the in flight registry so we can stop this route without trouble
         Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
         if (caused !=null)
-        	log.error(stack_to_string(caused));
+        	logger.error(stack_to_string(caused));
         camelContext.getInflightRepository().remove(exchange);
         // Stop the route
         camelContext.stop();

@@ -86,8 +86,6 @@ public class TemplateLowererProcessor implements Processor {
 			tl.lower(templateLowererOptions.getTemplatePath(),
 					localDestPath + templateLowererOptions.getDestFileName());
 
-		reader.shutDown();
-
 		String filename = templateLowererOptions.getDestFileName().replaceFirst("[.][^.]+$", "");
 
 		if (templateLowererOptions.isAttachmentToExchange() && templateLowererOptions.getQueryFile() == null) {
