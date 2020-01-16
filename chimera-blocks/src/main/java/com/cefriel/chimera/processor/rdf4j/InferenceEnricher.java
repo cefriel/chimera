@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.processor.enrich;
+package com.cefriel.chimera.processor.rdf4j;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ import com.cefriel.chimera.util.SemanticLoader;
 
 public class InferenceEnricher implements Processor {
 
-	//TODO Add possibility to set a TOKEN
-
 	private List<String> ontologyUrls;
+	private String token;
+	private String ontologyRDFFormat;
 
 	// Works only for IN-MEMORY Repositories
 	public void process(Exchange exchange) throws Exception {
@@ -58,7 +58,7 @@ public class InferenceEnricher implements Processor {
 		
 		try (RepositoryConnection con = schema_repo.getConnection()) {
         	for (String url: ontologyUrls) {
-        		con.add(SemanticLoader.load_data(url), vf.createIRI(url));
+        		con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
         	}
         }
 
@@ -73,6 +73,22 @@ public class InferenceEnricher implements Processor {
 
 	public void setOntologyUrls(List<String> ontologyUrls) {
 		this.ontologyUrls = ontologyUrls;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getOntologyRDFFormat() {
+		return ontologyRDFFormat;
+	}
+
+	public void setOntologyRDFFormat(String ontologyRDFFormat) {
+		this.ontologyRDFFormat = ontologyRDFFormat;
 	}
 
 }
