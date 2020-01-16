@@ -13,12 +13,11 @@
         <module>chimera-blocks</module>
         <module>libs/rmlmapper-cefriel</module>
         <module>libs/rdf-lowerer</module>
-        <module>libs/pinto</module>
     </modules>
 
     <!-- How it should be
     <modules>
-        <module>chimera-core-blocks</module> //Remove dependencies on rml rdf-lowerer
+        <module>chimera-core-blocks</module> // Removed dependencies on rmlmapper and rdf-lowerer
 
         <module>libs/rmlmapper-cefriel</module>
         <module>chimera-rml-lifting</module>
@@ -32,6 +31,5 @@
         <module>libs/st4rt</module>
         <module>chimera-st4rt</module>
     </modules>
-
      -->
 </project>
