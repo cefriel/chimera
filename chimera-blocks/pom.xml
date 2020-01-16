@@ -7,31 +7,17 @@
   <name>chimera-blocks</name>
 
   <properties>
-    <slf4j.version>1.7.25</slf4j.version>
-    <log4j.version>2.10.0</log4j.version>
-    <camel.version>2.24.0</camel.version>
+      <camel.version>2.24.0</camel.version>
+      <rdf4j.version>3.0.0</rdf4j.version>
+      <slf4j.version>1.7.25</slf4j.version>
+      <log4j.version>2.10.0</log4j.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring</artifactId>
-      <version>${camel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-jaxb</artifactId>
-      <version>${camel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-bindy</artifactId>
-      <version>${camel.version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-zipfile -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-zipfile</artifactId>
       <version>${camel.version}</version>
     </dependency>
     <!-- Log4j Dependencies -->
@@ -45,12 +31,7 @@
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.github.lukehutch</groupId>
-      <artifactId>fast-classpath-scanner</artifactId>
-      <version>3.1.9</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/junit/junit -->
+    <!-- -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -60,12 +41,7 @@
     <dependency>
       <groupId>org.eclipse.rdf4j</groupId>
       <artifactId>rdf4j-runtime</artifactId>
-      <version>2.5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1</version>
+      <version>${rdf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>com.cefriel</groupId>
@@ -81,8 +57,8 @@
 
   <build>
     <plugins>
-      <!-- to allow to run mvn camel:run -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
@@ -95,9 +71,6 @@
         <artifactId>camel-maven-plugin</artifactId>
         <version>${camel.version}</version>
       </plugin>
-      <!-- we need to define main class for this -->
-      <!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>exec-maven-plugin</artifactId> <version>1.2</version> <configuration> <executable>java</executable> 
-        <arguments> <argument>-classpath</argument> <classpath /> <argument>org.apache.camel.example.Main</argument> </arguments> </configuration> </plugin> -->
-    </plugins>
+  </plugins>
   </build>
 </project>
