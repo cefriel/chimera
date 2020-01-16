@@ -18,11 +18,15 @@ package com.cefriel.chimera.processor.rml;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.camel.Processor;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RMLMessageProcessor extends RMLProcessor {
+public class RMLMessageProcessor implements Processor {
+
+    private RMLOptions defaultRmlOptions;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -30,8 +34,20 @@ public class RMLMessageProcessor extends RMLProcessor {
         String label = exchange.getProperty(ProcessorConstants.RML_LABEL, String.class);
         Map<String, InputStream> streamsMap = new HashMap<>();
         streamsMap.put("is://" + label, in.getBody(InputStream.class));
+
+        RMLProcessor rmlProcessor = new RMLProcessor();
+        if (defaultRmlOptions != null)
+            rmlProcessor.setDefaultRmlOptions(defaultRmlOptions);
         
-        processRML(streamsMap, exchange);
+        rmlProcessor.processRML(streamsMap, exchange);
+    }
+
+    public RMLOptions getDefaultRmlOptions() {
+        return defaultRmlOptions;
+    }
+
+    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
+        this.defaultRmlOptions = defaultRmlOptions;
     }
     
 }

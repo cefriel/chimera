@@ -35,15 +35,11 @@ public class RMLProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
-    RMLOptions rmlOptions;
+    private RMLOptions defaultRmlOptions;
     
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
         Map<String, InputStream> streamsMap = in.getBody(Map.class);
-        
-        // RML Processor configuration
-        if (rmlOptions == null)
-            rmlOptions = exchange.getProperty(ProcessorConstants.RML_CONFIG, RMLOptions.class);
 
         processRML(streamsMap,exchange);
     }
@@ -51,6 +47,17 @@ public class RMLProcessor implements Processor {
     public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
         RDFGraph graph;
         graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+
+        // RML Processor configuration
+        RMLOptions rmlOptions = exchange.getIn().getHeader(ProcessorConstants.RML_CONFIG, RMLOptions.class);
+        if (rmlOptions != null)
+            exchange.getIn().removeHeader(ProcessorConstants.RML_CONFIG);
+        else {
+            rmlOptions = defaultRmlOptions;
+            if (rmlOptions == null)
+                throw new IllegalArgumentException("RMLOptions config should be provided in the header");
+        }
+
 
         IRI context =  Utils.getContextIRI(exchange);
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
@@ -69,12 +76,12 @@ public class RMLProcessor implements Processor {
         }
     }
 
-    public RMLOptions getRmlOptions() {
-        return rmlOptions;
+    public RMLOptions getDefaultRmlOptions() {
+        return defaultRmlOptions;
     }
 
-    public void setRmlOptions(RMLOptions rmlOptions) {
-        this.rmlOptions = rmlOptions;
+    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
+        this.defaultRmlOptions = defaultRmlOptions;
     }
-    
+
 }
