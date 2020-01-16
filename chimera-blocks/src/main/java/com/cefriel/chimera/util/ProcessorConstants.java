@@ -34,13 +34,7 @@ public class ProcessorConstants {
     // TEMPLATE
     public static final String TEMPLATE_CONFIG = "template_config";
 
-    public static final String SOURCE_STD = "source_standard";
-    public static final String DEST_STD = "destination_standard";
-
-    // Pinto
-    public static final String OBJ_ID="object_id";
-    public static final String OBJ_CLASS="object_class";
-    public static final String DEFAULT_NS="default_ns";
+    public static final String DUMP_FORMAT = "dump_format";
 
     public static final String JWT_TOKEN = "JWT_TOKEN";
 }

@@ -40,8 +40,6 @@ public class DumpGraph implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(DumpGraph.class);
 
-    // TODO Add the possibility of configuring the RDFFormat
-
     public void process(Exchange exchange) throws Exception {
 		Repository repo;
 		String output;
@@ -50,6 +48,11 @@ public class DumpGraph implements Processor {
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		IRI contextIRI = Utils.getContextIRI(exchange);
+
+		String format = exchange.getProperty(ProcessorConstants.DUMP_FORMAT, String.class);
+		RDFFormat rdfFormat = Utils.getRDFFormat(format);
+		if (rdfFormat == null)
+			rdfFormat = RDFFormat.TURTLE;
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			RepositoryResult<Statement> dump;
@@ -63,11 +66,11 @@ public class DumpGraph implements Processor {
 			for(Namespace n : Iterations.asList(namespaces))
 				dump_model.setNamespace(n);
 
-			Rio.write(dump_model, outstream, RDFFormat.TURTLE);
+			Rio.write(dump_model, outstream, rdfFormat);
 			output = new String(outstream.toByteArray(), StandardCharsets.UTF_8);
 
 			exchange.getOut().setBody(output);
-			exchange.getOut().setHeader(Exchange.CONTENT_TYPE, "text/turtle");
+			exchange.getOut().setHeader(Exchange.CONTENT_TYPE, rdfFormat.getDefaultMIMEType());
 		}
     }
 
