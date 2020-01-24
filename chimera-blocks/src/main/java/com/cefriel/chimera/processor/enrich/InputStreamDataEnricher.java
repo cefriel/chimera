@@ -25,9 +25,7 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -45,7 +43,6 @@ public class InputStreamDataEnricher implements Processor {
 		Message in = exchange.getIn();
 		InputStream input_msg = in.getBody(InputStream.class);
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
-
 
 		Model model = new LinkedHashModel();
 		RDFFormat rdfFormat = Utils.getRDFFormat(format);

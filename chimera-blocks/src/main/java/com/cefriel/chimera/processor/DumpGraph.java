@@ -23,7 +23,6 @@ import org.apache.camel.Processor;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -42,8 +41,6 @@ public class DumpGraph implements Processor {
 
     public void process(Exchange exchange) throws Exception {
 		Repository repo;
-		String output;
-		ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
@@ -66,11 +63,12 @@ public class DumpGraph implements Processor {
 			for(Namespace n : Iterations.asList(namespaces))
 				dump_model.setNamespace(n);
 
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 			Rio.write(dump_model, outstream, rdfFormat);
-			output = new String(outstream.toByteArray(), StandardCharsets.UTF_8);
+			String output = new String(outstream.toByteArray(), StandardCharsets.UTF_8);
 
-			exchange.getOut().setBody(output);
-			exchange.getOut().setHeader(Exchange.CONTENT_TYPE, rdfFormat.getDefaultMIMEType());
+			exchange.getMessage().setBody(output);
+			exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, rdfFormat.getDefaultMIMEType());
 		}
     }
 
