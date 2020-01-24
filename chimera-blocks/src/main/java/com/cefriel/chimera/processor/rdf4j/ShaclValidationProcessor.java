@@ -15,10 +15,12 @@
  */
 package com.cefriel.chimera.processor.rdf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -67,8 +69,11 @@ public class ShaclValidationProcessor implements Processor {
 				if (cause instanceof ShaclSailValidationException) {
 					// Use validationReport or validationReportModel to understand validation violations
 					Model validationReportModel = ((ShaclSailValidationException) cause).validationReportAsModel();
-					// TODO Add to the message body or to the header
-					Rio.write(validationReportModel, System.out, RDFFormat.TURTLE);
+					// Add report to the message header
+					ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+					Rio.write(validationReportModel, outstream, RDFFormat.TURTLE);
+					String output = new String(outstream.toByteArray(), StandardCharsets.UTF_8);
+					exchange.getMessage().setHeader("validation-shacl-report", output);
 				}
 				throw exception;
 			}
