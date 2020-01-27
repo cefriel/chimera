@@ -46,10 +46,11 @@ public class DumpGraph implements Processor {
 
 		IRI contextIRI = Utils.getContextIRI(exchange);
 
-		String format = exchange.getProperty(ProcessorConstants.DUMP_FORMAT, String.class);
+		String format = exchange.getMessage().getHeader(ProcessorConstants.DUMP_FORMAT, String.class);
+		if (format == null)
+			format = "turtle";
 		RDFFormat rdfFormat = Utils.getRDFFormat(format);
-		if (rdfFormat == null)
-			rdfFormat = RDFFormat.TURTLE;
+
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			RepositoryResult<Statement> dump;
@@ -69,6 +70,10 @@ public class DumpGraph implements Processor {
 
 			exchange.getMessage().setBody(output);
 			exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, rdfFormat.getDefaultMIMEType());
+
+			exchange.getMessage().setHeader(Exchange.FILE_NAME,
+					"dump-graph-" + exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class)
+							+ "." + rdfFormat.getDefaultFileExtension());
 		}
     }
 
