@@ -32,6 +32,7 @@ public class AttachGraph implements Processor {
 
     private String DB_ADDRESS;
     private String REPOSITORY_ID;
+    private boolean context = true;
 
     public void process(Exchange exchange) throws Exception {
         RDFGraph graph;
@@ -41,6 +42,9 @@ public class AttachGraph implements Processor {
         } else
             graph = new MemoryRDFGraph();
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
+
+    	if(context)
+    	    exchange.setProperty(ProcessorConstants.CONTEXT_ID, exchange.getExchangeId());
     }
 
     public String getDB_ADDRESS() {
@@ -57,6 +61,14 @@ public class AttachGraph implements Processor {
 
     public void setREPOSITORY_ID(String REPOSITORY_ID) {
         this.REPOSITORY_ID = REPOSITORY_ID;
+    }
+
+    public boolean isContext() {
+        return context;
+    }
+
+    public void setContext(boolean context) {
+        this.context = context;
     }
 
 }
