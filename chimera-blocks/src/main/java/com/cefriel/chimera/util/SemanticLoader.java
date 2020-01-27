@@ -17,8 +17,6 @@ package com.cefriel.chimera.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
@@ -31,7 +29,7 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class SemanticLoader {
 
-    private static String baseIRI = ProcessorConstants.BASE_CONVERSION_IRI;
+    private static String baseIRI = ProcessorConstants.BASE_IRI_VALUE;
 
     public static Model load_data(String url) throws RDFParseException, RDFHandlerException, IOException {
     	return secure_load_data(url, null, null);

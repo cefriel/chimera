@@ -17,14 +17,22 @@ package com.cefriel.chimera.util;
 
 public class ProcessorConstants {
 
-    public static final String BASE_CONVERSION_IRI = "http://sprint-transport.eu/data/";
-    public static final String DEFAULT_REPOSITORY_ID = "chimera-repo";
-    public static final String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
+    public static String BASE_IRI_VALUE = "http://sprint-transport.eu/data/";
+
+    public static String DEFAULT_REPOSITORY_ID = "chimera-repo";
+    public static String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
+
+    public static final String BASE_IRI = "base_iri";
+    public static final String PREFIX_BASE_IRI = "prefix_base_iri";
+
     public static final String CONTEXT_ID = "context_id";
     public static final String CONTEXT_GRAPH = "context_graph";
 
     public static final String SOURCE_STD = "source_standard";
     public static final String DEST_STD = "destination_standard";
+
+    public static final String ENRICHMENT_FORMAT = "enrichment_format";
+    public static final String DUMP_FORMAT = "dump_format";
 
     // RML
     public static final String RML_CONFIG = "rml_config";
@@ -37,7 +45,30 @@ public class ProcessorConstants {
     // TEMPLATE
     public static final String TEMPLATE_CONFIG = "template_config";
 
-    public static final String DUMP_FORMAT = "dump_format";
-
     public static final String JWT_TOKEN = "JWT_TOKEN";
+
+    public static String getBaseIriValue() {
+        return BASE_IRI_VALUE;
+    }
+
+    public static void setBaseIriValue(String baseIriValue) {
+        BASE_IRI_VALUE = baseIriValue;
+    }
+
+    public static String getDefaultRepositoryId() {
+        return DEFAULT_REPOSITORY_ID;
+    }
+
+    public static void setDefaultRepositoryId(String defaultRepositoryId) {
+        DEFAULT_REPOSITORY_ID = defaultRepositoryId;
+    }
+
+    public static String getDefaultRepoConfigFile() {
+        return DEFAULT_REPO_CONFIG_FILE;
+    }
+
+    public static void setDefaultRepoConfigFile(String defaultRepoConfigFile) {
+        DEFAULT_REPO_CONFIG_FILE = defaultRepoConfigFile;
+    }
+
 }

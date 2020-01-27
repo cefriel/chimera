@@ -36,15 +36,22 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 public class InputStreamDataEnricher implements Processor {
 
 	private String format = "turtle";
-	private String baseIRI = ProcessorConstants.BASE_CONVERSION_IRI;
+	private String baseIRI = ProcessorConstants.BASE_IRI_VALUE;
 
 	public void process(Exchange exchange) throws Exception {
 		Repository repo;
 		Message in = exchange.getIn();
 		InputStream input_msg = in.getBody(InputStream.class);
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		String headerBaseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
+		if (headerBaseIRI != null)
+			baseIRI = headerBaseIRI;
 
 		Model model = new LinkedHashModel();
+
+		String headerFormat = exchange.getMessage().getHeader(ProcessorConstants.ENRICHMENT_FORMAT, String.class);
+		if (headerFormat != null)
+			format = headerFormat;
 		RDFFormat rdfFormat = Utils.getRDFFormat(format);
 		RDFParser rdfParser = Rio.createParser(rdfFormat);
 		rdfParser.setRDFHandler(new StatementCollector(model));

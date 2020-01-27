@@ -11,7 +11,7 @@ public class Utils {
     public static String getContext(Exchange exchange) {
         String contextId = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
         if (contextId != null)
-            return ProcessorConstants.BASE_CONVERSION_IRI + contextId;
+            return ProcessorConstants.BASE_IRI_VALUE + contextId;
         return null;
     }
 

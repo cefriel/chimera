@@ -58,6 +58,12 @@ public class RMLProcessor implements Processor {
                 throw new IllegalArgumentException("RMLOptions config should be provided in the header");
         }
 
+        String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
+        String baseIRIPrefix = exchange.getMessage().getHeader(ProcessorConstants.PREFIX_BASE_IRI, String.class);
+        if (baseIRI != null)
+            rmlOptions.setBaseIRI(baseIRI);
+        if (baseIRIPrefix != null)
+                rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
         IRI context =  Utils.getContextIRI(exchange);
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);

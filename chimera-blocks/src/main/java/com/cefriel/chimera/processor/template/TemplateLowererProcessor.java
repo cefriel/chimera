@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 
 import com.cefriel.chimera.util.ProcessorConstants;
 
@@ -22,7 +21,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +63,11 @@ public class TemplateLowererProcessor implements Processor {
 					break;
 			}
 
+		String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
+		if (baseIRI == null)
+			baseIRI = ProcessorConstants.BASE_IRI_VALUE;
+		lu.setPrefix(baseIRI);
+
 		IRI contextIRI = Utils.getContextIRI(exchange);
 
 		RDFReader reader = new RDFReader(repo, contextIRI);
@@ -98,7 +101,7 @@ public class TemplateLowererProcessor implements Processor {
 			Map<String, InputStream> outputs = new HashMap<>();
 			for (String f : result)
 				outputs.put(f, UniLoader.open(localDestPath + f));
-			exchange.getOut().setBody(outputs, Map.class);
+			exchange.getMessage().setBody(outputs, Map.class);
 		}
 	}
 

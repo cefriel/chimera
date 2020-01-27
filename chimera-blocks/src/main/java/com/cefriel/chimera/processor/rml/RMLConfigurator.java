@@ -9,6 +9,7 @@ import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JRemoteStore;
 import be.ugent.rml.store.RDF4JStore;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -57,8 +58,11 @@ public class RMLConfigurator {
                 baseIRI = options.getBaseIRI();
                 logger.debug("Base IRI set to value: " + options.getBaseIRI());
             }
-            else
+            else {
                 baseIRI = Utils.getBaseDirectiveTurtle(is);
+                if (baseIRI == null)
+                    baseIRI = ProcessorConstants.BASE_IRI_VALUE;
+            }
 
             outputStore.copyNameSpaces(rmlStore);
 
