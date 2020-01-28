@@ -19,7 +19,7 @@ public class ProcessorConstants {
 
     public static String BASE_IRI_VALUE = "http://sprint-transport.eu/data/";
 
-    public static String DEFAULT_REPOSITORY_ID = "chimera-repo";
+    public static String DEFAULT_REPOSITORY_ID = "chimera_repo";
     public static String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
 
     public static final String BASE_IRI = "base_iri";
@@ -33,6 +33,8 @@ public class ProcessorConstants {
 
     public static final String ENRICHMENT_FORMAT = "enrichment_format";
     public static final String DUMP_FORMAT = "dump_format";
+
+    public static final String FILE_EXTENSION = "file_extension";
 
     // RML
     public static final String RML_CONFIG = "rml_config";

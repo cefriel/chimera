@@ -13,29 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cefriel.chimera.assetmanager;
+package com.cefriel.chimera.jwt;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
-
 import com.cefriel.chimera.util.ProcessorConstants;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 public class JWTHeaderAggregationStrategy implements AggregationStrategy {
 
     public Exchange aggregate(Exchange original, Exchange resource) {
-        Object originalBody = original.getIn().getBody();
         AccessResponseToken resourceResponse = resource.getIn().getBody(AccessResponseToken.class);
-        
-        if (original.getPattern().isOutCapable()) {
-        	System.out.println("original out: "+original.getOut()+" - "+resource.getIn().getBody());
-        	if (originalBody!=null)
-        		original.getOut().setBody(originalBody);
-        	original.setProperty(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
-        } else {
-        	original.setProperty(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
-        	if (originalBody!=null)
-        		original.getIn().setBody(originalBody);
-        }
+        original.setProperty(ProcessorConstants.JWT_TOKEN, resourceResponse.getAccess());
         return original;
     }
     

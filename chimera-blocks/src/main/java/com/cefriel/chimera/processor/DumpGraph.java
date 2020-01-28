@@ -71,9 +71,7 @@ public class DumpGraph implements Processor {
 			exchange.getMessage().setBody(output);
 			exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, rdfFormat.getDefaultMIMEType());
 
-			exchange.getMessage().setHeader(Exchange.FILE_NAME,
-					"dump-graph-" + exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class)
-							+ "." + rdfFormat.getDefaultFileExtension());
+			exchange.getMessage().setHeader(ProcessorConstants.FILE_EXTENSION, rdfFormat.getDefaultFileExtension());
 		}
     }
 
