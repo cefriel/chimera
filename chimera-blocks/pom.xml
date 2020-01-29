@@ -10,7 +10,6 @@
       <camel.version>2.25.0</camel.version>
       <rdf4j.version>3.0.0</rdf4j.version>
       <slf4j.version>1.7.25</slf4j.version>
-      <log4j.version>2.10.0</log4j.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -20,12 +19,7 @@
       <artifactId>camel-core</artifactId>
       <version>${camel.version}</version>
     </dependency>
-    <!-- Log4j Dependencies -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
+    <!-- Log Dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
