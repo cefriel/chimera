@@ -17,7 +17,6 @@ package com.cefriel.chimera.processor.enrich;
 
 import java.util.List;
 
-import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
@@ -30,7 +29,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
 
-public class UrlDataEnricher implements Processor{
+public class UrlDataEnricher implements Processor {
 
 	private List<String> additionalSourcesUrls;
 
