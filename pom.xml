@@ -10,26 +10,21 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>chimera-blocks</module>
+        <module>chimera-core</module>
+
+        <!-- Remove comment if not already installed in maven local repository
         <module>libs/rmlmapper-cefriel</module>
+        -->
+        <module>chimera-rml</module>
+
+        <!-- Remove comment if not already installed in maven local repository
         <module>libs/rdf-lowerer</module>
-    </modules>
+        -->
+        <module>chimera-rdf-lowerer</module>
 
-    <!-- How it should be
-    <modules>
-        <module>chimera-core-blocks</module> // Removed dependencies on rmlmapper and rdf-lowerer
-
-        <module>libs/rmlmapper-cefriel</module>
-        <module>chimera-rml-lifting</module>
-
-        <module>libs/rdf-lowerer</module>
-        <module>chimera-template-lowerer</module>
-
-        <module>libs/pinto</module>
-        <module>chimera-pinto</module>
-
+        <!-- TODO
         <module>libs/st4rt</module>
         <module>chimera-st4rt</module>
+        -->
     </modules>
-     -->
 </project>

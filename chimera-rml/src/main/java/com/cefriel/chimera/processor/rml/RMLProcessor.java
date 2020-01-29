@@ -20,6 +20,7 @@ import java.util.*;
 
 import be.ugent.rml.store.RDF4JRemoteStore;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -29,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import be.ugent.rml.Executor;
-import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.RMLProcessorConstants;
 
 public class RMLProcessor implements Processor {
 
@@ -49,9 +50,9 @@ public class RMLProcessor implements Processor {
         graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 
         // RML Processor configuration
-        RMLOptions rmlOptions = exchange.getIn().getHeader(ProcessorConstants.RML_CONFIG, RMLOptions.class);
+        RMLOptions rmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
         if (rmlOptions != null)
-            exchange.getIn().removeHeader(ProcessorConstants.RML_CONFIG);
+            exchange.getIn().removeHeader(RMLProcessorConstants.RML_CONFIG);
         else {
             rmlOptions = defaultRmlOptions;
             if (rmlOptions == null)
@@ -59,11 +60,11 @@ public class RMLProcessor implements Processor {
         }
 
         String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
-        String baseIRIPrefix = exchange.getMessage().getHeader(ProcessorConstants.PREFIX_BASE_IRI, String.class);
+        String baseIRIPrefix = exchange.getMessage().getHeader(RMLProcessorConstants.PREFIX_BASE_IRI, String.class);
         if (baseIRI != null)
             rmlOptions.setBaseIRI(baseIRI);
         if (baseIRIPrefix != null)
-                rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
+            rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
         IRI context =  Utils.getContextIRI(exchange);
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);

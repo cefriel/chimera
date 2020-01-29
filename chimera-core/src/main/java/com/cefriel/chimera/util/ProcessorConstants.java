@@ -23,29 +23,21 @@ public class ProcessorConstants {
     public static String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
 
     public static final String BASE_IRI = "base_iri";
-    public static final String PREFIX_BASE_IRI = "prefix_base_iri";
-
-    public static final String CONTEXT_ID = "context_id";
-    public static final String CONTEXT_GRAPH = "context_graph";
 
     public static final String SOURCE_STD = "source_standard";
     public static final String DEST_STD = "destination_standard";
+
+    public static final String CONTEXT_ID = "context_id";
+    public static final String CONTEXT_GRAPH = "context_graph";
 
     public static final String ENRICHMENT_FORMAT = "enrichment_format";
     public static final String DUMP_FORMAT = "dump_format";
 
     public static final String FILE_EXTENSION = "file_extension";
 
-    // RML
-    public static final String RML_CONFIG = "rml_config";
-	public static final String RML_LABEL = "rml_label";
-
     public static final String SHACL_RULES = "shacl_rules";
     public static final String ADDITIONAL_SOURCES = "additional_sources";
     public static final String ONTOLOGY_URLS = "ontologies";
-
-    // TEMPLATE
-    public static final String TEMPLATE_CONFIG = "template_config";
 
     public static final String JWT_TOKEN = "JWT_TOKEN";
 

@@ -16,6 +16,7 @@
 package com.cefriel.chimera.processor.template;
 
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.UniLoader;
 import com.cefriel.chimera.util.Utils;
 import com.cefriel.lowerer.TemplateLowerer;
@@ -29,7 +30,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.TemplateProcessorConstants;
 
 import java.io.File;
 import java.io.InputStream;
@@ -54,9 +55,9 @@ public class TemplateLowererProcessor implements Processor {
 
 		// Template Lowerer configuration
 		TemplateLowererOptions templateLowererOptions = exchange.getIn()
-					.getHeader(ProcessorConstants.TEMPLATE_CONFIG, TemplateLowererOptions.class);
+					.getHeader(TemplateProcessorConstants.TEMPLATE_CONFIG, TemplateLowererOptions.class);
 		if (templateLowererOptions != null)
-			exchange.getIn().removeHeader(ProcessorConstants.TEMPLATE_CONFIG);
+			exchange.getIn().removeHeader(TemplateProcessorConstants.TEMPLATE_CONFIG);
 		else {
 			templateLowererOptions = defaultTLOptions;
 			if (templateLowererOptions == null)

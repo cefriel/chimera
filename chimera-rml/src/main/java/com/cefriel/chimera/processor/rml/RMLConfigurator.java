@@ -25,6 +25,7 @@ import be.ugent.rml.store.RDF4JRemoteStore;
 import be.ugent.rml.store.RDF4JStore;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.RMLProcessorConstants;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFFormat;

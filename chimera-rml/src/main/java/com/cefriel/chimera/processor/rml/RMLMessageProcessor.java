@@ -15,7 +15,7 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.RMLProcessorConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -31,7 +31,7 @@ public class RMLMessageProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
-        String label = exchange.getProperty(ProcessorConstants.RML_LABEL, String.class);
+        String label = exchange.getProperty(RMLProcessorConstants.RML_LABEL, String.class);
         Map<String, InputStream> streamsMap = new HashMap<>();
         streamsMap.put("is://" + label, in.getBody(InputStream.class));
 

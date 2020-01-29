@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.sprint</groupId>
-  <artifactId>chimera-blocks</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <artifactId>chimera-rml</artifactId>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
-  <name>chimera-blocks</name>
+  <name>chimera-rml</name>
 
   <properties>
       <camel.version>2.25.0</camel.version>
@@ -15,30 +15,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-core</artifactId>
-      <version>${camel.version}</version>
-    </dependency>
-    <!-- Log Dependencies -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <!-- -->
-    <dependency>
-      <groupId>org.eclipse.rdf4j</groupId>
-      <artifactId>rdf4j-runtime</artifactId>
-      <version>${rdf4j.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.cefriel</groupId>
       <artifactId>rmlmapper</artifactId>
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.cefriel</groupId>
-      <artifactId>rdf-lowerer</artifactId>
+      <groupId>eu.sprint</groupId>
+      <artifactId>chimera-core</artifactId>
       <version>1.0.0</version>
     </dependency>
   </dependencies>
