@@ -24,6 +24,7 @@
   <bean class="com.cefriel.chimera.processor.template.TemplateLowererOptions" id="template_config_gtfs_stops">
     <property name="templatePath" value="./template-stops.vm"/>
     <property name="destFileName" value="stops.txt"/>
+    <property name="trimTemplate" value="false"/>
     <property name="attachmentToExchange" value="true"/>
   </bean>
   <!-- Camel routes -->
@@ -50,7 +51,6 @@
     <!-- Main routes -->
     <camel:route id="lifting">
       <camel:from uri="seda:lifting"/>
-      <camel:log loggingLevel="INFO" message="Lifting GTFS"/>
       <camel:process id="attachGraph_lift" ref="attachGraph"/>
       <camel:to uri="direct:lifting_component?timeout=0"/>
       <camel:process id="serialise_graph" ref="graph_dumper"/>
@@ -89,7 +89,7 @@
         <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.context_id}"</simple>
       </camel:setHeader>
       <camel:setHeader headerName="Exchange.FILE_NAME">
-        <camel:simple>roundtrip-result-$simple{exchangeProperty.context_id}</camel:simple>
+        <camel:simple>roundtrip-result-$simple{exchangeProperty.context_id}.txt</camel:simple>
       </camel:setHeader>
       <camel:marshal>
         <zipFile/>
@@ -132,6 +132,9 @@
       </camel:setHeader>
       <camel:process ref="template_lower"/>
       <camel:log loggingLevel="INFO" message="Lowering completed"/>
+      <setBody>
+        <simple>${body[stops.txt]}</simple>
+      </setBody>
     </camel:route>
   </camelContext>
 </beans>

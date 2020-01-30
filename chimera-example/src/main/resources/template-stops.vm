@@ -1,7 +1,4 @@
-#set( $newline="
-")
-stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url$newline
-#* NAMESPACES for SPARQL QUERIES *#
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,stop_timezone,wheelchair_boarding
 #set ( $prefixes = "
 	PREFIX rr: <http://www.w3.org/ns/r2rml#>
   	PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -20,22 +17,18 @@ stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url$newline
 #set ( $stop = "SELECT *
 		WHERE {
 			?s a gtfs:Stop .
-			OPTIONAL{ ?s gtfs:code ?stop_code . }
 			OPTIONAL{ ?s dct:identifier ?stop_id . }
-			OPTIONAL{ ?s dct:description ?stop_name . }
+			OPTIONAL{ ?s gtfs:code ?stop_code . }
+      		OPTIONAL{ ?s foaf:name ?stop_name . }
+			OPTIONAL{ ?s dct:description ?stop_desc . }
 			OPTIONAL{ ?s geo:lat ?stop_lat . }
 			OPTIONAL{ ?s geo:long ?stop_lon . }
 			OPTIONAL{ ?s gtfs:zone ?zone_id . }
 			OPTIONAL{ ?s foaf:page ?stop_url . }
-			OPTIONAL{ ?s gtfs:locationType ?location_type . } http://transport.linkeddata.es/resource/LocationType/$(location_type)
+			OPTIONAL{ ?s gtfs:locationType ?location_type . }
 			OPTIONAL{ ?s gtfs:timeZone ?stop_timezone . }
-			OPTIONAL{ ?s gtfs:wheelchairAccessible ?wheelchair_boarding . } http://transport.linkeddata.es/resource/WheelchairBoardingStatus/$(wheelchair_boarding)
+			OPTIONAL{ ?s gtfs:wheelchairAccessible ?wheelchair_boarding . }
 }" )
 #set( $queryStop = "$prefixes$stop" )
-#set( $stops = $reader.executeQueryStringValueXML($queryStop) )
-#if(!$stops.isEmpty())
-#foreach($s in $stops)
-#if($s.stop_code)$s.stop_code#end,#if($s.stop_id)$s.stop_id#end,#if($s.stop_name)$s.stop_name#end,#if($s.stop_lat)$s.stop_lat#end,#if($s.stop_lon)$s.stop_lon#end,#if($s.zone_id)$s.zone_id#end,#if($s.stop_url)$s.stop_url#end,#if($s.location_type)$functions.sp($s.location_type,'resource/LocationType/')#end,#if($s.stop_timezone)$s.stop_timezone#end,#if($s.wheelchair_boarding)$functions.sp($s.wheelchair_boarding,'/resource/WheelchairBoardingStatus/')#end
-#end
-#end
-$newline
+#set( $stops = $reader.executeQueryStringValue($queryStop) )
+#if(!$stops.isEmpty())#foreach($s in $stops)#if($s.stop_id)$s.stop_id#end,#if($s.stop_code)$s.stop_code#end,#if($s.stop_name)$s.stop_name#end,#if($s.stop_desc)$s.stop_desc#end,#if($s.stop_lat)$s.stop_lat#end,#if($s.stop_lon)$s.stop_lon#end,#if($s.zone_id)$s.zone_id#end,#if($s.stop_url)$s.stop_url#end,#if($s.location_type)$functions.sp($s.location_type,'resource/LocationType/')#end,#if($s.stop_timezone)$s.stop_timezone#end,#if($s.wheelchair_boarding)$functions.sp($s.wheelchair_boarding,'/resource/WheelchairBoardingStatus/')#end$functions.newline()#end#end
