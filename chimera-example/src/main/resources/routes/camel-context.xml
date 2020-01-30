@@ -84,7 +84,7 @@
       <camel:from uri="seda:loadresource"/>
       <camel:to id="save_locally" uri="file:///home?fileName=${header.filename}&amp;autoCreate=true"/>
       <setBody>
-        <simple>File saved at /home/${header.filename}</simple>
+        <simple>File saved at file:///home/${header.filename}</simple>
       </setBody>
       <marshal><json/></marshal>
     </camel:route>
