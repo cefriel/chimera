@@ -8,6 +8,7 @@
            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
   <bean class="com.cefriel.chimera.processor.rml.RMLMessageProcessor" id="rml_lifter"/>
+  <bean class="com.cefriel.chimera.processor.enrich.UrlDataEnricher" id="url_enricher"/>
   <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
   <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph"/>
   <bean class="com.cefriel.chimera.processor.DumpGraph" id="graph_dumper"/>
@@ -47,6 +48,9 @@
       <camel:post uri="/lift/gtfs">
         <camel:to uri="seda:lifting?timeout=0"/>
       </camel:post>
+      <camel:post uri="/load">
+        <camel:to uri="seda:loadresource?timeout=0"/>
+      </camel:post>
     </camel:rest>
     <!-- Main routes -->
     <camel:route id="lifting">
@@ -75,12 +79,26 @@
       <camel:from uri="seda:conversion"/>
       <camel:to uri="direct:conversion_processing?timeout=0"/>
     </camel:route>
+    <camel:route id="load">
+      <camel:from uri="seda:loadresource"/>
+      <camel:to id="save_locally" uri="file:///home?fileName=${header.filename}&amp;autoCreate=true"/>
+      <setBody>
+        <simple>File saved at /home/${header.filename}</simple>
+      </setBody>
+      <marshal><json/></marshal>
+    </camel:route>
     <!-- FRAGMENTS -->
     <camel:route id="conversion_processing">
       <camel:from uri="direct:conversion_processing"/>
       <camel:log loggingLevel="WARN" message="Converting GTFS"/>
       <camel:process id="attachGraph_conversion" ref="attachGraph"/>
       <camel:to uri="direct:lifting_component?timeout=0"/>
+      <!-- Remove comment to try enrichment or add it to the API call header
+      <camel:setHeader headerName="additional_source">
+        <simple>file://./enrich.ttl</simple>
+      </camel:setHeader>
+      -->
+      <camel:process id="enrich_kg" ref="url_enricher"/>
       <camel:to uri="direct:lowering_component?timeout=0"/>
       <camel:setHeader headerName="Content-Type">
         <constant>application/zip</constant>

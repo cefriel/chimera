@@ -1,0 +1,33 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://transport.linkeddata.es/sample/AMV> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/AMV".
+
+<http://transport.linkeddata.es/sample/BEATTY_AIRPORT> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/BEATTY_AIRPORT".
+
+<http://transport.linkeddata.es/sample/BULLFROG> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/BULLFROG".
+
+<http://transport.linkeddata.es/sample/DADAN> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/DADAN".
+
+<http://transport.linkeddata.es/sample/EMSI> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/EMSI".
+
+<http://transport.linkeddata.es/sample/FUR_CREEK_RES> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/FUR_CREEK_RES".
+
+<http://transport.linkeddata.es/sample/NADAV> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/NADAV".
+
+<http://transport.linkeddata.es/sample/NANAA> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/NANAA".
+
+<http://transport.linkeddata.es/sample/STAGECOACH> a gtfs:Stop;
+  foaf:page "http://samplefeed.com/stops/STAGECOACH".

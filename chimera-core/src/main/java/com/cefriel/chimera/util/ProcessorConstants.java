@@ -36,6 +36,7 @@ public class ProcessorConstants {
     public static final String FILE_EXTENSION = "file_extension";
 
     public static final String SHACL_RULES = "shacl_rules";
+    public static final String ADDITIONAL_SOURCE = "additional_source";
     public static final String ADDITIONAL_SOURCES = "additional_sources";
     public static final String ONTOLOGY_URLS = "ontologies";
 

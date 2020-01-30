@@ -15,6 +15,7 @@
  */
 package com.cefriel.chimera.processor.enrich;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cefriel.chimera.graph.RDFGraph;
@@ -39,6 +40,13 @@ public class UrlDataEnricher implements Processor {
 	
 		if (additionalSourcesUrls == null)
 			additionalSourcesUrls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
+
+		if (additionalSourcesUrls == null)
+			additionalSourcesUrls = new ArrayList<>();
+
+		String additionalSource = exchange.getMessage().getHeader(ProcessorConstants.ADDITIONAL_SOURCE, String.class);
+		if (additionalSource != null)
+			additionalSourcesUrls.add(additionalSource);
 
 		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);

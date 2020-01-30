@@ -24,7 +24,7 @@
     rdfs:label "stops".
 :s_0 a rr:SubjectMap.
 :map_stops_0 rr:subjectMap :s_0.
-:s_0 rr:template "http://transport.linkeddata.es/madrid/metro/stops/{stop_id}".
+:s_0 rr:template "http://transport.linkeddata.es/sample/{stop_id}".
 :pom_0 a rr:PredicateObjectMap.
 :map_stops_0 rr:predicateObjectMap :pom_0.
 :pm_0 a rr:PredicateMap.
