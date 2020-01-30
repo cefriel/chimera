@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  <bean class="com.cefriel.chimera.processor.rml.RMLMessageProcessor" id="rml_lifter"/>
+  <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
+  <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph"/>
+  <bean class="com.cefriel.chimera.processor.DumpGraph" id="graph_dumper"/>
+  <!-- Utilities -->
+  <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zip_splitter"/>
+  <!-- Configuration -->
+  <bean class="com.cefriel.chimera.processor.rml.RMLOptions" id="rml_config_gtfs_lifting">
+    <property name="mappings">
+      <util:list id="mappingsArray">
+        <value>./gtfs-mappings.rml.ttl</value>
+      </util:list>
+    </property>
+  </bean>
+  <bean class="com.cefriel.chimera.processor.template.TemplateLowererOptions" id="template_config_gtfs_stops">
+    <property name="templatePath" value="./template-stops.vm"/>
+    <property name="destFileName" value="stops.txt"/>
+    <property name="attachmentToExchange" value="true"/>
+  </bean>
+  <!-- Camel routes -->
+  <camelContext id="snap_converter_context" streamCache="true" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    <jmxAgent disabled="true" id="agent"/>
+    <!-- Exceptions management -->
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="0"/>
+      <handled>
+        <constant>false</constant>
+      </handled>
+    </onException>
+    <camel:restConfiguration component="undertow" contextPath="/chimera-demo" port="8888"/>
+    <!-- Converter input routes -->
+    <camel:rest id="_rest1">
+      <camel:post uri="/roundtrip/gtfs">
+        <camel:to uri="seda:conversion?timeout=0"/>
+      </camel:post>
+      <camel:post uri="/lift/gtfs">
+        <camel:to uri="seda:lifting?timeout=0"/>
+      </camel:post>
+    </camel:rest>
+    <!-- Main routes -->
+    <camel:route id="lifting">
+      <camel:from uri="seda:lifting"/>
+      <camel:log loggingLevel="INFO" message="Lifting GTFS"/>
+      <camel:process id="attachGraph_lift" ref="attachGraph"/>
+      <camel:to uri="direct:lifting_component?timeout=0"/>
+      <camel:process id="serialise_graph" ref="graph_dumper"/>
+      <camel:setHeader headerName="Content-Type">
+        <constant>application/zip</constant>
+      </camel:setHeader>
+      <camel:setHeader headerName="Content-Disposition">
+        <simple>inline; filename="lifting-result-$simple{exchangeProperty.context_id}"</simple>
+      </camel:setHeader>
+      <camel:setHeader headerName="Exchange.FILE_NAME">
+        <camel:simple>lifting-result-$simple{exchangeProperty.context_id}.$simple{header.file_extension}</camel:simple>
+      </camel:setHeader>
+      <camel:convertBodyTo type="String" charset="UTF-8"/>
+      <camel:setProperty propertyName="CamelCharsetName">
+        <constant>utf-8</constant>
+      </camel:setProperty>
+      <camel:marshal>
+        <zipFile/>
+      </camel:marshal>
+    </camel:route>
+    <camel:route id="conversion">
+      <camel:from uri="seda:conversion"/>
+      <camel:to uri="direct:conversion_processing?timeout=0"/>
+    </camel:route>
+    <!-- FRAGMENTS -->
+    <camel:route id="conversion_processing">
+      <camel:from uri="direct:conversion_processing"/>
+      <camel:log loggingLevel="WARN" message="Converting GTFS"/>
+      <camel:process id="attachGraph_conversion" ref="attachGraph"/>
+      <camel:to uri="direct:lifting_component?timeout=0"/>
+      <camel:to uri="direct:lowering_component?timeout=0"/>
+      <camel:setHeader headerName="Content-Type">
+        <constant>application/zip</constant>
+      </camel:setHeader>
+      <camel:setHeader headerName="Content-Disposition">
+        <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.context_id}"</simple>
+      </camel:setHeader>
+      <camel:setHeader headerName="Exchange.FILE_NAME">
+        <camel:simple>roundtrip-result-$simple{exchangeProperty.context_id}</camel:simple>
+      </camel:setHeader>
+      <camel:marshal>
+        <zipFile/>
+      </camel:marshal>
+    </camel:route>
+    <!-- LIFTING RML -->
+    <camel:route id="lift_fragment">
+      <camel:from uri="direct:lifting_component"/>
+          <camel:log loggingLevel="INFO" message="Lifting GTFS"/>
+          <camel:split streaming="true">
+            <ref>zip_splitter</ref>
+            <convertBodyTo type="java.io.InputStream"/>
+            <camel:filter id="filter_stops">
+              <camel:simple>${file:name} == "stops.txt"</camel:simple>
+              <camel:choice>
+                <camel:when>
+                  <camel:simple>${body} != null</camel:simple>
+                  <camel:setHeader headerName="rml_label" id="stops_label">
+                    <camel:simple>${file:name}</camel:simple>
+                  </camel:setHeader>
+                  <camel:log loggingLevel="INFO" message="Converting ${file:name}"/>
+                  <camel:setHeader headerName="rml_config">
+                    <simple>${ref:rml_config_gtfs_lifting}</simple>
+                  </camel:setHeader>
+                  <camel:process id="execute_mappings" ref="rml_lifter"/>
+                </camel:when>
+                <camel:otherwise>
+                  <camel:log loggingLevel="INFO" message="$simple{file:name} is empty"/>
+                </camel:otherwise>
+              </camel:choice>
+            </camel:filter>
+          </camel:split>
+    </camel:route>
+    <!-- LOWERING TEMPLATE-LOWERER -->
+    <camel:route id="lowering_fragment">
+      <camel:from uri="direct:lowering_component"/>
+      <camel:log loggingLevel="INFO" message="Lowering to GTFS"/>
+      <camel:setHeader headerName="template_config">
+        <simple>${ref:template_config_gtfs_stops}</simple>
+      </camel:setHeader>
+      <camel:process ref="template_lower"/>
+      <camel:log loggingLevel="INFO" message="Lowering completed"/>
+    </camel:route>
+  </camelContext>
+</beans>

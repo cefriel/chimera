@@ -22,6 +22,8 @@
         -->
         <module>chimera-rdf-lowerer</module>
 
+        <module>chimera-example</module>
+
         <!-- TODO
         <module>libs/st4rt</module>
         <module>chimera-st4rt</module>
