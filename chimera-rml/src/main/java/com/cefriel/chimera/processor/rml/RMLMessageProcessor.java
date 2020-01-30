@@ -27,13 +27,19 @@ import java.util.Map;
 public class RMLMessageProcessor implements Processor {
 
     private RMLOptions defaultRmlOptions;
+    private String label;
 
     @Override
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
-        String label = exchange.getProperty(RMLProcessorConstants.RML_LABEL, String.class);
+        String streamLabel = exchange.getMessage().getHeader(RMLProcessorConstants.RML_LABEL, String.class);
         Map<String, InputStream> streamsMap = new HashMap<>();
-        streamsMap.put("is://" + label, in.getBody(InputStream.class));
+        if (streamLabel != null) {
+            exchange.getMessage().removeHeader(RMLProcessorConstants.RML_LABEL);
+            streamsMap.put("is://" + streamLabel, in.getBody(InputStream.class));
+        } else {
+            streamsMap.put("is://" + label, in.getBody(InputStream.class));
+        }
 
         RMLProcessor rmlProcessor = new RMLProcessor();
         if (defaultRmlOptions != null)
@@ -48,6 +54,14 @@ public class RMLMessageProcessor implements Processor {
 
     public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
         this.defaultRmlOptions = defaultRmlOptions;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
     
 }

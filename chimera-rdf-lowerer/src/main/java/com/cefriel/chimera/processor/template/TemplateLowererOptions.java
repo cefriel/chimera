@@ -24,6 +24,7 @@ public class TemplateLowererOptions {
     private String format;
     private String utils;
     private String queryFile;
+    private boolean trimTemplate;
     private boolean attachmentToExchange;
 
     public String getTemplatePath() {
@@ -80,6 +81,14 @@ public class TemplateLowererOptions {
 
     public void setQueryFile(String queryFile) {
         this.queryFile = queryFile;
+    }
+
+    public boolean isTrimTemplate() {
+        return trimTemplate;
+    }
+
+    public void setTrimTemplate(boolean trimTemplate) {
+        this.trimTemplate = trimTemplate;
     }
 
     public boolean isAttachmentToExchange() {

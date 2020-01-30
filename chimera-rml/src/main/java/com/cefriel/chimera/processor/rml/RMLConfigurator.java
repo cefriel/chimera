@@ -21,11 +21,10 @@ import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.RDF4JRemoteStore;
+import be.ugent.rml.store.RDF4JRepository;
 import be.ugent.rml.store.RDF4JStore;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.RMLProcessorConstants;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -58,13 +57,13 @@ public class RMLConfigurator {
 
             RecordsFactory factory = new RecordsFactory(basePath, streams);
 
-            RDF4JRemoteStore outputStore;
+            RDF4JRepository outputStore;
             if (graph.isRemote() && options.getBatchSize() > 0) {
-                    outputStore = new RDF4JRemoteStore(graph.getRepository(), contextIRI,
+                    outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
                             options.getBatchSize(), options.isIncrementalUpdate());
             } else {
                 // Covers both the cases: HTTPRepository not incremental / In-memory repository
-                outputStore = new RDF4JRemoteStore(graph.getRepository(), contextIRI, 0, false);
+                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI, 0, false);
             }
 
             String baseIRI;

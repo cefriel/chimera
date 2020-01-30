@@ -95,6 +95,8 @@ public class TemplateLowererProcessor implements Processor {
 			tl.setKeyValuePairsPath(templateLowererOptions.getKeyValuePairsPath());
 		if (templateLowererOptions.getFormat() != null)
 			tl.setFormat(templateLowererOptions.getFormat());
+		if (templateLowererOptions.isTrimTemplate())
+			tl.setTrimTemplate(true);
 
 		new File(localDestPath).mkdirs();
 
@@ -116,7 +118,7 @@ public class TemplateLowererProcessor implements Processor {
 			}
 			Map<String, InputStream> outputs = new HashMap<>();
 			for (String f : result)
-				outputs.put(f, UniLoader.open(localDestPath + f));
+				outputs.put(f, UniLoader.open("file://" + localDestPath + f));
 			exchange.getMessage().setBody(outputs, Map.class);
 		}
 	}

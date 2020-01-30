@@ -18,7 +18,7 @@ package com.cefriel.chimera.processor.rml;
 import java.io.InputStream;
 import java.util.*;
 
-import be.ugent.rml.store.RDF4JRemoteStore;
+import be.ugent.rml.store.QuadStore;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.Utils;
@@ -42,7 +42,7 @@ public class RMLProcessor implements Processor {
         Message in = exchange.getIn();
         Map<String, InputStream> streamsMap = in.getBody(Map.class);
 
-        processRML(streamsMap,exchange);
+        processRML(streamsMap, exchange);
     }
 
     public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
@@ -67,10 +67,11 @@ public class RMLProcessor implements Processor {
             rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
         IRI context =  Utils.getContextIRI(exchange);
+        logger.info("MAP " + streamsMap.keySet());
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
 
         if(executor != null) {
-            RDF4JRemoteStore outputStore = (RDF4JRemoteStore) executor.execute(null);
+            QuadStore outputStore = executor.execute(null);
 
             if (outputStore.isEmpty()) {
                 logger.info("No results!");
@@ -78,7 +79,6 @@ public class RMLProcessor implements Processor {
             }
 
             //Write quads to the context graph
-            outputStore.writeToDB();
             outputStore.shutDown();
         }
     }
