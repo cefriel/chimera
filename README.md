@@ -34,12 +34,11 @@ Chimera Composable Semantic Data Transformation
         Attach the file chimera-example/inbox/enrich.ttl
         Add as header filename:enrich.ttl
         ```
-    - Copy the url returned (let's assume it is `file://url_resource_loaded`)
     - Perform the enriched conversion
         ```
         POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
         Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-        Add as header additional_source:file://url_resource_loaded
+        Add as header additional_source:enrich.ttl
         ```
 - Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back an _enriched_ GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation and downloading the additional source from a server requiring _JWT based authentication_.
     - Perform the enriched conversion

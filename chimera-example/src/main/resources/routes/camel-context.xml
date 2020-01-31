@@ -84,7 +84,7 @@
       <camel:from uri="seda:loadresource"/>
       <camel:to id="save_locally" uri="file:///home?fileName=${header.filename}&amp;autoCreate=true"/>
       <setBody>
-        <simple>File saved at file:///home/${header.filename}</simple>
+        <simple>File saved. Use it as an additional source adding to the request header [additional_source:${header.filename}].</simple>
       </setBody>
       <marshal><json/></marshal>
     </camel:route>
@@ -100,6 +100,14 @@
           <camel:enrich strategyRef="addJWT">
             <camel:constant>direct:authService</camel:constant>
           </camel:enrich>
+        </camel:when>
+      </camel:choice>
+      <camel:choice>
+        <camel:when>
+          <camel:simple>${header.additional_source} not contains '://'</camel:simple>
+          <camel:setHeader headerName="additional_source">
+            <camel:simple>file:///home/$simple{header.additional_source}</camel:simple>
+          </camel:setHeader>
         </camel:when>
       </camel:choice>
       <camel:process id="enrich_kg" ref="url_enricher"/>
@@ -180,7 +188,7 @@
         <camel:when>
           <camel:simple>${header.CamelHttpResponseCode} == 200</camel:simple>
           <camel:unmarshal>
-            <camel:json library="Jackson" unmarshalTypeName="com.cefriel.chimera.assetmanager.AccessResponseToken"/>
+            <camel:json library="Jackson" unmarshalTypeName="com.cefriel.chimera.jwt.AccessResponseToken"/>
           </camel:unmarshal>
          </camel:when>
       </camel:choice>
