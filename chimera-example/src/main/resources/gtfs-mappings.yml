@@ -19,7 +19,7 @@ mappings:
   stops:
     sources:
       - [is://stops.txt~csv]
-    s: http://transport.linkeddata.es/sample/$(stop_id)
+    s: $(stop_id)
     po:
       - [a,gtfs:Stop]
       - [gtfs:code,$(stop_code)]
