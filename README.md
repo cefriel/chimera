@@ -17,12 +17,12 @@ Chimera Composable Semantic Data Transformation
     docker run -p 8888:8888 chimera-example
     ```
 ### How to test it
-- Use the RML lifter block to obtain a Linked GTFS representation of a sample GTFS feed.
+- Use the _RML lifter_ block to obtain a Linked GTFS representation of a sample GTFS feed.
     ```
     POST http://localhost:8888/chimera-demo/lift/gtfs/ 
     Attach the file chimera-example/inbox/sample-gtfs-feed.zip
     ```
-- Use the _RML lifter_ block and the rdf-lowerer block to obtain back a GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation.
+- Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back a GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation.
     ```
     POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
     Attach the file chimera-example/inbox/sample-gtfs-feed.zip

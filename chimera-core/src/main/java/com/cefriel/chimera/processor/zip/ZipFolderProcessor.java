@@ -64,7 +64,7 @@ public class ZipFolderProcessor implements Processor {
         String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
         if (context == null)
             context = "";
-        exchange.getMessage().setHeader("Content-Disposition", "inline; filename=\"" + filename + "-" + context + "\"");
+        exchange.getMessage().setHeader("Content-Disposition", "inline; filename=\"" + filename + context + "\"");
     }
 
 }
