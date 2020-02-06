@@ -58,6 +58,7 @@
       <camel:from uri="seda:lifting"/>
       <camel:process id="attachGraph_lift" ref="attachGraph"/>
       <camel:to uri="direct:lifting_component?timeout=0"/>
+      <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:process id="serialise_graph" ref="graph_dumper"/>
       <camel:setHeader headerName="Content-Type">
         <constant>application/zip</constant>
@@ -94,23 +95,7 @@
       <camel:log loggingLevel="WARN" message="Converting GTFS"/>
       <camel:process id="attachGraph_conversion" ref="attachGraph"/>
       <camel:to uri="direct:lifting_component?timeout=0"/>
-      <camel:choice>
-        <camel:when>
-          <camel:simple>${header.token} == null &amp;&amp; ${header.username} != null &amp;&amp; ${header.password} != null</camel:simple>
-          <camel:enrich strategyRef="addJWT">
-            <camel:constant>direct:authService</camel:constant>
-          </camel:enrich>
-        </camel:when>
-      </camel:choice>
-      <camel:choice>
-        <camel:when>
-          <camel:simple>${header.additional_source} not contains '://'</camel:simple>
-          <camel:setHeader headerName="additional_source">
-            <camel:simple>file:///home/$simple{header.additional_source}</camel:simple>
-          </camel:setHeader>
-        </camel:when>
-      </camel:choice>
-      <camel:process id="enrich_kg" ref="url_enricher"/>
+      <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:to uri="direct:lowering_component?timeout=0"/>
       <camel:setHeader headerName="Content-Type">
         <constant>application/zip</constant>
@@ -192,6 +177,26 @@
           </camel:unmarshal>
          </camel:when>
       </camel:choice>
+    </camel:route>
+    <camel:route>
+      <camel:from uri="direct:enrich_component" />
+      <camel:choice>
+        <camel:when>
+          <camel:simple>${header.token} == null &amp;&amp; ${header.username} != null &amp;&amp; ${header.password} != null</camel:simple>
+          <camel:enrich strategyRef="addJWT">
+            <camel:constant>direct:authService</camel:constant>
+          </camel:enrich>
+        </camel:when>
+      </camel:choice>
+      <camel:choice>
+        <camel:when>
+          <camel:simple>${header.additional_source} != null &amp;&amp; ${header.additional_source} not contains '://'</camel:simple>
+          <camel:setHeader headerName="additional_source">
+            <camel:simple>file:///home/$simple{header.additional_source}</camel:simple>
+          </camel:setHeader>
+        </camel:when>
+      </camel:choice>
+      <camel:process id="enrich_kg" ref="url_enricher"/>
     </camel:route>
   </camelContext>
 </beans>
