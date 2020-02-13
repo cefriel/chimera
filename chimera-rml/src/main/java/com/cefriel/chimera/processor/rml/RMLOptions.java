@@ -27,6 +27,9 @@ public class RMLOptions {
     private boolean ordered;
     private String baseIRI;
     private String baseIRIPrefix;
+    private int corePoolSize = 4;
+    private int maximumPoolSize = 5;
+    private int keepAliveMinutes = 10;
 
     public List<String> getMappings() {
         return mappings;
@@ -90,6 +93,30 @@ public class RMLOptions {
 
     public void setBaseIRIPrefix(String baseIRIPrefix) {
         this.baseIRIPrefix = baseIRIPrefix;
+    }
+
+    public int getCorePoolSize() {
+        return corePoolSize;
+    }
+
+    public void setCorePoolSize(int corePoolSize) {
+        this.corePoolSize = corePoolSize;
+    }
+
+    public int getMaximumPoolSize() {
+        return maximumPoolSize;
+    }
+
+    public void setMaximumPoolSize(int maximumPoolSize) {
+        this.maximumPoolSize = maximumPoolSize;
+    }
+
+    public int getKeepAliveMinutes() {
+        return keepAliveMinutes;
+    }
+
+    public void setKeepAliveMinutes(int keepAliveMinutes) {
+        this.keepAliveMinutes = keepAliveMinutes;
     }
 
 }

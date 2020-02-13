@@ -57,6 +57,13 @@ public class RMLConfigurator {
 
             RecordsFactory factory = new RecordsFactory(basePath, streams);
 
+            if (options.getCorePoolSize() != 0)
+                RDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
+            if (options.getMaximumPoolSize() != 0)
+                RDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
+            if (options.getKeepAliveMinutes() != 0)
+                RDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
+
             RDF4JRepository outputStore;
             if (graph.isRemote() && options.getBatchSize() > 0) {
                     outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
