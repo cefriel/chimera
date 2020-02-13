@@ -54,13 +54,13 @@ public class TemplateLowererProcessor implements Processor {
 		Repository repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 
 		// Template Lowerer configuration
-		TemplateLowererOptions templateLowererOptions = exchange.getIn()
+		TemplateLowererOptions tlo = exchange.getIn()
 					.getHeader(TemplateProcessorConstants.TEMPLATE_CONFIG, TemplateLowererOptions.class);
-		if (templateLowererOptions != null)
+		if (tlo != null)
 			exchange.getIn().removeHeader(TemplateProcessorConstants.TEMPLATE_CONFIG);
 		else {
-			templateLowererOptions = defaultTLOptions;
-			if (templateLowererOptions == null)
+			tlo = defaultTLOptions;
+			if (tlo == null)
 				throw new IllegalArgumentException("TemplateLowererOptions config should be provided in the header");
 		}
 
@@ -72,8 +72,8 @@ public class TemplateLowererProcessor implements Processor {
 			localDestPath = localDestPath + context + "/";
 
 		LoweringUtils lu = new LoweringUtils();
-		if (templateLowererOptions.getUtils() != null)
-			switch (templateLowererOptions.getUtils()) {
+		if (tlo.getUtils() != null)
+			switch (tlo.getUtils()) {
 				case "transmodel":
 					lu = new TransmodelLoweringUtils();
 					break;
@@ -89,27 +89,26 @@ public class TemplateLowererProcessor implements Processor {
 		RDFReader reader = new RDFReader(repo, contextIRI);
 		TemplateLowerer tl = new TemplateLowerer(reader, lu);
 
-		if (templateLowererOptions.getKeyValueCsvPath() != null)
-			tl.setKeyValueCsvPath(templateLowererOptions.getKeyValueCsvPath());
-		if (templateLowererOptions.getKeyValuePairsPath() != null)
-			tl.setKeyValuePairsPath(templateLowererOptions.getKeyValuePairsPath());
-		if (templateLowererOptions.getFormat() != null)
-			tl.setFormat(templateLowererOptions.getFormat());
-		if (templateLowererOptions.isTrimTemplate())
+		if (tlo.getKeyValueCsvPath() != null)
+			tl.setKeyValueCsvPath(tlo.getKeyValueCsvPath());
+		if (tlo.getKeyValuePairsPath() != null)
+			tl.setKeyValuePairsPath(tlo.getKeyValuePairsPath());
+		if (tlo.getFormat() != null)
+			tl.setFormat(tlo.getFormat());
+		if (tlo.isTrimTemplate())
 			tl.setTrimTemplate(true);
 
 		new File(localDestPath).mkdirs();
 
-		if (templateLowererOptions.getQueryFile() != null)
-			tl.lower(templateLowererOptions.getTemplatePath(),
-					localDestPath + templateLowererOptions.getDestFileName(), templateLowererOptions.getQueryFile());
+		if (tlo.getQueryFile() != null)
+			tl.lower(tlo.getTemplatePath(),
+					localDestPath + tlo.getDestFileName(), tlo.getQueryFile());
 		else
-			tl.lower(templateLowererOptions.getTemplatePath(),
-					localDestPath + templateLowererOptions.getDestFileName());
+			tl.lower(tlo.getTemplatePath(),
+					localDestPath + tlo.getDestFileName());
 
-		String filename = templateLowererOptions.getDestFileName().replaceFirst("[.][^.]+$", "");
-
-		if (templateLowererOptions.isAttachmentToExchange() && templateLowererOptions.getQueryFile() == null) {
+		if (tlo.isAttachmentToExchange()) {
+			String filename = tlo.getDestFileName().replaceFirst("[.][^.]+$", "");
 			List<String> result;
 			try (Stream<Path> walk = Files.walk(Paths.get(localDestPath))) {
 				result = walk.map(x -> x.getFileName().toString())
