@@ -64,6 +64,13 @@ public class TemplateLowererProcessor implements Processor {
 				throw new IllegalArgumentException("TemplateLowererOptions config should be provided in the header");
 		}
 
+		String templatePath = exchange.getIn().getHeader(TemplateProcessorConstants.TEMPLATE_PATH, String.class);
+		if (templatePath == null)
+			templatePath = tlo.getTemplatePath();
+		String destFileName = exchange.getIn().getHeader(TemplateProcessorConstants.DEST_FILE_NAME, String.class);
+		if (destFileName == null)
+			destFileName = tlo.getDestFileName();
+
 		String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
 		String localDestPath = destinationPath;
 		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
@@ -101,11 +108,11 @@ public class TemplateLowererProcessor implements Processor {
 		new File(localDestPath).mkdirs();
 
 		if (tlo.getQueryFile() != null)
-			tl.lower(tlo.getTemplatePath(),
-					localDestPath + tlo.getDestFileName(), tlo.getQueryFile());
+			tl.lower(templatePath,
+					localDestPath + destFileName, tlo.getQueryFile());
 		else
-			tl.lower(tlo.getTemplatePath(),
-					localDestPath + tlo.getDestFileName());
+			tl.lower(templatePath,
+					localDestPath + destFileName);
 
 		if (tlo.isAttachmentToExchange()) {
 			String filename = tlo.getDestFileName().replaceFirst("[.][^.]+$", "");
