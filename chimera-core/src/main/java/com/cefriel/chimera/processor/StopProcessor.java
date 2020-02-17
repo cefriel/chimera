@@ -39,7 +39,19 @@ public class StopProcessor implements Processor {
         	logger.error(stack_to_string(caused));
         camelContext.getInflightRepository().remove(exchange);
         // Stop the route
-        camelContext.stop();
+        Thread stop = new Thread(() -> {
+            try {
+                if (routeId != null)
+                    exchange.getContext().stopRoute(routeId);
+                else
+                    exchange.getContext().stop();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        });
+
+        // Start the thread that stops this route
+        stop.start();
     }
 
     private String stack_to_string(Throwable e) {
