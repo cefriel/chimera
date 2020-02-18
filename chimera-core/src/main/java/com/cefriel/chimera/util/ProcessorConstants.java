@@ -19,9 +19,6 @@ public class ProcessorConstants {
 
     public static String BASE_IRI_VALUE = "http://sprint-transport.eu/data/";
 
-    public static String DEFAULT_REPOSITORY_ID = "chimera_repo";
-    public static String DEFAULT_REPO_CONFIG_FILE = "file://./repo-default-config.ttl";
-
     public static final String BASE_IRI = "base_iri";
 
     public static final String SOURCE_STD = "source_standard";
@@ -48,22 +45,6 @@ public class ProcessorConstants {
 
     public static void setBaseIriValue(String baseIriValue) {
         BASE_IRI_VALUE = baseIriValue;
-    }
-
-    public static String getDefaultRepositoryId() {
-        return DEFAULT_REPOSITORY_ID;
-    }
-
-    public static void setDefaultRepositoryId(String defaultRepositoryId) {
-        DEFAULT_REPOSITORY_ID = defaultRepositoryId;
-    }
-
-    public static String getDefaultRepoConfigFile() {
-        return DEFAULT_REPO_CONFIG_FILE;
-    }
-
-    public static void setDefaultRepoConfigFile(String defaultRepoConfigFile) {
-        DEFAULT_REPO_CONFIG_FILE = defaultRepoConfigFile;
     }
 
 }

@@ -17,6 +17,7 @@ package com.cefriel.chimera.processor;
 
 import com.cefriel.chimera.graph.HTTPRDFGraph;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.graph.SPARQLEndpointGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
@@ -30,15 +31,19 @@ public class AttachGraph implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(AttachGraph.class);
 
-    private String DB_ADDRESS;
-    private String REPOSITORY_ID;
+    private String rrAddress;
+    private String repositoryId;
+    private String sparqlEndpoint;
+
     private boolean context = true;
 
     public void process(Exchange exchange) throws Exception {
         RDFGraph graph;
-        if (DB_ADDRESS != null) {
-            logger.info("Connecting to remote repository " + REPOSITORY_ID);
-            graph = new HTTPRDFGraph(DB_ADDRESS, REPOSITORY_ID);
+        if (rrAddress != null && repositoryId != null) {
+            logger.info("Connecting to remote repository " + repositoryId);
+            graph = new HTTPRDFGraph(rrAddress, repositoryId);
+        } else if (sparqlEndpoint != null) {
+            graph = new SPARQLEndpointGraph(sparqlEndpoint);
         } else
             graph = new MemoryRDFGraph();
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
@@ -47,20 +52,28 @@ public class AttachGraph implements Processor {
     	    exchange.setProperty(ProcessorConstants.CONTEXT_ID, exchange.getExchangeId());
     }
 
-    public String getDB_ADDRESS() {
-        return DB_ADDRESS;
+    public String getRrAddress() {
+        return rrAddress;
     }
 
-    public void setDB_ADDRESS(String DB_ADDRESS) {
-        this.DB_ADDRESS = DB_ADDRESS;
+    public void setRrAddress(String rrAddress) {
+        this.rrAddress = rrAddress;
     }
 
-    public String getREPOSITORY_ID() {
-        return REPOSITORY_ID;
+    public String getRepositoryId() {
+        return repositoryId;
     }
 
-    public void setREPOSITORY_ID(String REPOSITORY_ID) {
-        this.REPOSITORY_ID = REPOSITORY_ID;
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
+    }
+
+    public String getSparqlEndpoint() {
+        return sparqlEndpoint;
+    }
+
+    public void setSparqlEndpoint(String sparqlEndpoint) {
+        this.sparqlEndpoint = sparqlEndpoint;
     }
 
     public boolean isContext() {
