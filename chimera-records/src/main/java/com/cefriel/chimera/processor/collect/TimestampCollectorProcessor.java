@@ -29,8 +29,8 @@ public class TimestampCollectorProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(RecordCollectorProcessor.class);
 
-    private String timestampLabel = "default_label";
     private String collectorId;
+    private String timestampLabel = "default_label";
 
     @Override
     public void process(Exchange exchange) throws Exception {

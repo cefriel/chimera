@@ -26,12 +26,16 @@ public class RecordCollectorProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(RecordCollectorProcessor.class);
 
+    private String collectorId;
     private String filepath = "./records.txt";
     private int bufferSize = -1;
+    private boolean append = true;
 
     @Override
     public void process(Exchange exchange) throws Exception {
         String collectorId = exchange.getMessage().getHeader(RecordProcessorConstants.COLLECTOR_ID, String.class);
+        if (collectorId == null)
+            collectorId = this.collectorId;
         if (collectorId == null) {
             logger.info("Collector ID not found. Attach it to header using as key " + RecordProcessorConstants.COLLECTOR_ID);
             return;
@@ -42,14 +46,18 @@ public class RecordCollectorProcessor implements Processor {
             String filepath;
             int bufferSize;
             filepath = exchange.getMessage().getHeader(RecordProcessorConstants.COLLECTOR_FILEPATH, String.class);
-            bufferSize = exchange.getMessage().getHeader(RecordProcessorConstants.COLLECTOR_BUFFER_SIZE, Integer.class);
+            String s_bufferSize = exchange.getMessage().getHeader(RecordProcessorConstants.COLLECTOR_BUFFER_SIZE, String.class);
+
 
             if (filepath == null)
                 filepath = this.filepath;
-            if (bufferSize == 0)
+            if(s_bufferSize != null)
+                bufferSize = Integer.parseInt(s_bufferSize);
+            else
                 bufferSize = this.bufferSize;
 
-            collector = new RecordCollector(filepath, bufferSize);
+            collector = new RecordCollector(filepath, bufferSize, append);
+            exchange.setProperty(collectorId, collector);
         } else
             collector.saveData(true);
     }
@@ -68,5 +76,13 @@ public class RecordCollectorProcessor implements Processor {
 
     public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
+    }
+
+    public String getCollectorId() {
+        return collectorId;
+    }
+
+    public void setCollectorId(String collectorId) {
+        this.collectorId = collectorId;
     }
 }

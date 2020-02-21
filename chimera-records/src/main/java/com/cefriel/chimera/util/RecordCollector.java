@@ -44,15 +44,20 @@ public class RecordCollector {
 	 * Constructor of a RecordCollector.
 	 * @param filepath The path to the file to save records
 	 * @param bufferSize The buffer size
+	 * @param append If file at filepath should be re-initialized
 	 */
-	public RecordCollector (String filepath, int bufferSize) {	
+	public RecordCollector (String filepath, int bufferSize, boolean append) {
 		dataToWrite = ConcurrentHashMap.newKeySet();
 		numbRecords = new AtomicInteger(0);
 		this.BUFFER_SIZE = bufferSize;
 		this.filepath = filepath;
 		
 		//Empty file
-		saveData(false);
+		saveData(append);
+	}
+
+	public RecordCollector (String filepath, int bufferSize) {
+		this(filepath, bufferSize, false);
 	}
 	
 	/**
