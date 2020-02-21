@@ -85,4 +85,12 @@ public class RecordCollectorProcessor implements Processor {
     public void setCollectorId(String collectorId) {
         this.collectorId = collectorId;
     }
+
+    public boolean isAppend() {
+        return append;
+    }
+
+    public void setAppend(boolean append) {
+        this.append = append;
+    }
 }
