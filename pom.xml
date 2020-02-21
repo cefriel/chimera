@@ -22,6 +22,8 @@
         -->
         <module>chimera-rdf-lowerer</module>
 
+        <module>chimera-records</module>
+
         <module>chimera-example</module>
 
         <!-- TODO
