@@ -15,11 +15,13 @@
  */
 package com.cefriel.chimera.processor.collect;
 
+import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.RecordCollector;
 import com.cefriel.chimera.util.RecordProcessorConstants;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.lucene.index.PrefixCodedTerms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +55,11 @@ public class TimestampCollectorProcessor implements Processor {
             rcp.process(exchange);
         } else {
             String[] record = new String[3];
-            record[0] = Utils.getContext(exchange);
+            String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
+            if (context != null)
+                record[0] = context;
+            else
+                record[0] = exchange.getExchangeId();
             record[1] = timestampLabel;
             record[2] = Long.toString(Instant.now().toEpochMilli());
             collector.addRecord(record);
