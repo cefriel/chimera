@@ -16,6 +16,7 @@
 
 package com.cefriel.chimera.util;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
@@ -51,6 +52,10 @@ public class RecordCollector {
 		numbRecords = new AtomicInteger(0);
 		this.BUFFER_SIZE = bufferSize;
 		this.filepath = filepath;
+
+		File folder = (new File(filepath)).getParentFile();
+		if (folder != null)
+			folder.mkdirs();
 		
 		//Empty file
 		saveData(append);
