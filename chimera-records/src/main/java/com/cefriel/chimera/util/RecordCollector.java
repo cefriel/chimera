@@ -47,13 +47,15 @@ public class RecordCollector {
 	 * @param bufferSize The buffer size
 	 * @param append If file at filepath should be re-initialized
 	 */
-	public RecordCollector (String filepath, int bufferSize, boolean append) {
+	public RecordCollector (String filepath, int bufferSize, boolean append) throws IOException {
 		dataToWrite = ConcurrentHashMap.newKeySet();
 		numbRecords = new AtomicInteger(0);
 		this.BUFFER_SIZE = bufferSize;
 		this.filepath = filepath;
 
-		File folder = (new File(filepath)).getParentFile();
+		File file = new File(filepath);
+		file.createNewFile();
+		File folder = file.getParentFile();
 		if (folder != null)
 			folder.mkdirs();
 		
@@ -61,7 +63,7 @@ public class RecordCollector {
 		saveData(append);
 	}
 
-	public RecordCollector (String filepath, int bufferSize) {
+	public RecordCollector (String filepath, int bufferSize) throws IOException {
 		this(filepath, bufferSize, false);
 	}
 	
