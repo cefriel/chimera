@@ -1,5 +1,23 @@
 Chimera Composable Semantic Data Transformation
 ===
+Chimera is a tool to build conversion pipelines and to integrate them inside Java applications or to expose them as services. It is implemented on top of Apache Camel.
+
+### Goals
+The main goals of Chimera are:
+* to define so-called “semantic conversion pipelines”, transformations using Semantic Web technologies to obtain message-to-message mediators or batch converters.
+* to minimise the amount of code to be written. In principle the aim is completely avoid coding by just configuring the various components.
+
+### Architecture
+The main assumption of Chimera is that it is possible to break down a converter (or mediator, using the naming conventions specific to Enterprise Service Buses) into smaller, composable and reusable entities. The insipiration to this approach is taken from both the ETL applications like Talend and the Enterprise Integration Patterns, since they both break a data-based process into blocks to be composed.
+The architecture of Chimera is heavily inspired by the Enterprise Integration Pattern “Data enricher”. A conversion process based on Semantic Web technologies can be seen as an RDF graph which is initially enriched with some background knowledge (being either a set of ontologies or a set of master/lookup data), and then enriched with triples coming from the incoming message/dataset. The resulting graph can then be exploited to extract data which is used to populate the structure of the destination message/dataset. The RDF graph can be interpreted as a variable which is shared by default among all the blocks in a conversion process.
+With this high-level process in mind, we can start defining a first set of “conversion blocks”:
+* Lifting: this block takes a structured message as input, and enriches the RDF graph with the triples obtained by applying a “mapping” to the input.
+* Data enricher: this block loads a set of RDF files and loads them into the RDF graph.
+* Inference enricher: this block loads a set of ontology files (in either RDFS or OWL format) and loads them into the RDF graph. The RDF graph becomes a “inference graph” after using this block, since the ontologies are used to drive inference.
+* Lowering: this block applies a “mapping” to the RDF graph, and produces a structured message as output.
+
+
+
 
 ### How to run it
 - Clone the repository
