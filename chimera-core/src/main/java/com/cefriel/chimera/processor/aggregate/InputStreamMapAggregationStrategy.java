@@ -29,14 +29,12 @@ public class InputStreamMapAggregationStrategy implements AggregationStrategy {
         Map<String, InputStream> isMap;
         if (oldExchange == null) {
             isMap = new HashMap<>();
-            isMap.putAll(newBody);
-            newExchange.getIn().setBody(isMap);
-            return newExchange;
         } else {
             isMap = oldExchange.getIn().getBody(Map.class);
-            isMap.putAll(newBody);
-            return oldExchange;
         }
+        isMap.putAll(newBody);
+        newExchange.getIn().setBody(isMap);
+        return newExchange;
     }
 
 }
