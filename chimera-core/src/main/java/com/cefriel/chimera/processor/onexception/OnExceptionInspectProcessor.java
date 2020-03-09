@@ -29,10 +29,12 @@ public class OnExceptionInspectProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         Exception ex = exchange.getException();
-        logger.info("Should be failed ", exchange.isFailed());
-        logger.info("Exception type ", ex.getClass().getCanonicalName());
-        logger.info("Message ", ex.getMessage());
-        logger.info("Cause ", ex.getCause());
-        logger.info("Exception ", ex);
+        logger.info("Should be failed " + exchange.isFailed());
+        if(ex != null) {
+            logger.info("Exception type " + ex.getClass().getCanonicalName());
+            logger.info("Message " + ex.getMessage());
+            logger.info("Exception ", ex);
+            logger.info("Cause ", ex.getCause());
+        }
     }
 }
