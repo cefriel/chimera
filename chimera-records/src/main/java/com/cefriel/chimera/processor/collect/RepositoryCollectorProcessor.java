@@ -52,7 +52,6 @@ public class RepositoryCollectorProcessor implements Processor {
         IRI contextIRI = Utils.getContextIRI(exchange);
         RDFReader reader = new RDFReader(repo, contextIRI);
         List<Map<String,String>> results = reader.executeQueryStringValue("SELECT (COUNT(*) as ?num) \n" +
-                "FROM <http://dbpedia.org> \n" +
                 "WHERE { ?s ?p ?o } ");
         String num = "Not available";
         if (results != null)
