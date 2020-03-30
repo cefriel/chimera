@@ -16,12 +16,22 @@ With this high-level process in mind, we can start defining a first set of “co
 * _Inference enricher_: this block loads a set of ontology files (in either RDFS or OWL format) and loads them into the RDF graph. The RDF graph becomes a “inference graph” after using this block, since the ontologies are used to drive inference.
 * _Lowering_: this block applies a “mapping” to the RDF graph, and produces a structured message as output.
 
+### Project structure
+The project has a parent POM (in the parent directory) that can be used to trigger the Maven builds of sub-projects respecting internal dependencies. You can modify the parent POM to select only sub-projects you are interested in.
+The main sub-project is `chimera-core` that contains the basic blocks of the Chimera framework. Additional blocks can be found in the other sub-projects:
+- `chimera-rml` contains the blocks to implement lifting using the [rml-mapper](https://github.com/cefriel/rmlmapper-cefriel) library 
+    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rmlmapper-cefriel`
+- `chimera-rdf-lowerer` contains the blocks to implement lowering using the [rdf-lowerer](https://github.com/cefriel/rdf-lowerer) library 
+    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
+- `chimera-records` contains a set of utility blocks to gather data (timestamps, RDF graph data,...)  within a Chimera pipeline
+Last but not least, the `chimera-example` provides an example of conversion pipeline implemented using the different blocks (complete instructions below).
+
 ### How to run it
-- Clone the repository
+- Clone the repository and the required git submodules
     ```
     git clone --recurse-submodules https://github.com/cefriel/chimera.git
     ```
-- Remove comments from `pom.xml` if required libraries are not installed in the local Maven repository
+- Remove comments from `pom.xml` if required libraries (git submodules) are not already installed in the local Maven repository
 - Run `mvn:install` in the root folder to build all the sub-projects and libraries
 - Build the chimera-example image
     ```
