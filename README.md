@@ -1,4 +1,4 @@
-Chimera Composable Semantic Data Transformation
+_Chimera_: Composable Semantic Data Transformation
 ===
 Chimera is a tool to build conversion pipelines and to integrate them inside Java applications or to expose them as services. It is implemented on top of Apache Camel.
 
