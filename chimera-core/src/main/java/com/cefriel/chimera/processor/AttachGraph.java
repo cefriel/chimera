@@ -15,13 +15,10 @@
  */
 package com.cefriel.chimera.processor;
 
-import com.cefriel.chimera.graph.HTTPRDFGraph;
-import com.cefriel.chimera.graph.RDFGraph;
-import com.cefriel.chimera.graph.SPARQLEndpointGraph;
+import com.cefriel.chimera.graph.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,19 +30,36 @@ public class AttachGraph implements Processor {
 
     private String rrAddress;
     private String repositoryId;
+    private String pathDataDir;
     private String sparqlEndpoint;
 
     private boolean context = true;
 
     public void process(Exchange exchange) throws Exception {
-        RDFGraph graph;
+        RDFGraph graph = null;
+        boolean attached = false;
         if (rrAddress != null && repositoryId != null) {
             logger.info("Connecting to remote repository " + repositoryId);
             graph = new HTTPRDFGraph(rrAddress, repositoryId);
-        } else if (sparqlEndpoint != null) {
+            attached = true;
+        }
+        if (sparqlEndpoint != null) {
+            logger.info("Connecting to SPARQL endpoint " + sparqlEndpoint);
             graph = new SPARQLEndpointGraph(sparqlEndpoint);
-        } else
+            if (attached)
+                logger.warn("Multiple graphs provided! SPARQL endpoint attached, others have been discarded!");
+            attached = true;
+        }
+        if (pathDataDir != null) {
+            logger.info("Creating Native RDF4J store with path " + pathDataDir);
+            graph = new NativeRDFGraph(pathDataDir);
+            if (attached)
+                logger.warn("Multiple graphs provided! Native Graph attached, others have been discarded!");
+        }
+        if (graph == null) {
+            logger.info("Creating In-Memory RDF4J store");
             graph = new MemoryRDFGraph();
+        }
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
 
     	if(context)
@@ -66,6 +80,14 @@ public class AttachGraph implements Processor {
 
     public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
+    }
+
+    public String getPathDataDir() {
+        return pathDataDir;
+    }
+
+    public void setPathDataDir(String pathDataDir) {
+        this.pathDataDir = pathDataDir;
     }
 
     public String getSparqlEndpoint() {

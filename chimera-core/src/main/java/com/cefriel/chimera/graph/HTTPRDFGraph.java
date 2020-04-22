@@ -41,8 +41,6 @@ public class HTTPRDFGraph implements RDFGraph {
     private String rrAddress;
     private String repositoryId;
 
-    private String repoConfigPath;
-
     public HTTPRDFGraph(String rrAddress, String repositoryId) throws IOException {
         this.rrAddress = rrAddress;
         this.repositoryId = repositoryId;
@@ -58,14 +56,6 @@ public class HTTPRDFGraph implements RDFGraph {
     @Override
     public boolean isRemote() {
         return true;
-    }
-
-    public String getRepoConfigPath() {
-        return repoConfigPath;
-    }
-
-    public void setRepoConfigPath(String repoConfigPath) {
-        this.repoConfigPath = repoConfigPath;
     }
 
 }

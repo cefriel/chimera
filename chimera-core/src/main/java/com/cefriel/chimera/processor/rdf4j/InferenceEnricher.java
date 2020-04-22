@@ -40,7 +40,7 @@ public class InferenceEnricher implements Processor {
 	private String token;
 	private String ontologyRDFFormat;
 
-	// Works only for IN-MEMORY Repositories
+	// Works only for IN-MEMORY or NATIVE Repositories
 	public void process(Exchange exchange) throws Exception {
 		Message in = exchange.getIn();
 		
