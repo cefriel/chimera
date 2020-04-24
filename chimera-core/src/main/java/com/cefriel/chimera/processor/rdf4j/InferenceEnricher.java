@@ -17,6 +17,7 @@ package com.cefriel.chimera.processor.rdf4j;
 
 import java.util.List;
 
+import com.cefriel.chimera.graph.RDFGraph;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -40,30 +41,28 @@ public class InferenceEnricher implements Processor {
 	private String token;
 	private String ontologyRDFFormat;
 
-	// Works only for IN-MEMORY or NATIVE Repositories
+	// Works only for IN-MEMORY Repositories, TODO NATIVE repositories
 	public void process(Exchange exchange) throws Exception {
 		Message in = exchange.getIn();
-		
-		List<String> ontology_urls = null;
+
         ValueFactory vf = SimpleValueFactory.getInstance();
 
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
 		
 		Sail data = graph.getData();
-		
-		Repository schema_repo = new SailRepository(new MemoryStore());
-		schema_repo.init();
-		if (ontology_urls == null)
+
+		Repository repo = graph.getRepository();
+
+		if (ontologyUrls == null)
 			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
 		
-		try (RepositoryConnection con = schema_repo.getConnection()) {
+		try (RepositoryConnection con = repo.getConnection()) {
         	for (String url: ontologyUrls) {
         		con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
         	}
         }
 
-		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer((NotifyingSail) data, schema_repo, false);
-		inferencer.initialize();
+		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer((NotifyingSail) data, repo, false);
 		graph.setData(inferencer);
 	}
 
