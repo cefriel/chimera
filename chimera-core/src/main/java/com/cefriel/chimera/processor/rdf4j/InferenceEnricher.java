@@ -18,11 +18,16 @@ package com.cefriel.chimera.processor.rdf4j;
 import java.util.List;
 
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -43,22 +48,23 @@ public class InferenceEnricher implements Processor {
 
 	// Works only for IN-MEMORY Repositories, TODO NATIVE repositories
 	public void process(Exchange exchange) throws Exception {
-		Message in = exchange.getIn();
 
         ValueFactory vf = SimpleValueFactory.getInstance();
-
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
-		
 		Sail data = graph.getData();
-
 		Repository repo = graph.getRepository();
 
 		if (ontologyUrls == null)
 			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
-		
+
+		IRI contextIRI = Utils.getContextIRI(exchange);
+
 		try (RepositoryConnection con = repo.getConnection()) {
         	for (String url: ontologyUrls) {
-        		con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
+				if (contextIRI != null)
+					con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), contextIRI, vf.createIRI(url));
+				else
+					con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
         	}
         }
 

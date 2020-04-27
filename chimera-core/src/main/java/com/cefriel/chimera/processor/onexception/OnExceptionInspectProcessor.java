@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
 
 public class OnExceptionInspectProcessor implements Processor {
 
-    private Logger logger = LoggerFactory.getLogger(DumpGraph.class);
+    private Logger logger = LoggerFactory.getLogger(OnExceptionInspectProcessor.class);
 
     @Override
     public void process(Exchange exchange) throws Exception {
         Exception ex = exchange.getException();
-        logger.info("Should be failed " + exchange.isFailed());
+        logger.info("exchange.isFailed(): " + exchange.isFailed());
         if(ex != null) {
             logger.info("Exception type " + ex.getClass().getCanonicalName());
             logger.info("Message " + ex.getMessage());
