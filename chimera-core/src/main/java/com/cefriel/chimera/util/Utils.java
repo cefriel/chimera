@@ -15,9 +15,22 @@
  */
 package com.cefriel.chimera.util;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 public class Utils {
+
+    public static Repository getContextAwareRepository(Repository repository, IRI context) {
+        if (context != null) {
+            ContextAwareRepository cRepo = new ContextAwareRepository(repository);
+            cRepo.setInsertContext(context);
+            cRepo.setReadContexts(context);
+            return cRepo;
+        }
+        return repository;
+    }
 
     public static RDFFormat getRDFFormat(String format) {
         switch (format.toLowerCase()) {
