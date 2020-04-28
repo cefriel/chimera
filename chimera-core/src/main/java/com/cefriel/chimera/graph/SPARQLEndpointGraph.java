@@ -16,22 +16,14 @@
 
 package com.cefriel.chimera.graph;
 
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 
-public class SPARQLEndpointGraph implements RDFGraph {
-
-    private Repository repo;
+public class SPARQLEndpointGraph extends RDFGraph {
 
     public SPARQLEndpointGraph(String endpoint) {
         repo = new SPARQLRepository(endpoint);
         // TODO Federation with FedX, requires rdf4j 3.1.0
-    }
-
-    @Override
-    public Repository getRepository() {
-        return repo;
     }
 
     @Override

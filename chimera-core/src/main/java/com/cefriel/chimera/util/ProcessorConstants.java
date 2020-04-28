@@ -24,7 +24,7 @@ public class ProcessorConstants {
     public static final String SOURCE_STD = "source_standard";
     public static final String DEST_STD = "destination_standard";
 
-    public static final String CONTEXT_ID = "context_id";
+    public static final String GRAPH_ID = "graph_id";
     public static final String CONTEXT_GRAPH = "context_graph";
 
     public static final String ENRICHMENT_FORMAT = "enrichment_format";

@@ -20,7 +20,6 @@ import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.RecordCollector;
 import com.cefriel.chimera.util.RecordProcessorConstants;
-import com.cefriel.chimera.util.Utils;
 import com.cefriel.utils.rdf.RDFReader;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -48,8 +47,11 @@ public class RepositoryCollectorProcessor implements Processor {
             return;
         }
 
-        Repository repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
-        IRI contextIRI = Utils.getContextIRI(exchange);
+        RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+        if (graph == null)
+            throw new RuntimeException("RDF Graph not attached");
+        Repository repo = graph.getRepository();
+        IRI contextIRI = graph.getContext();
         RDFReader reader = new RDFReader(repo, contextIRI);
         List<Map<String,String>> results = reader.executeQueryStringValue("SELECT (COUNT(*) as ?num) \n" +
                 "WHERE { ?s ?p ?o } ");
@@ -64,9 +66,9 @@ public class RepositoryCollectorProcessor implements Processor {
             rcp.process(exchange);
         } else {
             String[] record = new String[3];
-            String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
-            if (context != null)
-                record[0] = context;
+            String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
+            if (graphID != null)
+                record[0] = graphID;
             else
                 record[0] = exchange.getExchangeId();
             record[1] = "num_triples";

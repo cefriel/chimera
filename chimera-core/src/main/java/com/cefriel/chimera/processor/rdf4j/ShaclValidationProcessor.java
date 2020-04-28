@@ -47,6 +47,8 @@ public class ShaclValidationProcessor implements Processor {
 		ValueFactory vf = SimpleValueFactory.getInstance();
 
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
 		NotifyingSail data = (NotifyingSail) graph.getData();
 		ShaclSail shaclSail = new ShaclSail(data);
 		shaclSail.setIgnoreNoShapesLoadedException(true);

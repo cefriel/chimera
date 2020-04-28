@@ -15,24 +15,21 @@
  */
 package com.cefriel.chimera.graph;
 
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 
 import java.io.File;
 
-public class NativeRDFGraph implements RDFGraph {
+public class NativeRDFGraph extends RDFGraph {
 
 	private Sail data;
-	private SailRepository repository;
 
 	public NativeRDFGraph(String pathDataDir) {
 		File dataDir = new File(pathDataDir);
 		data = new NativeStore(dataDir);
-		repository = new SailRepository(data);
-		repository.init();
+		repo = new SailRepository(data);
+		repo.init();
 	}
 
 	public Sail getData() {
@@ -41,11 +38,6 @@ public class NativeRDFGraph implements RDFGraph {
 
 	public void setData(Sail data) {
 		this.data = data;
-	}
-
-	@Override
-	public Repository getRepository() {
-		return repository;
 	}
 
 	@Override

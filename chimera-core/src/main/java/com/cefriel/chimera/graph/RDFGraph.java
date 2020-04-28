@@ -15,9 +15,32 @@
  */
 package com.cefriel.chimera.graph;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 
-public interface RDFGraph {
-    public Repository getRepository();
-    public boolean isRemote();
+public abstract class RDFGraph {
+
+    Repository repo;
+    IRI context;
+
+    public abstract boolean isRemote();
+
+    public Repository getRepository() {
+        return repo;
+    }
+
+    public IRI getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        if (context != null) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+            this.context = vf.createIRI(context);
+        }
+        this.context = null;
+    }
+
 }

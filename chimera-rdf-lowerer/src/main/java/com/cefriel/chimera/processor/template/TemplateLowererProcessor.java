@@ -18,7 +18,6 @@ package com.cefriel.chimera.processor.template;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.UniLoader;
-import com.cefriel.chimera.util.Utils;
 import com.cefriel.lowerer.TemplateLowerer;
 import com.cefriel.utils.LoweringUtils;
 import com.cefriel.utils.TransmodelLoweringUtils;
@@ -51,7 +50,10 @@ public class TemplateLowererProcessor implements Processor {
 	private String destinationPath = "/tmp/";
 
 	public void process(Exchange exchange) throws Exception {
-		Repository repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
+		Repository repo = graph.getRepository();
 
 		// Template Lowerer configuration
 		TemplateLowererOptions tlo = exchange.getIn()
@@ -71,12 +73,12 @@ public class TemplateLowererProcessor implements Processor {
 		if (destFileName == null)
 			destFileName = tlo.getDestFileName();
 
-		String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
+		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 		String localDestPath = destinationPath;
 		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
 			localDestPath += '/';
-		if (context != null)
-			localDestPath = localDestPath + context + "/";
+		if (graphID != null)
+			localDestPath = localDestPath + graphID + "/";
 
 		LoweringUtils lu = new LoweringUtils();
 		if (tlo.getUtils() != null)
@@ -91,8 +93,7 @@ public class TemplateLowererProcessor implements Processor {
 			baseIRI = ProcessorConstants.BASE_IRI_VALUE;
 		lu.setPrefix(baseIRI);
 
-		IRI contextIRI = Utils.getContextIRI(exchange);
-
+		IRI contextIRI = graph.getContext();
 		RDFReader reader = new RDFReader(repo, contextIRI);
 		TemplateLowerer tl = new TemplateLowerer(reader, lu);
 

@@ -46,18 +46,20 @@ public class InferenceEnricher implements Processor {
 	private String token;
 	private String ontologyRDFFormat;
 
-	// Works only for IN-MEMORY Repositories, TODO NATIVE repositories
+	// Works only for IN-MEMORY Repositories
 	public void process(Exchange exchange) throws Exception {
 
         ValueFactory vf = SimpleValueFactory.getInstance();
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
 		Sail data = graph.getData();
 		Repository repo = graph.getRepository();
 
 		if (ontologyUrls == null)
 			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
 
-		IRI contextIRI = Utils.getContextIRI(exchange);
+		IRI contextIRI = graph.getContext();
 
 		try (RepositoryConnection con = repo.getConnection()) {
         	for (String url: ontologyUrls) {

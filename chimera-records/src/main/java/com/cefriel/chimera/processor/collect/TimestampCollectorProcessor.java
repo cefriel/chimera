@@ -18,10 +18,8 @@ package com.cefriel.chimera.processor.collect;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.RecordCollector;
 import com.cefriel.chimera.util.RecordProcessorConstants;
-import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.lucene.index.PrefixCodedTerms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +53,9 @@ public class TimestampCollectorProcessor implements Processor {
             rcp.process(exchange);
         } else {
             String[] record = new String[3];
-            String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
-            if (context != null)
-                record[0] = context;
+            String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
+            if (graphID != null)
+                record[0] = graphID;
             else
                 record[0] = exchange.getExchangeId();
             record[1] = timestampLabel;

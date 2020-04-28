@@ -46,8 +46,9 @@ public class RMLProcessor implements Processor {
     }
 
     public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
-        RDFGraph graph;
-        graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+        RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+        if (graph == null)
+            throw new RuntimeException("RDF Graph not attached");
 
         // RML Processor configuration
         RMLOptions rmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
@@ -66,7 +67,7 @@ public class RMLProcessor implements Processor {
         if (baseIRIPrefix != null)
             rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
-        IRI context =  Utils.getContextIRI(exchange);
+        IRI context =  graph.getContext();
         logger.info("MAP " + streamsMap.keySet());
         Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
 

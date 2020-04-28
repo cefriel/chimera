@@ -36,7 +36,10 @@ public class UrlDataEnricher implements Processor {
 
 	public void process(Exchange exchange) throws Exception {
 		Model additionalDataset;
-		Repository repo;
+		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
+		Repository repo = graph.getRepository();
 	
 		if (additionalSourcesUrls == null)
 			additionalSourcesUrls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
@@ -48,13 +51,12 @@ public class UrlDataEnricher implements Processor {
 		if (additionalSource != null)
 			additionalSourcesUrls.add(additionalSource);
 
-		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			for (String url : additionalSourcesUrls) {
 				additionalDataset = SemanticLoader.load_data(url, token);
-				IRI contextIRI = Utils.getContextIRI(exchange);
+				IRI contextIRI = graph.getContext();
 				if (contextIRI != null)
 					con.add(additionalDataset, contextIRI);
 				else

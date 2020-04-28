@@ -40,10 +40,12 @@ public class ClearContextProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        Repository repo;
-        repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+        RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+        if (graph == null)
+            throw new RuntimeException("RDF Graph not attached");
+        Repository repo = graph.getRepository();
 
-        IRI contextIRI = Utils.getContextIRI(exchange);
+        IRI contextIRI = graph.getContext();
 
         try (RepositoryConnection con = repo.getConnection()) {
             if (contextIRI != null)

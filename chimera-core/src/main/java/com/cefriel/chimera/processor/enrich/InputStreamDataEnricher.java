@@ -39,10 +39,12 @@ public class InputStreamDataEnricher implements Processor {
 	private String baseIRI = ProcessorConstants.BASE_IRI_VALUE;
 
 	public void process(Exchange exchange) throws Exception {
-		Repository repo;
 		Message in = exchange.getIn();
 		InputStream input_msg = in.getBody(InputStream.class);
-		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
+		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
+		Repository repo = graph.getRepository();
 		String headerBaseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
 		if (headerBaseIRI != null)
 			baseIRI = headerBaseIRI;
@@ -57,7 +59,7 @@ public class InputStreamDataEnricher implements Processor {
 		rdfParser.setRDFHandler(new StatementCollector(model));
 		rdfParser.parse(input_msg, baseIRI);
 
-		IRI contextIRI = Utils.getContextIRI(exchange);
+		IRI contextIRI = graph.getContext();
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			if (contextIRI != null)

@@ -62,8 +62,10 @@ public class AttachGraph implements Processor {
         }
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
 
-    	if(context)
-    	    exchange.setProperty(ProcessorConstants.CONTEXT_ID, exchange.getExchangeId());
+        exchange.setProperty(ProcessorConstants.GRAPH_ID, exchange.getExchangeId());
+    	if(context) {
+            graph.setContext(ProcessorConstants.BASE_IRI_VALUE + exchange.getExchangeId());
+        }
     }
 
     public String getRrAddress() {

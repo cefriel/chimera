@@ -16,7 +16,6 @@
 package com.cefriel.chimera.processor;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -45,11 +44,12 @@ public class DumpGraph implements Processor {
 	private String destinationPath;
 
     public void process(Exchange exchange) throws Exception {
-		Repository repo;
+    	RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
+		if (graph == null)
+			throw new RuntimeException("RDF Graph not attached");
+		Repository repo = graph.getRepository();
 
-		repo = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class).getRepository();
-
-		IRI contextIRI = Utils.getContextIRI(exchange);
+		IRI contextIRI = graph.getContext();
 
 		String format = exchange.getMessage().getHeader(ProcessorConstants.DUMP_FORMAT, String.class);
 		if (format == null)
@@ -79,14 +79,14 @@ public class DumpGraph implements Processor {
 				exchange.getMessage().setHeader(ProcessorConstants.FILE_EXTENSION, rdfFormat.getDefaultFileExtension());
 				logger.info("Graph dumped to message body");
 			} else {
-				String context = exchange.getProperty(ProcessorConstants.CONTEXT_ID, String.class);
+				String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 				String localDestPath = destinationPath;
 				if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
 					localDestPath += '/';
 				new File(localDestPath).mkdirs();
 				localDestPath += "graph-dump";
-				if (context != null)
-					localDestPath = localDestPath + "-" + context;
+				if (graphID != null)
+					localDestPath = localDestPath + "-" + graphID;
 				localDestPath = localDestPath + "." + rdfFormat.getDefaultFileExtension();
 				OutputStream fileOutputStream = new FileOutputStream(new File(localDestPath));
 				outstream.writeTo(fileOutputStream);
