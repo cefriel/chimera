@@ -31,11 +31,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public class RepositoryCollectorProcessor implements Processor {
+public class QueryResultCollectorProcessor implements Processor {
 
-    private Logger logger = LoggerFactory.getLogger(RepositoryCollectorProcessor.class);
+    private Logger logger = LoggerFactory.getLogger(QueryResultCollectorProcessor.class);
 
     private String collectorId;
+    private String query;
+    private String variable;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -53,27 +55,28 @@ public class RepositoryCollectorProcessor implements Processor {
         Repository repo = graph.getRepository();
         IRI contextIRI = graph.getContext();
         RDFReader reader = new RDFReader(repo, contextIRI);
-        List<Map<String,String>> results = reader.executeQueryStringValue("SELECT (COUNT(*) as ?num) \n" +
-                "WHERE { ?s ?p ?o } ");
-        String num = "Not available";
-        if (results != null)
-            if (!results.isEmpty())
-                num = results.get(0).get("num");
-
+        List<Map<String,String>> results = reader.executeQueryStringValue(query);
+        String result = "No results!";
         RecordCollector collector = exchange.getProperty(collectorId, RecordCollector.class);
         if (collector == null) {
             RecordCollectorProcessor rcp = new RecordCollectorProcessor();
             rcp.process(exchange);
         } else {
-            String[] record = new String[3];
-            String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
-            if (graphID != null)
-                record[0] = graphID;
-            else
-                record[0] = exchange.getExchangeId();
-            record[1] = "num_triples";
-            record[2] = num;
-            collector.addRecord(record);
+            if (results != null)
+                if (!results.isEmpty()) {
+                    String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
+                    for (Map<String, String> row : results) {
+                        String r = row.get(variable);
+                        String[] record = new String[3];
+                        if (graphID != null)
+                            record[0] = graphID;
+                        else
+                            record[0] = exchange.getExchangeId();
+                        record[1] = variable;
+                        record[2] = r;
+                        collector.addRecord(record);
+                    }
+                }
         }
     }
 
@@ -83,5 +86,21 @@ public class RepositoryCollectorProcessor implements Processor {
 
     public void setCollectorId(String collectorId) {
         this.collectorId = collectorId;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public String getVariable() {
+        return variable;
+    }
+
+    public void setVariable(String variable) {
+        this.variable = variable;
     }
 }
