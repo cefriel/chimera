@@ -20,7 +20,7 @@ import java.util.List;
 public class RMLOptions {
 
     private List<String> mappings;
-    private String functionFile;
+    private List<String> functionFiles;
     private int batchSize;
     private boolean incrementalUpdate;
     private boolean noCache;
@@ -39,12 +39,12 @@ public class RMLOptions {
         this.mappings = mappings;
     }
 
-    public String getFunctionFile() {
-        return functionFile;
+    public List<String> getFunctionFiles() {
+        return functionFiles;
     }
 
-    public void setFunctionFile(String functionFile) {
-        this.functionFile = functionFile;
+    public void setFunctionFiles(List<String> functionFiles) {
+        this.functionFiles = functionFiles;
     }
 
     public int getBatchSize() {

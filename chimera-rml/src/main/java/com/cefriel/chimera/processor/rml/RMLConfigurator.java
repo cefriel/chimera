@@ -18,7 +18,6 @@ package com.cefriel.chimera.processor.rml;
 import be.ugent.rml.Executor;
 import be.ugent.rml.Utils;
 import be.ugent.rml.functions.FunctionLoader;
-import be.ugent.rml.functions.lib.GrelProcessor;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.RDF4JRepository;
@@ -47,7 +46,7 @@ public class RMLConfigurator {
 
             // Concatenate all mapping files
             List<InputStream> lis = options.getMappings().stream()
-                    .map(Utils::getInputStreamFromMOptionValue)
+                    .map(Utils::getInputStreamFromFileOrContentString)
                     .collect(Collectors.toList());
             InputStream is = new SequenceInputStream(Collections.enumeration(lis));
 
@@ -94,23 +93,36 @@ public class RMLConfigurator {
 
             Executor executor;
 
-            String fOptionValue = options.getFunctionFile();
+            String[] fOptionValue = null;
+            List<String> functionFiles = options.getFunctionFiles();
+            if (functionFiles != null) {
+                fOptionValue = new String[functionFiles.size()];
+                fOptionValue = functionFiles.toArray(fOptionValue);
+            }
             FunctionLoader functionLoader;
 
-            Map<String, Class> libraryMap = new HashMap<>();
-            libraryMap.put("GrelFunctions", GrelProcessor.class);
-            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-
+            // Read function description files.
             if (fOptionValue == null) {
-                functionLoader = new FunctionLoader(null, null, libraryMap);
+                functionLoader = new FunctionLoader();
             } else {
-                functionLoader = new FunctionLoader(Utils.getFile(fOptionValue), null, libraryMap);
+                logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+                RDF4JStore functionDescriptionTriples = new RDF4JStore();
+                functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
+                Map<String, Class> libraryMap = new HashMap<>();
+                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+                List<InputStream> lisF = Arrays.stream(fOptionValue)
+                        .map(Utils::getInputStreamFromFileOrContentString)
+                        .collect(Collectors.toList());
+                for (int i = 0; i < lisF.size(); i++) {
+                    functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
+                }
+                functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
             }
 
             // We have to get the InputStreams of the RML documents again,
             // because we can only use an InputStream once.
             lis = options.getMappings().stream()
-                    .map(Utils::getInputStreamFromMOptionValue)
+                    .map(Utils::getInputStreamFromFileOrContentString)
                     .collect(Collectors.toList());
             is = new SequenceInputStream(Collections.enumeration(lis));
 
