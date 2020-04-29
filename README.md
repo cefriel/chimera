@@ -12,7 +12,7 @@ The main assumption of Chimera is that it is possible to break down a converter 
 The architecture of Chimera is heavily inspired by the Enterprise Integration Pattern "Data enricher". A conversion process based on Semantic Web technologies can be seen as an RDF graph which is initially enriched with some background knowledge (being either a set of ontologies or a set of master/lookup data), and then enriched with triples coming from the incoming message/dataset. The resulting graph can then be exploited to extract data which is used to populate the structure of the destination message/dataset. The RDF graph can be interpreted as a variable which is shared by default among all the blocks in a conversion process.
 With this high-level process in mind, we can start defining a first set of “conversion blocks”:
 * _Lifting_: this block takes a structured message as input, and enriches the RDF graph with the triples obtained by applying a "mapping" to the input.
-* _Data enricher_: this block loads a set of RDF files and loads them into the RDF graph.
+* _Data enricher_: this block loads a set of RDF files, or generates a set of triples (e.g. CONSTRUCT queries) and loads them into the RDF graph.
 * _Inference enricher_: this block loads a set of ontology files (in either RDFS or OWL format) and loads them into the RDF graph. The RDF graph becomes a “inference graph” after using this block, since the ontologies are used to drive inference.
 * _Lowering_: this block applies a “mapping” to the RDF graph, and produces a structured message as output.
 
@@ -24,6 +24,7 @@ The main sub-project is `chimera-core` that contains the basic blocks of the Chi
 - `chimera-rdf-lowerer` contains the blocks to implement lowering using the [rdf-lowerer](https://github.com/cefriel/rdf-lowerer) library 
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
 - `chimera-records` contains a set of utility blocks to gather data (timestamps, RDF graph data,...)  within a Chimera pipeline
+
 Last but not least, the `chimera-example` provides an example of conversion pipeline implemented using the different blocks (complete instructions below).
 
 ### How to run it
