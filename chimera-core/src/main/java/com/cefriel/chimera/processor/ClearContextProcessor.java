@@ -48,9 +48,10 @@ public class ClearContextProcessor implements Processor {
         IRI contextIRI = graph.getContext();
 
         try (RepositoryConnection con = repo.getConnection()) {
-            if (contextIRI != null)
+            if (contextIRI != null) {
                 con.clear(contextIRI);
-            logger.info("Cleared named graph " + contextIRI.stringValue());
+                logger.info("Cleared named graph " + contextIRI.stringValue());
+            }
             if (removeNamespacesPaths != null)
                 for(String path : removeNamespacesPaths)  {
                     Model l = SemanticLoader.load_data(path);
