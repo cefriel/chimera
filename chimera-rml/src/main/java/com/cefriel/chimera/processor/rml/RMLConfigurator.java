@@ -15,13 +15,16 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import be.ugent.rml.Executor;
-import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.store.Quad;
+import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.store.RDF4JRepository;
 import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.term.NamedNode;
+import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.commons.cli.*;
@@ -38,7 +41,7 @@ public class RMLConfigurator {
 
     private static final Logger logger = LoggerFactory.getLogger(RMLConfigurator.class);
 
-    static Executor configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, RMLOptions options) {
+    static Initializer getInitializer(RMLOptions options) {
 
         try {
             // parse the command line arguments
@@ -53,45 +56,6 @@ public class RMLConfigurator {
             // Read mapping file.
             RDF4JStore rmlStore = new RDF4JStore();
             rmlStore.read(is, null, RDFFormat.TURTLE);
-
-            RecordsFactory factory = new RecordsFactory(basePath, streams);
-
-            if (options.getCorePoolSize() != 0)
-                RDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
-            if (options.getMaximumPoolSize() != 0)
-                RDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
-            if (options.getKeepAliveMinutes() != 0)
-                RDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
-
-            RDF4JRepository outputStore;
-            if (graph.isRemote() && options.getBatchSize() > 0) {
-                    outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
-                            options.getBatchSize(), options.isIncrementalUpdate());
-            } else {
-                // Covers both the cases: HTTPRepository not incremental / In-memory repository
-                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI, 0, false);
-            }
-
-            String baseIRI;
-            if (options.getBaseIRI() != null) {
-                baseIRI = options.getBaseIRI();
-                logger.debug("Base IRI set to value: " + options.getBaseIRI());
-            }
-            else {
-                baseIRI = Utils.getBaseDirectiveTurtle(is);
-                if (baseIRI == null)
-                    baseIRI = ProcessorConstants.BASE_IRI_VALUE;
-            }
-
-            outputStore.copyNameSpaces(rmlStore);
-
-            if (baseIRI != null)
-                if (options.getBaseIRIPrefix() != null)
-                    outputStore.addNamespace(options.getBaseIRIPrefix(), baseIRI);
-                else
-                    outputStore.addNamespace("base", baseIRI);
-
-            Executor executor;
 
             String[] fOptionValue = null;
             List<String> functionFiles = options.getFunctionFiles();
@@ -119,21 +83,7 @@ public class RMLConfigurator {
                 functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
             }
 
-            // We have to get the InputStreams of the RML documents again,
-            // because we can only use an InputStream once.
-            lis = options.getMappings().stream()
-                    .map(Utils::getInputStreamFromFileOrContentString)
-                    .collect(Collectors.toList());
-            is = new SequenceInputStream(Collections.enumeration(lis));
-
-            executor = new Executor(rmlStore, factory, functionLoader, outputStore, baseIRI);
-
-            if (options.isNoCache())
-                executor.setNoCache(true);
-            if (options.isOrdered())
-                executor.setOrdered(true);
-
-            return executor;
+            return new Initializer(rmlStore, functionLoader);
 
         } catch (ParseException exp) {
             // oops, something went wrong
@@ -143,6 +93,106 @@ public class RMLConfigurator {
         }
 
         return null;
+
+    }
+
+    static Mapper configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, RMLOptions options) {
+        return configure(graph, contextIRI, streams, null, options);
+    }
+
+    static Mapper configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, Initializer initializer, RMLOptions options) {
+
+        try {
+            if (initializer == null)
+                initializer = getInitializer(options);
+
+            // parse the command line arguments
+            String basePath = System.getProperty("user.dir");
+            RecordsFactory factory = new RecordsFactory(basePath, streams);
+
+            if (options.getCorePoolSize() != 0)
+                RDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
+            if (options.getMaximumPoolSize() != 0)
+                RDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
+            if (options.getKeepAliveMinutes() != 0)
+                RDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
+
+            RDF4JRepository outputStore;
+            if (graph.isRemote() && options.getBatchSize() > 0) {
+                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
+                        options.getBatchSize(), options.isIncrementalUpdate());
+            } else {
+                // Covers both the cases: HTTPRepository not incremental / In-memory repository
+                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI, 0, false);
+            }
+
+            String baseIRI;
+            if (options.getBaseIRI() != null) {
+                baseIRI = options.getBaseIRI();
+                logger.debug("Base IRI set to value: " + options.getBaseIRI());
+            }
+            else {
+                baseIRI = ProcessorConstants.BASE_IRI_VALUE;
+            }
+
+            outputStore.copyNameSpaces(initializer.getRMLStore());
+
+            if (baseIRI != null)
+                if (options.getBaseIRIPrefix() != null)
+                    outputStore.addNamespace(options.getBaseIRIPrefix(), baseIRI);
+                else
+                    outputStore.addNamespace("base", baseIRI);
+
+            Mapper mapper;
+            if(options.isConcurrentRecords())
+                mapper = new ConcurrentExecutor(initializer, factory, outputStore, baseIRI);
+            else
+                mapper = new Executor(initializer, factory, outputStore, baseIRI);
+
+            if (options.isNoCache())
+                mapper.setNoCache(true);
+            if (options.isOrdered())
+                mapper.setOrdered(true);
+
+            return mapper;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
+    }
+
+    public static Map<String, List<Term>> getOrderedTriplesMaps(Initializer initializer) {
+        QuadStore rmlStore = initializer.getRMLStore();
+        List<Term> triplesMaps = initializer.getTriplesMaps();
+        Map<String, List<Term>> orderedTriplesMaps = new HashMap<>();
+        for (Term triplesMap : triplesMaps) {
+            List<Term> logicalSources = Utils.getObjectsFromQuads(rmlStore.getQuads(triplesMap, new NamedNode(NAMESPACES.RML + "logicalSource"), null));
+            if (logicalSources.isEmpty()) {
+                orderedTriplesMaps.get("others").add(triplesMap);
+                continue;
+            }
+            Term logicalSource = logicalSources.get(0);
+            List<Quad> quads = rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null);
+            if (quads.isEmpty()) {
+                orderedTriplesMaps.get("others").add(triplesMap);
+                continue;
+            }
+            String source = quads.get(0).getObject().getValue();
+            if (source == null) {
+                orderedTriplesMaps.get("others").add(triplesMap);
+                continue;
+            }
+            if(orderedTriplesMaps.containsKey(source))
+                orderedTriplesMaps.get(source).add(triplesMap);
+            else{
+                List<Term> terms = new ArrayList<>();
+                terms.add(triplesMap);
+                orderedTriplesMaps.put(source, terms);
+            }
+        }
+        return orderedTriplesMaps;
     }
 
 }

@@ -21,5 +21,8 @@ public class RMLProcessorConstants {
     // RML
     public static final String RML_CONFIG = "rml_config";
 	public static final String RML_LABEL = "rml_label";
+    public static final String RML_INITIALIZER = "rml_initializer";
 
+    public static final String CONCURRENCY_LOGICAL_SOURCE = "logical_source";
+    public static final String CONCURRENCY_TRIPLES_MAPS = "triples_maps";
 }
