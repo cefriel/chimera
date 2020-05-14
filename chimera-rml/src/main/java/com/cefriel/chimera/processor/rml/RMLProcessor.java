@@ -94,13 +94,14 @@ public class RMLProcessor implements Processor {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
             ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
             ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
+            ConcurrentHashMap<String, InputStream> cStreamsMap = new ConcurrentHashMap<>(streamsMap);
 
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
                 logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, cStreamsMap, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
                         return "Job done for Logical Source " + logicalSource;
@@ -113,7 +114,7 @@ public class RMLProcessor implements Processor {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, cStreamsMap, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, mappings);
                         return "Job done for Triples Map " + triplesMap.getValue();
