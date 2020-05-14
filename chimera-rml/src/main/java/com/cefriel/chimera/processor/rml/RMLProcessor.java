@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
 
+import be.ugent.rml.ConcurrentExecutor;
 import be.ugent.rml.Initializer;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.Mapper;
@@ -40,6 +41,7 @@ public class RMLProcessor implements Processor {
 
     private RMLOptions defaultRmlOptions;
     private String concurrency;
+    private int nThreads;
     
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
@@ -88,26 +90,30 @@ public class RMLProcessor implements Processor {
 
         if (concurrency != null) {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
-            ExecutorService jobexecutor = Executors.newCachedThreadPool();
-            ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(jobexecutor);
+            ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+            ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
 
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
+                logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
-                        Mapper executor = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
-                        executeMappings(executor, orderedTriplesMaps.get(logicalSource));
+                        Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
                         return "Job done for Logical Source " + logicalSource;
                     }));
                 }
             } else if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_TRIPLES_MAPS)) {
+                logger.info("Triples Maps Concurrency enabled. Num threads: " + nThreads);
                 List<Term> triplesMaps = initializer.getTriplesMaps();
                 for (Term triplesMap : triplesMaps) {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
                     jobs.add(completionService.submit(() -> {
-                        Mapper executor = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
-                        executeMappings(executor, mappings);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, mappings);
                         return "Job done for Triples Map " + triplesMap.getValue();
                     }));
                 }
@@ -121,13 +127,19 @@ public class RMLProcessor implements Processor {
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error(e.getMessage(), e);
                     ;
-                    jobexecutor.shutdownNow();
+                    executorService.shutdownNow();
                 }
+
+            executorService.shutdownNow();
+
         } else {
-            Mapper executor = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
-            if(executor != null)
-                executeMappings(executor, null);
+            Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+            if(mapper != null)
+                executeMappings(mapper, null);
         }
+
+        if (ConcurrentExecutor.executorService != null)
+            ConcurrentExecutor.executorService.shutdownNow();
     }
 
     private void executeMappings(Mapper mapper, List<Term> triplesMaps) throws Exception {
@@ -154,6 +166,14 @@ public class RMLProcessor implements Processor {
 
     public void setConcurrency(String concurrency) {
         this.concurrency = concurrency;
+    }
+
+    public int getnThreads() {
+        return nThreads;
+    }
+
+    public void setnThreads(int nThreads) {
+        this.nThreads = nThreads;
     }
 
 }

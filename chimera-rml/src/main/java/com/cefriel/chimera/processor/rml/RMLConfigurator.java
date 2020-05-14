@@ -144,10 +144,13 @@ public class RMLConfigurator {
                     outputStore.addNamespace("base", baseIRI);
 
             Mapper mapper;
-            if(options.isConcurrentRecords())
+            if(options.isConcurrentRecords()) {
+                logger.info("Concurrent Executor created");
                 mapper = new ConcurrentExecutor(initializer, factory, outputStore, baseIRI);
-            else
+            } else {
+                logger.info("Executor created");
                 mapper = new Executor(initializer, factory, outputStore, baseIRI);
+            }
 
             if (options.isNoCache())
                 mapper.setNoCache(true);
