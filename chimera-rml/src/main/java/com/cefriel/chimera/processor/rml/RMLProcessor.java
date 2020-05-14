@@ -41,7 +41,9 @@ public class RMLProcessor implements Processor {
 
     private RMLOptions defaultRmlOptions;
     private String concurrency;
-    private int nThreads;
+    private int nThreads = 4;
+    //TODO Set also nThreads for ConcurrentExecutor executorService?
+    //TODO Use the same executorService?
     
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
