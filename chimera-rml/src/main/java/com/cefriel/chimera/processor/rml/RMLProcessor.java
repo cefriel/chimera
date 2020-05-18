@@ -15,19 +15,19 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
 
 import be.ugent.rml.ConcurrentExecutor;
 import be.ugent.rml.Initializer;
+import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.Mapper;
 import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.rml.CamelAccessFactory;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
@@ -40,19 +40,18 @@ public class RMLProcessor implements Processor {
     private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
     private RMLOptions defaultRmlOptions;
+
     private String concurrency;
     private int nThreads = 4;
     //TODO Set also nThreads for ConcurrentExecutor executorService?
     //TODO Use the same executorService?
     
     public void process(Exchange exchange) throws Exception {
-        Message in = exchange.getIn();
-        Map<String, InputStream> streamsMap = in.getBody(Map.class);
-
-        processRML(streamsMap, exchange);
+        processRML(exchange, new CamelAccessFactory(exchange));
     }
 
-    public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
+
+    public void processRML(Exchange exchange, AccessFactory accessFactory) throws Exception {
         RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
         if (graph == null)
             throw new RuntimeException("RDF Graph not attached");
@@ -77,7 +76,6 @@ public class RMLProcessor implements Processor {
             rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
         IRI context =  graph.getContext();
-        logger.info("MAP " + streamsMap.keySet());
 
         final Initializer initializer;
         Initializer messageInitializer = exchange.getIn().getHeader(RMLProcessorConstants.RML_INITIALIZER, Initializer.class);
@@ -94,14 +92,13 @@ public class RMLProcessor implements Processor {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
             ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
             ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
-            ConcurrentHashMap<String, InputStream> cStreamsMap = new ConcurrentHashMap<>(streamsMap);
 
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
                 logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, cStreamsMap, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
                         return "Job done for Logical Source " + logicalSource;
@@ -114,7 +111,7 @@ public class RMLProcessor implements Processor {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, cStreamsMap, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, mappings);
                         return "Job done for Triples Map " + triplesMap.getValue();
@@ -136,7 +133,7 @@ public class RMLProcessor implements Processor {
             executorService.shutdownNow();
 
         } else {
-            Mapper mapper = RMLConfigurator.configure(graph, context, streamsMap, initializer, rmlOptions);
+            Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
             if(mapper != null)
                 executeMappings(mapper, null);
         }

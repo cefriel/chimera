@@ -16,6 +16,7 @@
 package com.cefriel.chimera.processor.rml;
 
 import be.ugent.rml.*;
+import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
@@ -44,9 +45,6 @@ public class RMLConfigurator {
     static Initializer getInitializer(RMLOptions options) {
 
         try {
-            // parse the command line arguments
-            String basePath = System.getProperty("user.dir");
-
             // Concatenate all mapping files
             List<InputStream> lis = options.getMappings().stream()
                     .map(Utils::getInputStreamFromFileOrContentString)
@@ -96,19 +94,18 @@ public class RMLConfigurator {
 
     }
 
-    static Mapper configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, RMLOptions options) {
-        return configure(graph, contextIRI, streams, null, options);
+    static Mapper configure(RDFGraph graph, IRI contextIRI, AccessFactory accessFactory, RMLOptions options) {
+        return configure(graph, contextIRI, accessFactory, null, options);
     }
 
-    static Mapper configure(RDFGraph graph, IRI contextIRI, Map<String, InputStream> streams, Initializer initializer, RMLOptions options) {
-
+    static Mapper configure(RDFGraph graph, IRI contextIRI, AccessFactory accessFactory, Initializer initializer, RMLOptions options) {
         try {
             if (initializer == null)
                 initializer = getInitializer(options);
 
-            // parse the command line arguments
-            String basePath = System.getProperty("user.dir");
-            RecordsFactory factory = new RecordsFactory(basePath, streams);
+            RecordsFactory factory = new RecordsFactory(accessFactory);
+            if (options.isEmptyStrings())
+                factory.setEmptyStrings(true);
 
             if (options.getCorePoolSize() != 0)
                 RDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();

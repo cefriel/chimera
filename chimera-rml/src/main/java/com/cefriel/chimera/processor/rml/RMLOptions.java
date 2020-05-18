@@ -27,6 +27,7 @@ public class RMLOptions {
     private boolean ordered;
     private String baseIRI;
     private String baseIRIPrefix;
+    private boolean emptyStrings;
     private int corePoolSize = 4;
     private int maximumPoolSize = 5;
     private int keepAliveMinutes = 10;
@@ -94,6 +95,14 @@ public class RMLOptions {
 
     public void setBaseIRIPrefix(String baseIRIPrefix) {
         this.baseIRIPrefix = baseIRIPrefix;
+    }
+
+    public boolean isEmptyStrings() {
+        return emptyStrings;
+    }
+
+    public void setEmptyStrings(boolean emptyStrings) {
+        this.emptyStrings = emptyStrings;
     }
 
     public int getCorePoolSize() {

@@ -13,38 +13,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.cefriel.chimera.processor.rml;
 
+import be.ugent.rml.access.AccessFactory;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+public class RMLGenericProcessor implements Processor {
 
-public class RMLInputStreamProcessor implements Processor {
-
-    private String label;
+    private RMLOptions defaultRmlOptions;
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        InputStream is = exchange.getIn().getBody(InputStream.class);
-        String sourceLabel = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
-        if (sourceLabel == null)
-            sourceLabel = label;
-        if (is != null && sourceLabel != null) {
-            Map<String, InputStream> map = new HashMap<>();
-            map.put("is://" + sourceLabel, is);
-            exchange.getMessage().setBody(map, Map.class);
-        }
+        RMLProcessor rmlProcessor = new RMLProcessor();
+
+        if (defaultRmlOptions != null)
+            rmlProcessor.setDefaultRmlOptions(defaultRmlOptions);
+
+        String basePath = System.getProperty("user.dir");
+        rmlProcessor.processRML(exchange, new AccessFactory(basePath));
     }
 
-    public String getLabel() {
-        return label;
+    public RMLOptions getDefaultRmlOptions() {
+        return defaultRmlOptions;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
+        this.defaultRmlOptions = defaultRmlOptions;
     }
+    
 }
