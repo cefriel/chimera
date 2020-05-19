@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -53,13 +54,15 @@ public class CamelAccessFactory extends AccessFactory{
         super(null);
         inputStreamsMap = new ConcurrentHashMap<>();
         if (isMessage) {
-            inputStreamsMap = new ConcurrentHashMap<>();
             InputStream is = exchange.getIn().getBody(InputStream.class);
             inputStreamsMap.put(KEY_MESSAGE, is);
         } else {
             Map<String, InputStream> map = exchange.getIn().getBody(Map.class);
-            if (map != null)
+            if (map != null) {
+                logger.info("Removing null InputStreams in the given Map");
+                map.values().removeIf(Objects::isNull);
                 inputStreamsMap.putAll(map);
+            }
         }
         logger.info("CamelAccessFactory: " + inputStreamsMap.keySet());
     }

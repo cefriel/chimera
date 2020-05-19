@@ -43,8 +43,6 @@ public class RMLProcessor implements Processor {
 
     private String concurrency;
     private int nThreads = 4;
-    //TODO Set also nThreads for ConcurrentExecutor executorService?
-    //TODO Use the same executorService?
     
     public void process(Exchange exchange) throws Exception {
         processRML(exchange, new CamelAccessFactory(exchange));
