@@ -40,15 +40,17 @@ public class InputStreamAccess implements Access {
     public InputStream getInputStream() throws IOException {
         if (stream == null)
             throw new IOException("InputStream key not specified");
-        if (inputStreamsMap == null)
-            throw new IOException("InputStreamMap not initialised");
-        InputStream is = inputStreamsMap.get(stream);
-        if (is == null)
-            throw new IOException("InputStream " + stream + " not found in the InputStreamMap");
-        // Copy the stream to avoid consuming it
-        ByteArrayOutputStream baos = getOutputStream(is);
-        inputStreamsMap.put(stream, new ByteArrayInputStream(baos.toByteArray()));
-        return new ByteArrayInputStream(baos.toByteArray());
+            if (inputStreamsMap == null)
+                throw new IOException("InputStreamMap not initialised");
+            InputStream is = inputStreamsMap.get(stream);
+            if (is == null)
+                throw new IOException("InputStream " + stream + " not found in the InputStreamMap");
+            // Copy the stream to avoid consuming it
+        synchronized (is) {
+            ByteArrayOutputStream baos = getOutputStream(is);
+            inputStreamsMap.put(stream, new ByteArrayInputStream(baos.toByteArray()));
+            return new ByteArrayInputStream(baos.toByteArray());
+        }
     }
 
     private ByteArrayOutputStream getOutputStream(InputStream is) throws IOException {
