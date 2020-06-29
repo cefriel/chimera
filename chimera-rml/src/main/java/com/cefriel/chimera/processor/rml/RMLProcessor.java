@@ -15,7 +15,6 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import java.io.Writer;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -43,8 +42,6 @@ public class RMLProcessor implements Processor {
     private RMLOptions defaultRmlOptions;
 
     private String concurrency;
-
-    private boolean singleExecutor;
     private int nThreads = 4;
     
     public void process(Exchange exchange) throws Exception {
@@ -89,7 +86,6 @@ public class RMLProcessor implements Processor {
                 throw new IllegalArgumentException("Initializer cannot be null");
         }
 
-        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
         if (concurrency != null) {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
             ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
@@ -99,16 +95,12 @@ public class RMLProcessor implements Processor {
                 logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
-                    final Mapper m;
-                    if(!singleExecutor)
-                        m = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
-                    else
-                        m = mapper;
-                    if(m != null)
-                        jobs.add(completionService.submit(() -> {
-                            executeMappings(m, orderedTriplesMaps.get(logicalSource));
-                            return "Job done for Logical Source " + logicalSource;
-                        }));
+                    jobs.add(completionService.submit(() -> {
+                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
+                        return "Job done for Logical Source " + logicalSource;
+                    }));
                 }
             } else if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_TRIPLES_MAPS)) {
                 logger.info("Triples Maps Concurrency enabled. Num threads: " + nThreads);
@@ -116,16 +108,12 @@ public class RMLProcessor implements Processor {
                 for (Term triplesMap : triplesMaps) {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
-                    final Mapper m;
-                    if(!singleExecutor)
-                        m = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
-                    else
-                        m = mapper;
-                    if(m != null)
-                        jobs.add(completionService.submit(() -> {
-                            executeMappings(m, mappings);
-                            return "Job done for Triples Map " + triplesMap.getValue();
-                        }));
+                    jobs.add(completionService.submit(() -> {
+                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, mappings);
+                        return "Job done for Triples Map " + triplesMap.getValue();
+                    }));
                 }
             }
 
@@ -143,14 +131,9 @@ public class RMLProcessor implements Processor {
             executorService.shutdownNow();
 
         } else {
+            Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
             if(mapper != null)
                 executeMappings(mapper, null);
-        }
-
-        if(mapper != null) {
-            QuadStore resultingQuads = mapper.getResultingQuads();
-            if (resultingQuads != null)
-                resultingQuads.shutDown();
         }
 
         if (ConcurrentExecutor.executorService != null)
@@ -163,11 +146,8 @@ public class RMLProcessor implements Processor {
         if (outputStore.isEmpty())
             logger.info("No results!");
 
-        //Write quads to the context graph
-        outputStore.write((Writer) null, "repo");
-
-        if(!singleExecutor)
-            outputStore.shutDown();
+        // Write quads to the context graph
+        outputStore.shutDown();
     }
 
     public RMLOptions getDefaultRmlOptions() {
@@ -192,14 +172,6 @@ public class RMLProcessor implements Processor {
 
     public void setnThreads(int nThreads) {
         this.nThreads = nThreads;
-    }
-
-    public boolean isSingleExecutor() {
-        return singleExecutor;
-    }
-
-    public void setSingleExecutor(boolean singleExecutor) {
-        this.singleExecutor = singleExecutor;
     }
 
 }

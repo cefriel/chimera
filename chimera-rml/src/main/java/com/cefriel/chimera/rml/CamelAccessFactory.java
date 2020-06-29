@@ -26,6 +26,7 @@ import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class creates Access instances for Camel Exchanges.
  */
-public class CamelAccessFactory extends AccessFactory{
+public class CamelAccessFactory extends AccessFactory {
 
     private Logger logger = LoggerFactory.getLogger(CamelAccessFactory.class);
 
@@ -76,20 +77,24 @@ public class CamelAccessFactory extends AccessFactory{
      * and the literal, referred through the RML property rml:source, is used as a key to access the Map and identify the InputStream
      * accessible through the Access. 
      */
-    public Access getAccess(Term logicalSource, QuadStore rmlStore) {
+     public Access getAccess(Term logicalSource, QuadStore rmlStore) {
 
-        if (inputStreamsMap.containsKey(KEY_MESSAGE))
-            return new InputStreamAccess(KEY_MESSAGE, inputStreamsMap);
+        try {
+            if (inputStreamsMap.containsKey(KEY_MESSAGE))
+                return new InputStreamAccess(KEY_MESSAGE, inputStreamsMap);
 
-        List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
+            List<Term> sources = Utils.getObjectsFromQuads(rmlStore.getQuads(logicalSource, new NamedNode(NAMESPACES.RML + "source"), null));
 
-        if (!sources.isEmpty()) {
-            Term source = sources.get(0);
-            if (source != null) {
-                String value = source.getValue();
-                if (value !=  null)
-                    return new InputStreamAccess(value, inputStreamsMap);
+            if (!sources.isEmpty()) {
+                Term source = sources.get(0);
+                if (source != null) {
+                    String value = source.getValue();
+                    if (value !=  null)
+                        return new InputStreamAccess(value, inputStreamsMap);
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         throw new Error("The Logical Source does not have a source.");

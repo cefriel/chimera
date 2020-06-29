@@ -39,7 +39,7 @@ public class AttachGraph implements Processor {
         RDFGraph graph = null;
         boolean attached = false;
         if (rrAddress != null && repositoryId != null) {
-            logger.info("Connecting to remote repository " + repositoryId);
+            logger.info("Connecting to remote repository " + rrAddress + " " + repositoryId);
             graph = new HTTPRDFGraph(rrAddress, repositoryId);
             attached = true;
         }

@@ -31,6 +31,7 @@ public class RMLOptions {
     private int corePoolSize = 4;
     private int maximumPoolSize = 5;
     private int keepAliveMinutes = 10;
+    private boolean concurrentWrites;
     private boolean concurrentRecords;
 
     public List<String> getMappings() {
@@ -127,6 +128,14 @@ public class RMLOptions {
 
     public void setKeepAliveMinutes(int keepAliveMinutes) {
         this.keepAliveMinutes = keepAliveMinutes;
+    }
+
+    public boolean isConcurrentWrites() {
+        return concurrentWrites;
+    }
+
+    public void setConcurrentWrites(boolean concurrentWrites) {
+        this.concurrentWrites = concurrentWrites;
     }
 
     public boolean isConcurrentRecords() {

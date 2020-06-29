@@ -20,10 +20,7 @@ import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
 import be.ugent.rml.records.RecordsFactory;
-import be.ugent.rml.store.Quad;
-import be.ugent.rml.store.QuadStore;
-import be.ugent.rml.store.RDF4JRepository;
-import be.ugent.rml.store.RDF4JStore;
+import be.ugent.rml.store.*;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
@@ -107,20 +104,19 @@ public class RMLConfigurator {
             if (options.isEmptyStrings())
                 factory.setEmptyStrings(true);
 
-            if (options.getCorePoolSize() != 0)
-                RDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
-            if (options.getMaximumPoolSize() != 0)
-                RDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
-            if (options.getKeepAliveMinutes() != 0)
-                RDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
-
             RDF4JRepository outputStore;
-            if (graph.isRemote() && options.getBatchSize() > 0) {
-                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
+            if (options.isConcurrentWrites()) {
+                if (options.getCorePoolSize() != 0)
+                    ConcurrentRDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
+                if (options.getMaximumPoolSize() != 0)
+                    ConcurrentRDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
+                if (options.getKeepAliveMinutes() != 0)
+                    ConcurrentRDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
+                outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), contextIRI,
                         options.getBatchSize(), options.isIncrementalUpdate());
             } else {
-                // Covers both the cases: HTTPRepository not incremental / In-memory repository
-                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI, 0, false);
+                outputStore = new RDF4JRepository(graph.getRepository(), contextIRI,
+                        options.getBatchSize(), options.isIncrementalUpdate());
             }
 
             String baseIRI;
