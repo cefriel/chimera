@@ -64,10 +64,10 @@
         <constant>application/zip</constant>
       </camel:setHeader>
       <camel:setHeader headerName="Content-Disposition">
-        <simple>inline; filename="lifting-result-$simple{exchangeProperty.context_id}"</simple>
+        <simple>inline; filename="lifting-result-$simple{exchangeProperty.graph_id}"</simple>
       </camel:setHeader>
       <camel:setHeader headerName="Exchange.FILE_NAME">
-        <camel:simple>lifting-result-$simple{exchangeProperty.context_id}.$simple{header.file_extension}</camel:simple>
+        <camel:simple>lifting-result-$simple{exchangeProperty.graph_id}.$simple{header.file_extension}</camel:simple>
       </camel:setHeader>
       <camel:convertBodyTo type="String" charset="UTF-8"/>
       <camel:setProperty propertyName="CamelCharsetName">
@@ -101,10 +101,10 @@
         <constant>application/zip</constant>
       </camel:setHeader>
       <camel:setHeader headerName="Content-Disposition">
-        <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.context_id}"</simple>
+        <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.graph_id}"</simple>
       </camel:setHeader>
       <camel:setHeader headerName="Exchange.FILE_NAME">
-        <camel:simple>roundtrip-result-$simple{exchangeProperty.context_id}.txt</camel:simple>
+        <camel:simple>roundtrip-result-$simple{exchangeProperty.graph_id}.txt</camel:simple>
       </camel:setHeader>
       <camel:marshal>
         <zipFile/>
