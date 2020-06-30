@@ -47,19 +47,15 @@ public class UniLoader {
             InputStream is = new FileInputStream(res);
             return is;
         }
-        if (token != null) {
-            java.net.URL documentUrl = new URL(resource);
-            HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
 
-            // Set up URL connection to get retrieve information back
-            con.setRequestMethod("GET");
+        java.net.URL documentUrl = new URL(resource);
+        HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
+
+        // Set up URL connection to get retrieve information back
+        con.setRequestMethod("GET");
+        if (token != null)
             con.setRequestProperty("Authorization", "Bearer " + token);
-            con.setRequestProperty("Accept", "application/x-turtle, application/rdf+xml");
-
-            // Pull the information back from the URL
-            return con.getInputStream();
-        }
-        else
-            return new URL(resource).openStream();
+        // Pull the information back from the URL
+        return con.getInputStream();
     }
 }

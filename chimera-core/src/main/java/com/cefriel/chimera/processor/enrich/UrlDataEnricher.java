@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cefriel.chimera.graph.RDFGraph;
-import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;

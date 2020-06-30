@@ -40,6 +40,7 @@ public class RMLProcessor implements Processor {
     private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
     private RMLOptions defaultRmlOptions;
+    private Initializer rmlInitializer;
 
     private String concurrency;
     private int nThreads = 4;
@@ -76,14 +77,12 @@ public class RMLProcessor implements Processor {
         IRI context =  graph.getContext();
 
         final Initializer initializer;
-        Initializer messageInitializer = exchange.getIn().getHeader(RMLProcessorConstants.RML_INITIALIZER, Initializer.class);
-        if (messageInitializer != null) {
-            exchange.getIn().removeHeader(RMLProcessorConstants.RML_INITIALIZER);
-            initializer = messageInitializer;
+        if (rmlInitializer != null) {
+            initializer = rmlInitializer;
         } else {
             initializer = RMLConfigurator.getInitializer(rmlOptions);
             if (initializer == null)
-                throw new IllegalArgumentException("Initializer cannot be null");
+                throw new IllegalArgumentException("RML Initializer cannot be null");
         }
 
         if (concurrency != null) {
@@ -143,9 +142,6 @@ public class RMLProcessor implements Processor {
     private void executeMappings(Mapper mapper, List<Term> triplesMaps) throws Exception {
         QuadStore outputStore = mapper.execute(triplesMaps);
 
-        if (outputStore.isEmpty())
-            logger.info("No results!");
-
         // Write quads to the context graph
         outputStore.shutDown();
     }
@@ -156,6 +152,14 @@ public class RMLProcessor implements Processor {
 
     public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
         this.defaultRmlOptions = defaultRmlOptions;
+    }
+
+    public Initializer getRmlInitializer() {
+        return rmlInitializer;
+    }
+
+    public void setRmlInitializer(Initializer rmlInitializer) {
+        this.rmlInitializer = rmlInitializer;
     }
 
     public String getConcurrency() {
