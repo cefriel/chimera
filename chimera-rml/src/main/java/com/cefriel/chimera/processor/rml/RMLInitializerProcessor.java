@@ -28,6 +28,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class RMLInitializerProcessor implements Processor {
         if (mappings != null)
             rmlMappings = mappings;
         if (rmlMappings == null) {
-            logger.info("RML Mappings not specified. Cannot create Initializer.");
+            logger.error("RML Mappings not specified. Cannot create Initializer.");
             exchange.getMessage().setBody(null);
             return;
         }
@@ -66,15 +67,27 @@ public class RMLInitializerProcessor implements Processor {
         String functionsUrl = baseUrl + "/" + rmlMappings + "/functions";
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
+        InputStream rmlIS = UniLoader.open(mappingsUrl, token);
+        if (rmlIS == null) {
+            logger.error("RML Mappings not found. Cannot create Initializer.");
+            exchange.getMessage().setBody(null);
+            return;
+        }
         RDF4JStore rmlStore = new RDF4JStore();
-        rmlStore.read(UniLoader.open(mappingsUrl, token), null, RDFFormat.TURTLE);
+        rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
 
-        RDF4JStore functionsStore = new RDF4JStore();
-        functionsStore.read(UniLoader.open(functionsUrl, token), null, RDFFormat.TURTLE);
-        FunctionLoader functionLoader = new FunctionLoader(functionsStore, null);
+        FunctionLoader functionLoader;
+        InputStream functionsIS = UniLoader.open(functionsUrl, token);
+
+        if (functionsIS != null) {
+            RDF4JStore functionsStore = new RDF4JStore();
+            functionsStore.read(functionsIS, null, RDFFormat.TURTLE);
+            functionLoader = new FunctionLoader(functionsStore, null);
+        } else
+            functionLoader = new FunctionLoader();
 
         logger.info("RML Initializer created");
-        initializer = new Initializer(rmlStore,functionLoader);
+        initializer = new Initializer(rmlStore, functionLoader);
         if (initializer != null)
             cache.put(rmlMappings, initializer);
         exchange.getMessage().setBody(initializer, Initializer.class);
