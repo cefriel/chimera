@@ -28,6 +28,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,10 +45,8 @@ public class QueryResultCollectorProcessor implements Processor {
         String collectorId = exchange.getMessage().getHeader(RecordProcessorConstants.COLLECTOR_ID, String.class);
         if (collectorId == null)
             collectorId = this.collectorId;
-        if (collectorId == null) {
-            logger.info("Collector ID not found. Attach it to header using as key " + RecordProcessorConstants.COLLECTOR_ID);
-            return;
-        }
+        if (collectorId == null)
+            logger.error("Collector ID not found. Attach it to header using as key " + RecordProcessorConstants.COLLECTOR_ID);
 
         RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
         if (graph == null)
@@ -58,8 +57,9 @@ public class QueryResultCollectorProcessor implements Processor {
         List<Map<String,String>> results = reader.executeQueryStringValue(query);
         String result = "No results!";
         RecordCollector collector = exchange.getProperty(collectorId, RecordCollector.class);
-        if (collector == null) {
+        if (collector == null && collectorId != null) {
             RecordCollectorProcessor rcp = new RecordCollectorProcessor();
+            rcp.setCollectorId(collectorId);
             rcp.process(exchange);
         } else {
             if (results != null)
@@ -74,7 +74,10 @@ public class QueryResultCollectorProcessor implements Processor {
                             record[0] = exchange.getExchangeId();
                         record[1] = variable;
                         record[2] = r;
-                        collector.addRecord(record);
+                        if (collector != null)
+                            collector.addRecord(record);
+                        else
+                            logger.info(Arrays.toString(record));
                     }
                 }
         }
