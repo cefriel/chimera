@@ -15,31 +15,14 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import be.ugent.rml.access.AccessFactory;
+import com.cefriel.chimera.rml.CamelAccessFactory;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 
-public class RMLGenericProcessor implements Processor {
-
-    private RMLOptions defaultRmlOptions;
+public class RMLCamelProcessor extends RMLProcessor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        RMLProcessor rmlProcessor = new RMLProcessor();
-
-        if (defaultRmlOptions != null)
-            rmlProcessor.setDefaultRmlOptions(defaultRmlOptions);
-
-        String basePath = System.getProperty("user.dir");
-        rmlProcessor.processRML(exchange, new AccessFactory(basePath));
+        processRML(exchange, new CamelAccessFactory(exchange));
     }
 
-    public RMLOptions getDefaultRmlOptions() {
-        return defaultRmlOptions;
-    }
-
-    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
-        this.defaultRmlOptions = defaultRmlOptions;
-    }
-    
 }

@@ -17,48 +17,12 @@ package com.cefriel.chimera.processor.rml;
 
 import com.cefriel.chimera.rml.CamelAccessFactory;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 
-public class RMLMessageProcessor implements Processor {
-
-    private RMLOptions defaultRmlOptions;
-    private String concurrency;
-    private int nThreads = 4;
+public class RMLMessageProcessor extends RMLProcessor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        RMLProcessor rmlProcessor = new RMLProcessor();
-
-        if (defaultRmlOptions != null)
-            rmlProcessor.setDefaultRmlOptions(defaultRmlOptions);
-        rmlProcessor.setConcurrency(concurrency);
-        rmlProcessor.setnThreads(nThreads);
-
-        rmlProcessor.processRML(exchange, new CamelAccessFactory(exchange, true));
-    }
-
-    public RMLOptions getDefaultRmlOptions() {
-        return defaultRmlOptions;
-    }
-
-    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
-        this.defaultRmlOptions = defaultRmlOptions;
-    }
-
-    public String getConcurrency() {
-        return concurrency;
-    }
-
-    public void setConcurrency(String concurrency) {
-        this.concurrency = concurrency;
-    }
-
-    public int getnThreads() {
-        return nThreads;
-    }
-
-    public void setnThreads(int nThreads) {
-        this.nThreads = nThreads;
+        processRML(exchange, new CamelAccessFactory(exchange, true));
     }
     
 }

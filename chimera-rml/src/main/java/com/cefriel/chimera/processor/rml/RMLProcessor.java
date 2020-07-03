@@ -25,7 +25,6 @@ import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.Mapper;
 import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
-import com.cefriel.chimera.rml.CamelAccessFactory;
 import com.cefriel.chimera.util.ProcessorConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -37,18 +36,18 @@ import com.cefriel.chimera.util.RMLProcessorConstants;
 
 public class RMLProcessor implements Processor {
 
-    private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
+    Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
-    private RMLOptions defaultRmlOptions;
-    private Initializer rmlInitializer;
+    RMLOptions defaultRmlOptions;
+    Initializer rmlInitializer;
+    String concurrency;
+    int nThreads = 4;
 
-    private String concurrency;
-    private int nThreads = 4;
-    
+    @Override
     public void process(Exchange exchange) throws Exception {
-        processRML(exchange, new CamelAccessFactory(exchange));
+        String basePath = System.getProperty("user.dir");
+        processRML(exchange, new AccessFactory(basePath));
     }
-
 
     public void processRML(Exchange exchange, AccessFactory accessFactory) throws Exception {
         RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
@@ -58,14 +57,10 @@ public class RMLProcessor implements Processor {
         // RML Processor configuration
         final RMLOptions rmlOptions;
         RMLOptions messageRmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
-        if (messageRmlOptions != null) {
-            exchange.getIn().removeHeader(RMLProcessorConstants.RML_CONFIG);
+        if (messageRmlOptions != null)
             rmlOptions = messageRmlOptions;
-        } else {
-            rmlOptions = defaultRmlOptions;
-            if (rmlOptions == null)
-                throw new IllegalArgumentException("RMLOptions config should be provided in the header");
-        }
+        else
+            rmlOptions = (defaultRmlOptions != null) ?  defaultRmlOptions : new RMLOptions();
 
         String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
         String baseIRIPrefix = exchange.getMessage().getHeader(RMLProcessorConstants.PREFIX_BASE_IRI, String.class);
@@ -82,7 +77,7 @@ public class RMLProcessor implements Processor {
         } else {
             initializer = RMLConfigurator.getInitializer(rmlOptions);
             if (initializer == null)
-                throw new IllegalArgumentException("RML Initializer cannot be null");
+                throw new IllegalArgumentException("RML Initializer cannot be retrieved or generated using RMLOptions");
         }
 
         if (concurrency != null) {
@@ -137,6 +132,8 @@ public class RMLProcessor implements Processor {
 
         if (ConcurrentExecutor.executorService != null)
             ConcurrentExecutor.executorService.shutdownNow();
+
+        logger.info("RML processing completed");
     }
 
     private void executeMappings(Mapper mapper, List<Term> triplesMaps) throws Exception {
