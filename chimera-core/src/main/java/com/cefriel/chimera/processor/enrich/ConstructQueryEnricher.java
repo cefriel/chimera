@@ -42,7 +42,8 @@ public class ConstructQueryEnricher implements Processor {
     private Logger logger = LoggerFactory.getLogger(ConstructQueryEnricher.class);
 
     private List<String> sparqlQueries;
-    private String queriesUrl;
+    private String queriesId;
+    private String baseUrl;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -54,8 +55,15 @@ public class ConstructQueryEnricher implements Processor {
         if (sparqlQueries == null)
             sparqlQueries = new ArrayList<>();
 
-        if (queriesUrl != null) {
+        String msgQueriesId = exchange.getMessage().getHeader(ProcessorConstants.QUERIES_ID, String.class);
+        if (msgQueriesId != null)
+            queriesId = msgQueriesId;
+        if (queriesId != null) {
+            if (baseUrl == null)
+                baseUrl = "";
+            String queriesUrl = baseUrl + "/" + queriesId + "/queries";
             String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
+
             Model model = SemanticLoader.secure_load_data(queriesUrl, "turtle", token);
             logger.info("Triples loaded from source " + queriesUrl + ": " + model.size());
 
@@ -86,11 +94,20 @@ public class ConstructQueryEnricher implements Processor {
         this.sparqlQueries = sparqlQueries;
     }
 
-    public String getQueriesUrl() {
-        return queriesUrl;
+    public String getQueriesId() {
+        return queriesId;
     }
 
-    public void setQueriesUrl(String queriesUrl) {
-        this.queriesUrl = queriesUrl;
+    public void setQueriesId(String queriesId) {
+        this.queriesId = queriesId;
     }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
 }
