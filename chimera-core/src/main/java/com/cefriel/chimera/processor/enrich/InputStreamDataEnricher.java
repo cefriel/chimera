@@ -21,11 +21,10 @@ import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -35,12 +34,11 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class InputStreamDataEnricher implements Processor {
 
-	private String format = "turtle";
+	private String format;
 	private String baseIRI = ProcessorConstants.BASE_IRI_VALUE;
 
 	public void process(Exchange exchange) throws Exception {
-		Message in = exchange.getIn();
-		InputStream input_msg = in.getBody(InputStream.class);
+		InputStream is = exchange.getIn().getBody(InputStream.class);
 		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 		if (graph == null)
 			throw new RuntimeException("RDF Graph not attached");
@@ -49,15 +47,18 @@ public class InputStreamDataEnricher implements Processor {
 		if (headerBaseIRI != null)
 			baseIRI = headerBaseIRI;
 
-		Model model = new LinkedHashModel();
+		Model model = new TreeModel();
 
+		RDFFormat rdfFormat = RDFFormat.TURTLE;
+		if (format != null)
+			rdfFormat = Utils.getRDFFormat(format);
 		String headerFormat = exchange.getMessage().getHeader(ProcessorConstants.ENRICHMENT_FORMAT, String.class);
 		if (headerFormat != null)
-			format = headerFormat;
-		RDFFormat rdfFormat = Utils.getRDFFormat(format);
+			rdfFormat = Utils.getRDFFormat(headerFormat);
 		RDFParser rdfParser = Rio.createParser(rdfFormat);
+
 		rdfParser.setRDFHandler(new StatementCollector(model));
-		rdfParser.parse(input_msg, baseIRI);
+		rdfParser.parse(is, baseIRI);
 
 		IRI contextIRI = graph.getContext();
 

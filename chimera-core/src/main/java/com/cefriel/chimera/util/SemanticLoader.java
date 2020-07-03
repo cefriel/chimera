@@ -53,6 +53,8 @@ public class SemanticLoader {
         rdfParser.setRDFHandler(new StatementCollector(model));
 
         InputStream inputStream = UniLoader.open(url, token);
+        if (inputStream == null)
+            return null;
         rdfParser.parse(inputStream, baseIRI);
         return model;
     }

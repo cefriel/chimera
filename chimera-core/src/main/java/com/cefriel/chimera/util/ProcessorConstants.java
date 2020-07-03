@@ -19,6 +19,9 @@ public class ProcessorConstants {
 
     public static String BASE_IRI_VALUE = "http://sprint-transport.eu/data/";
 
+    public static String QUERY_CLASS = "http://sprint-transport.eu/terms#Query";
+    public static String CONSTRUCT_PROPERTY = "http://sprint-transport.eu/terms#construct";
+
     public static final String BASE_IRI = "base_iri";
 
     public static final String SOURCE_STD = "source_standard";

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.processor.onexception.OnExceptionInspectProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
@@ -28,8 +29,12 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UrlDataEnricher implements Processor {
+
+	private Logger logger = LoggerFactory.getLogger(UrlDataEnricher.class);
 
 	private List<String> additionalSourcesUrls;
 
@@ -55,11 +60,15 @@ public class UrlDataEnricher implements Processor {
 		try (RepositoryConnection con = repo.getConnection()) {
 			for (String url : additionalSourcesUrls) {
 				additionalDataset = SemanticLoader.load_data(url, token);
-				IRI contextIRI = graph.getContext();
-				if (contextIRI != null)
-					con.add(additionalDataset, contextIRI);
-				else
-					con.add(additionalDataset);
+				if (additionalDataset == null)
+					logger.error("No data loaded! URL: " + url);
+				else {
+					IRI contextIRI = graph.getContext();
+					if (contextIRI != null)
+						con.add(additionalDataset, contextIRI);
+					else
+						con.add(additionalDataset);
+				}
 			}
 		}
 	}
