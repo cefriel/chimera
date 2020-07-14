@@ -130,9 +130,6 @@ public class RMLProcessor implements Processor {
                 executeMappings(mapper, null);
         }
 
-        if (ConcurrentExecutor.executorService != null)
-            ConcurrentExecutor.executorService.shutdownNow();
-
         logger.info("RML processing completed");
     }
 
