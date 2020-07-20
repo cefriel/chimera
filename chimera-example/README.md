@@ -31,15 +31,15 @@ chimera-example-c6b446c8-nnvwc   0/1     ContainerCreating   0          2s
 chimera-example-c6b446c8-whnp9   1/1     Running             0          50m
 
 ```
-To automate the scaling you can use an Horizontal Pod Autoscaler (HPA), for example referring to the current CPU usage. The following command enables autoscaling from 1 up to 5 replicas if CPU usage is greater than 80 percent.
+To automate the scaling you can use an Horizontal Pod Autoscaler (HPA), for example referring to the current CPU usage. You need `metrics-server` deployed to provide metrics via the resource metrics API to the HPA (instructions for deploying it are on the GitHub repository of [metrics-server](https://github.com/kubernetes-incubator/metrics-server/)). The following command enables autoscaling from 1 up to 5 replicas if CPU usage is greater than 80 percent.
 ```
 $ kubectl autoscale deployments/chimera-example --min=1 --max=5 --cpu-percent=80
 ```
 Different and custom metrics can be used to set the scaling logic. More info and yaml configuration for HPA can be found here: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/ 
 
-To check the HPA status run `kubectl get hpa` or `kubectl describe hpa chimera-example`. If `metrics-server` is running you also get the current metric value w.r.t. the target. Example:
+To check the HPA status run `kubectl get hpa` or `kubectl describe hpa chimera-example`. Example:
 ```
 $ kubectl get hpa
 NAME              REFERENCE                    TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
-chimera-example   Deployment/chimera-example   9%/80%    1         5         5          31s
+chimera-example   Deployment/chimera-example   9%/80%    1         5         3          31s
 ```
