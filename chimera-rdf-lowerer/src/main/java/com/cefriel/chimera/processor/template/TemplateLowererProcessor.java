@@ -47,7 +47,7 @@ public class TemplateLowererProcessor implements Processor {
 	private Logger logger = LoggerFactory.getLogger(TemplateLowererProcessor.class);
 
 	private TemplateLowererOptions defaultTLOptions;
-	private String destinationPath = "/tmp/";
+	private String destinationPath = "./tmp/";
 
 	public void process(Exchange exchange) throws Exception {
 		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
@@ -116,7 +116,7 @@ public class TemplateLowererProcessor implements Processor {
 					localDestPath + destFileName);
 
 		if (tlo.isAttachmentToExchange()) {
-			String filename = tlo.getDestFileName().replaceFirst("[.][^.]+$", "");
+			String filename = destFileName.replaceFirst("[.][^.]+$", "");
 			List<String> result;
 			try (Stream<Path> walk = Files.walk(Paths.get(localDestPath))) {
 				result = walk.map(x -> x.getFileName().toString())
