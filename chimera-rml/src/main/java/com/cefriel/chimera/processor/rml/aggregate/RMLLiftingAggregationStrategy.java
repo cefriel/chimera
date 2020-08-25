@@ -43,10 +43,7 @@ public class RMLLiftingAggregationStrategy implements AggregationStrategy {
             }
         }
         try {
-            if (message)
-                processor.processRML(exchange, new CamelAccessFactory(exchange, true));
-            else
-                processor.process(exchange);
+            processor.processRML(exchange, new CamelAccessFactory(exchange, message));
         } catch (Exception e) {
             logger.error("Error in RML lifting process");
             e.printStackTrace();
