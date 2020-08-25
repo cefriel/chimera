@@ -33,15 +33,15 @@ import org.eclipse.rdf4j.repository.util.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ConstructQueryEnricher implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(ConstructQueryEnricher.class);
 
     private List<String> sparqlQueries;
+
+    private static Map<String, List<String>> cache = new HashMap<>();
     private String queriesId;
     private String baseUrl;
 
@@ -59,21 +59,33 @@ public class ConstructQueryEnricher implements Processor {
         if (msgQueriesId != null)
             queriesId = msgQueriesId;
         if (queriesId != null) {
-            if (baseUrl == null)
-                baseUrl = "";
-            String queriesUrl = baseUrl + "/" + queriesId + "/queries";
-            String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
+            synchronized (cache) {
+                List<String> cachedQueries = cache.get(queriesId);
+                if (cachedQueries != null) {
+                    logger.info("Cached queries used for: " + queriesId);
+                    sparqlQueries.addAll(cachedQueries);
+                }
+                else {
+                    if (baseUrl == null)
+                        baseUrl = "";
+                    String queriesUrl = baseUrl + "/" + queriesId + "/queries";
+                    String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
-            Model model = SemanticLoader.secure_load_data(queriesUrl, "turtle", token);
-            logger.info("Triples loaded from source " + queriesUrl + ": " + model.size());
+                    Model model = SemanticLoader.secure_load_data(queriesUrl, "turtle", token);
+                    logger.info("Triples loaded from source " + queriesUrl + ": " + model.size());
 
-            ValueFactory factory = SimpleValueFactory.getInstance();
-            IRI queryClass = factory.createIRI(ProcessorConstants.QUERY_CLASS);
-            IRI constructProperty = factory.createIRI(ProcessorConstants.CONSTRUCT_PROPERTY);
-            for (Resource query : model.filter(null, RDF.TYPE, queryClass).subjects()) {
-                logger.info("Query " + query.stringValue());
-                Optional<Literal> queries = Models.objectLiteral(model.filter(query, constructProperty, null));
-                queries.ifPresent(q -> sparqlQueries.add(q.stringValue()));
+                    ValueFactory factory = SimpleValueFactory.getInstance();
+                    IRI queryClass = factory.createIRI(ProcessorConstants.QUERY_CLASS);
+                    IRI constructProperty = factory.createIRI(ProcessorConstants.CONSTRUCT_PROPERTY);
+                    List<String> extractedQueries = new ArrayList<>();
+                    for (Resource query : model.filter(null, RDF.TYPE, queryClass).subjects()) {
+                        logger.info("Query " + query.stringValue());
+                        Optional<Literal> queries = Models.objectLiteral(model.filter(query, constructProperty, null));
+                        queries.ifPresent(q -> extractedQueries.add(q.stringValue()));
+                    }
+                    sparqlQueries.addAll(extractedQueries);
+                    cache.put(queriesId, new ArrayList<>(extractedQueries));
+                }
             }
         }
 
