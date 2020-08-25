@@ -56,6 +56,7 @@ public class TemplateLowererInitializerProcessor implements Processor {
         synchronized (cache) {
             initializer = cache.get(loweringTemplate);
             if (initializer != null) {
+                logger.info("Cached initializer used for: " + loweringTemplate);
                 exchange.getMessage().setBody(initializer, TemplateLowererInitializer.class);
                 return;
             }

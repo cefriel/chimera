@@ -56,6 +56,7 @@ public class RMLInitializerProcessor implements Processor {
         synchronized (cache) {
             initializer = cache.get(rmlMappings);
             if (initializer != null) {
+                logger.info("Cached initializer used for: " + rmlMappings);
                 exchange.getMessage().setBody(initializer, Initializer.class);
                 return;
             }
