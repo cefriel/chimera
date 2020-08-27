@@ -18,9 +18,9 @@ package com.cefriel.chimera.processor.rml;
 import java.util.*;
 import java.util.concurrent.*;
 
-import be.ugent.rml.ConcurrentExecutor;
 import be.ugent.rml.Initializer;
 import be.ugent.rml.access.AccessFactory;
+import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
 import be.ugent.rml.Mapper;
 import be.ugent.rml.term.Term;
@@ -36,6 +36,7 @@ import com.cefriel.chimera.util.RMLProcessorConstants;
 
 public class RMLProcessor implements Processor {
 
+    static ExecutorCompletionService<String> completionService;
     Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
     RMLOptions defaultRmlOptions;
@@ -80,17 +81,21 @@ public class RMLProcessor implements Processor {
                 throw new IllegalArgumentException("RML Initializer cannot be retrieved or generated using RMLOptions");
         }
 
+        final RecordsFactory recordsFactory = RMLConfigurator.getRecordsFactory(accessFactory, rmlOptions);
+
         if (concurrency != null) {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
-            ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
-            ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
+            if (completionService == null) {
+                ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+                completionService = new ExecutorCompletionService<>(executorService);
+            }
 
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
                 logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
                         return "Job done for Logical Source " + logicalSource;
@@ -103,7 +108,7 @@ public class RMLProcessor implements Processor {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, mappings);
                         return "Job done for Triples Map " + triplesMap.getValue();
@@ -119,13 +124,10 @@ public class RMLProcessor implements Processor {
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error(e.getMessage(), e);
                     e.printStackTrace();
-                    executorService.shutdownNow();
                 }
 
-            executorService.shutdownNow();
-
         } else {
-            Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+            Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
             if(mapper != null)
                 executeMappings(mapper, null);
         }

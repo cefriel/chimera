@@ -91,18 +91,21 @@ public class RMLConfigurator {
 
     }
 
-    static Mapper configure(RDFGraph graph, IRI contextIRI, AccessFactory accessFactory, RMLOptions options) {
-        return configure(graph, contextIRI, accessFactory, null, options);
+    static RecordsFactory getRecordsFactory(AccessFactory accessFactory, RMLOptions options) {
+        RecordsFactory factory = new RecordsFactory(accessFactory);
+        if (options.isEmptyStrings())
+            factory.setEmptyStrings(true);
+        return factory;
     }
 
-    static Mapper configure(RDFGraph graph, IRI contextIRI, AccessFactory accessFactory, Initializer initializer, RMLOptions options) {
+    static Mapper configure(RDFGraph graph, IRI contextIRI, RecordsFactory factory, RMLOptions options) {
+        return configure(graph, contextIRI, factory, null, options);
+    }
+
+    static Mapper configure(RDFGraph graph, IRI contextIRI, RecordsFactory factory, Initializer initializer, RMLOptions options) {
         try {
             if (initializer == null)
                 initializer = getInitializer(options);
-
-            RecordsFactory factory = new RecordsFactory(accessFactory);
-            if (options.isEmptyStrings())
-                factory.setEmptyStrings(true);
 
             RDF4JRepository outputStore;
             if (options.isConcurrentWrites()) {

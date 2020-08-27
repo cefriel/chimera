@@ -24,39 +24,27 @@ import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RMLLiftingAggregationStrategy implements AggregationStrategy {
+public class RMLLiftingAggregationStrategy extends RMLProcessor implements AggregationStrategy {
 
     private Logger logger = LoggerFactory.getLogger(RMLLiftingAggregationStrategy.class);
 
-    private RMLOptions rmlOptions;
     private boolean message;
 
     public Exchange aggregate(Exchange exchange, Exchange rmlInitializer) {
-        RMLProcessor processor = new RMLProcessor();
-        if (rmlOptions != null)
-            processor.setDefaultRmlOptions(rmlOptions);
         if (rmlInitializer != null) {
             Initializer initializer = rmlInitializer.getIn().getBody(Initializer.class);
             if (initializer != null) {
                 logger.info("RML Initialization extract");
-                processor.setRmlInitializer(initializer);
+                setRmlInitializer(initializer);
             }
         }
         try {
-            processor.processRML(exchange, new CamelAccessFactory(exchange, message));
+            processRML(exchange, new CamelAccessFactory(exchange, message));
         } catch (Exception e) {
             logger.error("Error in RML lifting process");
             e.printStackTrace();
         }
         return exchange;
-    }
-
-    public RMLOptions getRmlOptions() {
-        return rmlOptions;
-    }
-
-    public void setRmlOptions(RMLOptions rmlOptions) {
-        this.rmlOptions = rmlOptions;
     }
 
     public boolean isMessage() {
