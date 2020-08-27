@@ -22,6 +22,7 @@ import be.ugent.rml.store.RDF4JStore;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.RMLProcessorConstants;
 import com.cefriel.chimera.util.UniLoader;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -64,8 +65,9 @@ public class RMLInitializerProcessor implements Processor {
 
         if (baseUrl == null)
             baseUrl = "";
-        String mappingsUrl = baseUrl + "/" + rmlMappings + "/rml";
-        String functionsUrl = baseUrl + "/" + rmlMappings + "/functions";
+        baseUrl = Utils.trailingSlash(baseUrl);
+        String mappingsUrl = baseUrl + "rml/" + rmlMappings;
+        String functionsUrl = baseUrl + "function/" + rmlMappings;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream rmlIS = UniLoader.open(mappingsUrl, token);

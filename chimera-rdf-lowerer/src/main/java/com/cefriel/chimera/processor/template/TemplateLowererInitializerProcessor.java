@@ -20,6 +20,7 @@ import com.cefriel.chimera.lowerer.TemplateLowererInitializer;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.TemplateProcessorConstants;
 import com.cefriel.chimera.util.UniLoader;
+import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.slf4j.Logger;
@@ -64,7 +65,8 @@ public class TemplateLowererInitializerProcessor implements Processor {
 
         if (baseUrl == null)
             baseUrl = "";
-        String templateUrl = baseUrl + "/" + loweringTemplate + "/template";
+        baseUrl = Utils.trailingSlash(baseUrl);
+        String templateUrl = baseUrl + loweringTemplate;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream tlIS = UniLoader.open(templateUrl, token);

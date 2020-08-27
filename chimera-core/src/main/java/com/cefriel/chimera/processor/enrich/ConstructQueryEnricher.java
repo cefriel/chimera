@@ -68,7 +68,8 @@ public class ConstructQueryEnricher implements Processor {
                 else {
                     if (baseUrl == null)
                         baseUrl = "";
-                    String queriesUrl = baseUrl + "/" + queriesId + "/queries";
+                    baseUrl = Utils.trailingSlash(baseUrl);
+                    String queriesUrl = baseUrl + queriesId;
                     String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
                     Model model = SemanticLoader.secure_load_data(queriesUrl, "turtle", token);
@@ -93,6 +94,7 @@ public class ConstructQueryEnricher implements Processor {
             logger.info("Executing query on the graph: " + query);
             Model m = Repositories.graphQuery(repo, query, r -> QueryResults.asModel(r));
             try (RepositoryConnection con = repo.getConnection()) {
+                logger.info("Added " + m.size() + " triples");
                 con.add(m);
             }
         }

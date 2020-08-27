@@ -32,6 +32,10 @@ public class Utils {
         return repository;
     }
 
+    public static String trailingSlash(String url) {
+        return url.endsWith("/") ? url : url + "/";
+    }
+
     public static RDFFormat getRDFFormat(String format) {
         switch (format.toLowerCase()) {
             case "binary":
