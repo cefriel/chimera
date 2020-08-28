@@ -100,6 +100,8 @@ public class TemplateLowererProcessor implements Processor {
 		String destFileName = exchange.getIn().getHeader(TemplateProcessorConstants.DEST_FILE_NAME, String.class);
 		if (destFileName == null)
 			destFileName = tlo.getDestFileName();
+		if (destFileName == null)
+			destFileName = "output.txt";
 
 		String localDestPath = destinationPath;
 		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
