@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class RMLConfigurator {
@@ -109,12 +110,6 @@ public class RMLConfigurator {
 
             RDF4JRepository outputStore;
             if (options.isConcurrentWrites()) {
-                if (options.getCorePoolSize() != 0)
-                    ConcurrentRDF4JRepository.CORE_POOL_SIZE = options.getCorePoolSize();
-                if (options.getMaximumPoolSize() != 0)
-                    ConcurrentRDF4JRepository.MAXIMUM_POOL_SIZE = options.getMaximumPoolSize();
-                if (options.getKeepAliveMinutes() != 0)
-                    ConcurrentRDF4JRepository.KEEP_ALIVE_MINUTES = options.getKeepAliveMinutes();
                 outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), contextIRI,
                         options.getBatchSize(), options.isIncrementalUpdate());
             } else {
@@ -141,10 +136,8 @@ public class RMLConfigurator {
 
             Mapper mapper;
             if(options.isConcurrentRecords()) {
-                logger.info("Concurrent Executor created");
                 mapper = new ConcurrentExecutor(initializer, factory, outputStore, baseIRI);
             } else {
-                logger.info("Executor created");
                 mapper = new Executor(initializer, factory, outputStore, baseIRI);
             }
 
@@ -160,6 +153,19 @@ public class RMLConfigurator {
         }
 
         return null;
+    }
+
+    public static void initExecutors (RMLOptions options) {
+        if(options.isConcurrentRecords())
+            if (ConcurrentExecutor.executorService == null) {
+                ConcurrentExecutor.executorService = Executors.newFixedThreadPool(options.getNumThreadsRecords());
+                logger.info("ExecutorService for ConcurrentExecutor initialized [num_threads = " + options.getNumThreadsRecords() + "]");
+            }
+        if (options.isConcurrentWrites())
+            if (ConcurrentRDF4JRepository.executorService == null) {
+                ConcurrentRDF4JRepository.executorService = Executors.newFixedThreadPool(options.getNumThreadsWrites());
+                logger.info("ExecutorService for ConcurrentRDF4JRepository initialized [num_threads = " + options.getNumThreadsWrites() + "]");
+            }
     }
 
     public static Map<String, List<Term>> getOrderedTriplesMaps(Initializer initializer) {

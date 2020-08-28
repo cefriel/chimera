@@ -15,6 +15,8 @@
  */
 package com.cefriel.chimera.processor.rml;
 
+import com.cefriel.chimera.util.RMLProcessorConstants;
+
 import java.util.List;
 
 public class RMLOptions {
@@ -28,11 +30,10 @@ public class RMLOptions {
     private String baseIRI;
     private String baseIRIPrefix;
     private boolean emptyStrings;
-    private int corePoolSize = 4;
-    private int maximumPoolSize = 5;
-    private int keepAliveMinutes = 10;
     private boolean concurrentWrites;
     private boolean concurrentRecords;
+    int numThreadsRecords = RMLProcessorConstants.DEFAULT_NUM_THREADS;
+    int numThreadsWrites = RMLProcessorConstants.DEFAULT_NUM_THREADS;
 
     public List<String> getMappings() {
         return mappings;
@@ -106,30 +107,6 @@ public class RMLOptions {
         this.emptyStrings = emptyStrings;
     }
 
-    public int getCorePoolSize() {
-        return corePoolSize;
-    }
-
-    public void setCorePoolSize(int corePoolSize) {
-        this.corePoolSize = corePoolSize;
-    }
-
-    public int getMaximumPoolSize() {
-        return maximumPoolSize;
-    }
-
-    public void setMaximumPoolSize(int maximumPoolSize) {
-        this.maximumPoolSize = maximumPoolSize;
-    }
-
-    public int getKeepAliveMinutes() {
-        return keepAliveMinutes;
-    }
-
-    public void setKeepAliveMinutes(int keepAliveMinutes) {
-        this.keepAliveMinutes = keepAliveMinutes;
-    }
-
     public boolean isConcurrentWrites() {
         return concurrentWrites;
     }
@@ -144,6 +121,22 @@ public class RMLOptions {
 
     public void setConcurrentRecords(boolean concurrentRecords) {
         this.concurrentRecords = concurrentRecords;
+    }
+
+    public int getNumThreadsRecords() {
+        return numThreadsRecords;
+    }
+
+    public void setNumThreadsRecords(int numThreadsRecords) {
+        this.numThreadsRecords = numThreadsRecords;
+    }
+
+    public int getNumThreadsWrites() {
+        return numThreadsWrites;
+    }
+
+    public void setNumThreadsWrites(int numThreadsWrites) {
+        this.numThreadsWrites = numThreadsWrites;
     }
 
 }

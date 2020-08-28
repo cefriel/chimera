@@ -36,13 +36,14 @@ import com.cefriel.chimera.util.RMLProcessorConstants;
 
 public class RMLProcessor implements Processor {
 
-    static ExecutorCompletionService<String> completionService;
     Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
     RMLOptions defaultRmlOptions;
     Initializer rmlInitializer;
+
+    static ExecutorService executorService;
     String concurrency;
-    int nThreads = 4;
+    int numThreads = RMLProcessorConstants.DEFAULT_NUM_THREADS;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -81,17 +82,21 @@ public class RMLProcessor implements Processor {
                 throw new IllegalArgumentException("RML Initializer cannot be retrieved or generated using RMLOptions");
         }
 
+        // Unique Records Factory
         final RecordsFactory recordsFactory = RMLConfigurator.getRecordsFactory(accessFactory, rmlOptions);
+        //Init executors if needed for writes or records
+        RMLConfigurator.initExecutors(rmlOptions);
 
         if (concurrency != null) {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
-            if (completionService == null) {
-                ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
-                completionService = new ExecutorCompletionService<>(executorService);
+            if (executorService == null) {
+                executorService = Executors.newFixedThreadPool(numThreads);
+                logger.info("ExecutorService for RMLProcessor initialized [num_threads = " + numThreads + "]");
             }
+            ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
 
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
-                logger.info("Logical Source Concurrency enabled. Num threads: " + nThreads);
+                logger.info("Logical Source Concurrency enabled. Num threads: " + numThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
@@ -102,7 +107,7 @@ public class RMLProcessor implements Processor {
                     }));
                 }
             } else if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_TRIPLES_MAPS)) {
-                logger.info("Triples Maps Concurrency enabled. Num threads: " + nThreads);
+                logger.info("Triples Maps Concurrency enabled. Num threads: " + numThreads);
                 List<Term> triplesMaps = initializer.getTriplesMaps();
                 for (Term triplesMap : triplesMaps) {
                     List<Term> mappings = new ArrayList<>();
@@ -166,12 +171,12 @@ public class RMLProcessor implements Processor {
         this.concurrency = concurrency;
     }
 
-    public int getnThreads() {
-        return nThreads;
+    public int getNumThreads() {
+        return numThreads;
     }
 
-    public void setnThreads(int nThreads) {
-        this.nThreads = nThreads;
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 
 }

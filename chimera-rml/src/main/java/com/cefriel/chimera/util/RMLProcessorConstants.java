@@ -25,4 +25,6 @@ public class RMLProcessorConstants {
 
     public static final String CONCURRENCY_LOGICAL_SOURCE = "logical_source";
     public static final String CONCURRENCY_TRIPLES_MAPS = "triples_maps";
+
+    public static final int DEFAULT_NUM_THREADS = 4;
 }
