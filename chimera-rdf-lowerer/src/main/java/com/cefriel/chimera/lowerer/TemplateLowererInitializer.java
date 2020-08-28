@@ -31,6 +31,7 @@ public class TemplateLowererInitializer {
         else {
             ByteArrayOutputStream baos = getOutputStream(templateStream);
             this.bytes = baos.toByteArray();
+            baos.close();
         }
     }
 
