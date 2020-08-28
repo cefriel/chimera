@@ -25,11 +25,14 @@ import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+
 public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
     private Logger logger = LoggerFactory.getLogger(TemplateLowererAggregationStrategy.class);
 
     private TemplateLowererOptions tlOptions;
+    private boolean stream;
 
     public Exchange aggregate(Exchange exchange, Exchange tlInitializer) {
         TemplateLowererProcessor processor = new TemplateLowererProcessor();
@@ -39,7 +42,35 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
             TemplateLowererInitializer initializer = tlInitializer.getIn().getBody(TemplateLowererInitializer.class);
             if (initializer != null) {
                 logger.info("Template Lowerer Initialization extracted");
-                exchange.getMessage().setHeader(TemplateProcessorConstants.TEMPLATE_PATH, initializer.getTemplatePath());
+                InputStream tlIS = null;
+                try {
+                    tlIS = initializer.getTemplateStream();
+                } catch (IOException e) {
+                    logger.error("Exception accessing template stream");
+                }
+                if (!stream) {
+                    byte[] buffer = new byte[0];
+                    try {
+                        buffer = new byte[tlIS.available()];
+                        tlIS.read(buffer);
+                    } catch (IOException e) {
+                        logger.error("Exception reading template stream");
+                    }
+                    String templatePath = "./tmp/tmp-template-" + exchange.getExchangeId() + ".vm";
+                    File templateFile = new File(templatePath);
+                    templateFile.getParentFile().mkdirs();
+                    try {
+                        OutputStream outStream = new FileOutputStream(templateFile);
+                        outStream.write(buffer);
+                        outStream.close();
+                    } catch (IOException e) {
+                        logger.error("Exception writing template stream to file");
+                    }
+                    exchange.getMessage().setHeader(TemplateProcessorConstants.TEMPLATE_PATH, templatePath);
+                } else {
+                    processor.setStream(stream);
+                    exchange.setProperty(TemplateProcessorConstants.TEMPLATE_STREAM, tlIS);
+                }
             }
         }
         try {
@@ -57,5 +88,13 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
     public void setTlOptions(TemplateLowererOptions tlOptions) {
         this.tlOptions = tlOptions;
+    }
+
+    public boolean isStream() {
+        return stream;
+    }
+
+    public void setStream(boolean stream) {
+        this.stream = stream;
     }
 }

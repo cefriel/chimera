@@ -16,15 +16,39 @@
 
 package com.cefriel.chimera.lowerer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class TemplateLowererInitializer {
 
-    private String templatePath;
+    private byte[] bytes;
 
-    public TemplateLowererInitializer(String templatePath) {
-        this.templatePath = templatePath;
+    public TemplateLowererInitializer(InputStream templateStream) throws IOException {
+        if (templateStream == null)
+            this.bytes = null;
+        else {
+            ByteArrayOutputStream baos = getOutputStream(templateStream);
+            this.bytes = baos.toByteArray();
+        }
     }
 
-    public String getTemplatePath() {
-        return templatePath;
+    private ByteArrayOutputStream getOutputStream(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) > -1 ) {
+            baos.write(buffer, 0, len);
+        }
+        baos.flush();
+        return baos;
+    }
+
+    public InputStream getTemplateStream() throws IOException {
+        if (this.bytes != null)
+            return new ByteArrayInputStream(bytes);
+        else
+            throw new IOException("InputStream not initialized");
     }
 }

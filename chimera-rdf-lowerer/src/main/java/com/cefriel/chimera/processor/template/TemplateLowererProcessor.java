@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cefriel.chimera.util.TemplateProcessorConstants;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,6 +47,7 @@ public class TemplateLowererProcessor implements Processor {
 
 	private TemplateLowererOptions defaultTLOptions;
 	private String destinationPath = "./tmp/";
+	private boolean stream;
 
 	public void process(Exchange exchange) throws Exception {
 		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
@@ -66,20 +66,6 @@ public class TemplateLowererProcessor implements Processor {
 				throw new IllegalArgumentException("TemplateLowererOptions config should be provided in the header");
 		}
 
-		String templatePath = exchange.getIn().getHeader(TemplateProcessorConstants.TEMPLATE_PATH, String.class);
-		if (templatePath == null)
-			templatePath = tlo.getTemplatePath();
-		String destFileName = exchange.getIn().getHeader(TemplateProcessorConstants.DEST_FILE_NAME, String.class);
-		if (destFileName == null)
-			destFileName = tlo.getDestFileName();
-
-		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
-		String localDestPath = destinationPath;
-		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
-			localDestPath += '/';
-		if (graphID != null)
-			localDestPath = localDestPath + graphID + "/";
-
 		LoweringUtils lu = new LoweringUtils();
 		if (tlo.getUtils() != null)
 			switch (tlo.getUtils()) {
@@ -88,6 +74,7 @@ public class TemplateLowererProcessor implements Processor {
 					break;
 			}
 
+		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 		String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
 		if (baseIRI == null)
 			baseIRI = ProcessorConstants.BASE_IRI_VALUE;
@@ -106,27 +93,60 @@ public class TemplateLowererProcessor implements Processor {
 		if (tlo.isTrimTemplate())
 			tl.setTrimTemplate(true);
 
+		String templatePath = exchange.getIn().getHeader(TemplateProcessorConstants.TEMPLATE_PATH, String.class);
+		if (templatePath == null)
+			templatePath = tlo.getTemplatePath();
+
+		String destFileName = exchange.getIn().getHeader(TemplateProcessorConstants.DEST_FILE_NAME, String.class);
+		if (destFileName == null)
+			destFileName = tlo.getDestFileName();
+
+		String localDestPath = destinationPath;
+		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
+			localDestPath += '/';
+		if (graphID != null)
+			localDestPath = localDestPath + graphID + "/";
+
 		new File(localDestPath).mkdirs();
 
-		if (tlo.getQueryFile() != null)
-			tl.lower(templatePath,
-					localDestPath + destFileName, tlo.getQueryFile());
-		else
-			tl.lower(templatePath,
-					localDestPath + destFileName);
+		String filepath = localDestPath + destFileName;
 
-		if (tlo.isAttachmentToExchange()) {
-			String filename = destFileName.replaceFirst("[.][^.]+$", "");
-			List<String> result;
-			try (Stream<Path> walk = Files.walk(Paths.get(localDestPath))) {
-				result = walk.map(x -> x.getFileName().toString())
-						.filter(f -> f.contains(filename))
-						.collect(Collectors.toList());
+		if (stream) {
+			logger.info("Template processed as a stream");
+			InputStream template = exchange.getProperty(TemplateProcessorConstants.TEMPLATE_STREAM, InputStream.class);
+			if (tlo.getQueryFile() != null)
+				logger.warn("Parametric templates not supported for streams");
+			if (template != null) {
+				String result = tl.lower(template);
+				if (tlo.isAttachmentToExchange())
+					exchange.getMessage().setBody(result, String.class);
+				else
+					try (PrintWriter out = new PrintWriter(filepath)) {
+						out.println(result);
+					}
 			}
-			Map<String, InputStream> outputs = new HashMap<>();
-			for (String f : result)
-				outputs.put(f, UniLoader.open("file://" + localDestPath + f));
-			exchange.getMessage().setBody(outputs, Map.class);
+		} else {
+			tl.lower(templatePath, filepath, tlo.getQueryFile());
+
+			if (tlo.isAttachmentToExchange()) {
+				if (tlo.getQueryFile() != null) {
+					//Attach all file created with parametric template
+					String filename = destFileName.replaceFirst("[.][^.]+$", "");
+					List<String> result;
+					try (Stream<Path> walk = Files.walk(Paths.get(localDestPath))) {
+						result = walk.map(x -> x.getFileName().toString())
+								.filter(f -> f.contains(filename))
+								.collect(Collectors.toList());
+					}
+					Map<String, InputStream> outputs = new HashMap<>();
+					for (String f : result)
+						outputs.put(f, UniLoader.open("file://" + localDestPath + f));
+					exchange.getMessage().setBody(outputs, Map.class);
+				} else {
+					//Attach the result as InputStream
+					exchange.getMessage().setBody(UniLoader.open("file://" + filepath), InputStream.class);
+				}
+			}
 		}
 	}
 
@@ -144,6 +164,14 @@ public class TemplateLowererProcessor implements Processor {
 
 	public void setDestinationPath(String destinationPath) {
 		this.destinationPath = destinationPath;
+	}
+
+	public boolean isStream() {
+		return stream;
+	}
+
+	public void setStream(boolean stream) {
+		this.stream = stream;
 	}
 
 }

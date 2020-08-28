@@ -43,7 +43,6 @@ public class TemplateLowererInitializerProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-
         String templateId = exchange.getMessage().getHeader(TemplateProcessorConstants.LOWERING_TEMPLATE, String.class);
         if (templateId != null)
             loweringTemplate = templateId;
@@ -76,16 +75,8 @@ public class TemplateLowererInitializerProcessor implements Processor {
             return;
         }
 
-        byte[] buffer = new byte[tlIS.available()];
-        tlIS.read(buffer);
-        String templatePath = "./tmp/" + loweringTemplate + ".vm";
-        File templateFile = new File(templatePath);
-        templateFile.getParentFile().mkdirs();
-        OutputStream outStream = new FileOutputStream(templateFile);
-        outStream.write(buffer);
-
         logger.info("Template Lowerer Initializer created");
-        initializer = new TemplateLowererInitializer(templatePath);
+        initializer = new TemplateLowererInitializer(tlIS);
         if (initializer != null)
             cache.put(loweringTemplate, initializer);
         exchange.getMessage().setBody(initializer, TemplateLowererInitializer.class);
