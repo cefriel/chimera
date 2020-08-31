@@ -41,6 +41,8 @@ public class RMLProcessor implements Processor {
     RMLOptions defaultRmlOptions;
     Initializer rmlInitializer;
 
+    boolean singleRecordsFactory;
+
     static ExecutorService executorService;
     String concurrency;
     int numThreads = RMLProcessorConstants.DEFAULT_NUM_THREADS;
@@ -82,8 +84,6 @@ public class RMLProcessor implements Processor {
                 throw new IllegalArgumentException("RML Initializer cannot be retrieved or generated using RMLOptions");
         }
 
-        // Unique Records Factory
-        final RecordsFactory recordsFactory = RMLConfigurator.getRecordsFactory(accessFactory, rmlOptions);
         //Init executors if needed for writes or records
         RMLConfigurator.initExecutors(rmlOptions);
 
@@ -95,12 +95,25 @@ public class RMLProcessor implements Processor {
             }
             ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
 
+            // Check option for single RecordsFactory
+            final RecordsFactory recordsFactory;
+            if (singleRecordsFactory) {
+                recordsFactory = RMLConfigurator.getRecordsFactory(accessFactory, rmlOptions);
+                logger.info("Single RecordsFactory instantiated");
+            }
+            else
+                recordsFactory = null;
+
             if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
                 logger.info("Logical Source Concurrency enabled. Num threads: " + numThreads);
                 Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
                 for (String logicalSource : orderedTriplesMaps.keySet()) {
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        Mapper mapper;
+                        if (singleRecordsFactory)
+                            mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        else
+                            mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
                         return "Job done for Logical Source " + logicalSource;
@@ -113,7 +126,11 @@ public class RMLProcessor implements Processor {
                     List<Term> mappings = new ArrayList<>();
                     mappings.add(triplesMap);
                     jobs.add(completionService.submit(() -> {
-                        Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        Mapper mapper;
+                        if (singleRecordsFactory)
+                            mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        else
+                            mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
                         if(mapper != null)
                             executeMappings(mapper, mappings);
                         return "Job done for Triples Map " + triplesMap.getValue();
@@ -132,7 +149,7 @@ public class RMLProcessor implements Processor {
                 }
 
         } else {
-            Mapper mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+            Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
             if(mapper != null)
                 executeMappings(mapper, null);
         }
@@ -162,6 +179,15 @@ public class RMLProcessor implements Processor {
     public void setRmlInitializer(Initializer rmlInitializer) {
         this.rmlInitializer = rmlInitializer;
     }
+
+    public boolean isSingleRecordsFactory() {
+        return singleRecordsFactory;
+    }
+
+    public void setSingleRecordsFactory(boolean singleRecordsFactory) {
+        this.singleRecordsFactory = singleRecordsFactory;
+    }
+
 
     public String getConcurrency() {
         return concurrency;

@@ -99,8 +99,9 @@ public class RMLConfigurator {
         return factory;
     }
 
-    static Mapper configure(RDFGraph graph, IRI contextIRI, RecordsFactory factory, RMLOptions options) {
-        return configure(graph, contextIRI, factory, null, options);
+    static Mapper configure(RDFGraph graph, IRI contextIRI, AccessFactory accessFactory, Initializer initializer, RMLOptions options) {
+        RecordsFactory factory = getRecordsFactory(accessFactory, options);
+        return configure(graph, contextIRI, factory, initializer, options);
     }
 
     static Mapper configure(RDFGraph graph, IRI contextIRI, RecordsFactory factory, Initializer initializer, RMLOptions options) {
