@@ -20,8 +20,8 @@ import com.cefriel.chimera.lowerer.TemplateLowererInitializer;
 import com.cefriel.chimera.processor.template.TemplateLowererOptions;
 import com.cefriel.chimera.processor.template.TemplateLowererProcessor;
 import com.cefriel.chimera.util.TemplateProcessorConstants;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

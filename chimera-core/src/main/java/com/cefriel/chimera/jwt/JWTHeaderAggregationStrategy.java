@@ -15,9 +15,9 @@
  */
 package com.cefriel.chimera.jwt;
 
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import com.cefriel.chimera.util.ProcessorConstants;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 public class JWTHeaderAggregationStrategy implements AggregationStrategy {
 

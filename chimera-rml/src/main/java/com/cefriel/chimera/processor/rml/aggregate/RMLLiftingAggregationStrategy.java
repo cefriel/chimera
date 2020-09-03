@@ -16,11 +16,10 @@
 package com.cefriel.chimera.processor.rml.aggregate;
 
 import be.ugent.rml.Initializer;
-import com.cefriel.chimera.processor.rml.RMLOptions;
 import com.cefriel.chimera.processor.rml.RMLProcessor;
 import com.cefriel.chimera.rml.CamelAccessFactory;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
