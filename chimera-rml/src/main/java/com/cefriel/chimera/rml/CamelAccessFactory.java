@@ -65,7 +65,10 @@ public class CamelAccessFactory extends AccessFactory {
                 inputStreamsMap.putAll(map);
             }
         }
-        logger.info("CamelAccessFactory: " + inputStreamsMap.keySet());
+        if(isMessage)
+            logger.info("Camel Message used as Logical Source");
+        else
+            logger.info("CamelAccessFactory Map: " + inputStreamsMap.keySet());
     }
 
     /**
