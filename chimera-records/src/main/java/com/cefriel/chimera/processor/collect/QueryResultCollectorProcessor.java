@@ -56,7 +56,9 @@ public class QueryResultCollectorProcessor implements Processor {
         RDFReader reader = new RDFReader(repo, contextIRI);
         List<Map<String,String>> results = reader.executeQueryStringValue(query);
         String result = "No results!";
-        RecordCollector collector = exchange.getProperty(collectorId, RecordCollector.class);
+        RecordCollector collector = null;
+        if (collectorId != null)
+            collector = exchange.getProperty(collectorId, RecordCollector.class);
         if (collector == null && collectorId != null) {
             RecordCollectorProcessor rcp = new RecordCollectorProcessor();
             rcp.setCollectorId(collectorId);
