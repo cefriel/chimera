@@ -19,12 +19,16 @@ import be.ugent.rml.*;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
+import be.ugent.rml.records.JSONOptRecordFactory;
 import be.ugent.rml.records.RecordsFactory;
+import be.ugent.rml.records.ReferenceFormulationRecordFactory;
+import be.ugent.rml.records.XMLSAXRecordFactory;
 import be.ugent.rml.store.*;
 import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.RMLProcessorConstants;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -32,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -93,7 +99,12 @@ public class RMLConfigurator {
     }
 
     static RecordsFactory getRecordsFactory(AccessFactory accessFactory, RMLOptions options) {
-        RecordsFactory factory = new RecordsFactory(accessFactory);
+        Map<String, ReferenceFormulationRecordFactory> map = new HashMap<>();
+        if (!options.isDefaultRecordFactory()) {
+            map.put(NAMESPACES.QL + "XPath", new XMLSAXRecordFactory());
+            map.put(NAMESPACES.QL + "JSONPath", new JSONOptRecordFactory());
+        }
+        RecordsFactory factory = new RecordsFactory(accessFactory, map);
         if (options.isEmptyStrings())
             factory.setEmptyStrings(true);
         return factory;

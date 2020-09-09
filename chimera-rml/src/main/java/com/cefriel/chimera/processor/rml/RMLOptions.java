@@ -32,6 +32,7 @@ public class RMLOptions {
     private boolean emptyStrings;
     private boolean concurrentWrites;
     private boolean concurrentRecords;
+    private boolean defaultRecordFactory;
     int numThreadsRecords = RMLProcessorConstants.DEFAULT_NUM_THREADS;
     int numThreadsWrites = RMLProcessorConstants.DEFAULT_NUM_THREADS;
 
@@ -121,6 +122,14 @@ public class RMLOptions {
 
     public void setConcurrentRecords(boolean concurrentRecords) {
         this.concurrentRecords = concurrentRecords;
+    }
+
+    public boolean isDefaultRecordFactory() {
+        return defaultRecordFactory;
+    }
+
+    public void setDefaultRecordFactory(boolean defaultRecordFactory) {
+        this.defaultRecordFactory = defaultRecordFactory;
     }
 
     public int getNumThreadsRecords() {
