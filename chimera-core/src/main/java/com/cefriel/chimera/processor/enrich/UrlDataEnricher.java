@@ -44,21 +44,24 @@ public class UrlDataEnricher implements Processor {
 		if (graph == null)
 			throw new RuntimeException("RDF Graph not attached");
 		Repository repo = graph.getRepository();
-	
-		if (additionalSourcesUrls == null)
-			additionalSourcesUrls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
 
+		List<String> urls;
 		if (additionalSourcesUrls == null)
-			additionalSourcesUrls = new ArrayList<>();
+			urls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
+		else
+			urls = additionalSourcesUrls;
+
+		if (urls == null)
+			urls = new ArrayList<>();
 
 		String additionalSource = exchange.getMessage().getHeader(ProcessorConstants.ADDITIONAL_SOURCE, String.class);
 		if (additionalSource != null)
-			additionalSourcesUrls.add(additionalSource);
+			urls.add(additionalSource);
 
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
-			for (String url : additionalSourcesUrls) {
+			for (String url : urls) {
 				additionalDataset = SemanticLoader.load_data(url, token);
 				if (additionalDataset == null)
 					logger.error("No data loaded! URL: " + url);
