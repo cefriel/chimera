@@ -12,7 +12,7 @@
   <description>SPRINT Converter Example</description>
 
   <properties>
-    <camel.version>2.25.0</camel.version>
+    <camel.version>3.3.0</camel.version>
     <slf4j.version>1.7.25</slf4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -21,24 +21,8 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-spring</artifactId>
+      <artifactId>camel-spring-main</artifactId>
       <version>${camel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <!-- Put after to avoid conflicts with spring/slf4j artifact imported by rdf4j -->
-    <dependency>
-      <groupId>eu.sprint</groupId>
-      <artifactId>chimera-rml</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.sprint</groupId>
-      <artifactId>chimera-rdf-lowerer</artifactId>
-      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -52,12 +36,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-zipfile</artifactId>
+      <artifactId>camel-zip-deflater</artifactId>
       <version>${camel.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-xstream</artifactId>
+      <artifactId>camel-zipfile</artifactId>
       <version>${camel.version}</version>
     </dependency>
     <dependency>
@@ -79,6 +63,22 @@
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <!-- Put after to avoid conflicts with spring/slf4j artifact imported by rdf4j -->
+    <dependency>
+      <groupId>eu.sprint</groupId>
+      <artifactId>chimera-rml</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.sprint</groupId>
+      <artifactId>chimera-rdf-lowerer</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -86,60 +86,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
+        <version>3.8.1</version>
         <configuration>
           <source>11</source>
           <target>11</target>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-maven-plugin</artifactId>
-        <version>${camel.version}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
-        <configuration>
-          <createDependencyReducedPom>false</createDependencyReducedPom>
-        </configuration>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
+            <id>repackage</id>
             <goals>
-              <goal>shade</goal>
+              <goal>repackage</goal>
             </goals>
             <configuration>
-              <minimizeJar>false</minimizeJar>
-              <transformers>
-                <transformer
-                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>ConverterApplication</mainClass>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/spring.handlers</resource>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/spring.schemas</resource>
-                </transformer>
-              </transformers>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-                <filter>
-                  <artifact>commons-logging:commons-logging</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-              </filters>
+              <mainClass>com.cefriel.chimera.ConverterApplication</mainClass>
             </configuration>
           </execution>
         </executions>

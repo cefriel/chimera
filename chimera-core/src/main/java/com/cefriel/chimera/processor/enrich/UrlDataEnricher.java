@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cefriel.chimera.graph.RDFGraph;
-import com.cefriel.chimera.util.Utils;
+import com.cefriel.chimera.processor.onexception.OnExceptionInspectProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
@@ -29,8 +29,12 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UrlDataEnricher implements Processor {
+
+	private Logger logger = LoggerFactory.getLogger(UrlDataEnricher.class);
 
 	private List<String> additionalSourcesUrls;
 
@@ -40,27 +44,34 @@ public class UrlDataEnricher implements Processor {
 		if (graph == null)
 			throw new RuntimeException("RDF Graph not attached");
 		Repository repo = graph.getRepository();
-	
-		if (additionalSourcesUrls == null)
-			additionalSourcesUrls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
 
+		List<String> urls;
 		if (additionalSourcesUrls == null)
-			additionalSourcesUrls = new ArrayList<>();
+			urls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
+		else
+			urls = additionalSourcesUrls;
+
+		if (urls == null)
+			urls = new ArrayList<>();
 
 		String additionalSource = exchange.getMessage().getHeader(ProcessorConstants.ADDITIONAL_SOURCE, String.class);
 		if (additionalSource != null)
-			additionalSourcesUrls.add(additionalSource);
+			urls.add(additionalSource);
 
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
-			for (String url : additionalSourcesUrls) {
+			for (String url : urls) {
 				additionalDataset = SemanticLoader.load_data(url, token);
-				IRI contextIRI = graph.getContext();
-				if (contextIRI != null)
-					con.add(additionalDataset, contextIRI);
-				else
-					con.add(additionalDataset);
+				if (additionalDataset == null)
+					logger.error("No data loaded! URL: " + url);
+				else {
+					IRI contextIRI = graph.getContext();
+					if (contextIRI != null)
+						con.add(additionalDataset, contextIRI);
+					else
+						con.add(additionalDataset);
+				}
 			}
 		}
 	}

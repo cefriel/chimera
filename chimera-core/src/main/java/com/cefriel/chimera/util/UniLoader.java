@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UniLoader {
-    private static Logger log = LoggerFactory.getLogger(UniLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(UniLoader.class);
 
     public static InputStream open(String resource) throws MalformedURLException, IOException {
         return open(resource, null);
@@ -34,32 +34,34 @@ public class UniLoader {
 
     public static InputStream open(String resource, String token) throws MalformedURLException, IOException {
     	String res;
-        log.warn("Loading resource " + resource);
+        InputStream is;
+        logger.info("Loading resource " + resource);
         if (resource.startsWith("classpath://")) {
         	res = resource.replace("classpath://", "");
-            log.warn("Loading classpath resource "+res);
-            InputStream is = UniLoader.class.getClassLoader().getResourceAsStream(res);
+            is = UniLoader.class.getClassLoader().getResourceAsStream(res);
             return is;
         }
         if (resource.startsWith("file://")) {
         	res = resource.replace("file://", "");
-            log.warn("Loading file resource " + res);
-            InputStream is = new FileInputStream(res);
+            is = new FileInputStream(res);
             return is;
         }
-        if (token != null) {
-            java.net.URL documentUrl = new URL(resource);
-            HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
 
-            // Set up URL connection to get retrieve information back
-            con.setRequestMethod("GET");
+        java.net.URL documentUrl = new URL(resource);
+        HttpURLConnection con = (HttpURLConnection) documentUrl.openConnection();
+
+        // Set up URL connection to get retrieve information back
+        con.setRequestMethod("GET");
+        if (token != null)
             con.setRequestProperty("Authorization", "Bearer " + token);
-            con.setRequestProperty("Accept", "application/x-turtle, application/rdf+xml");
-
-            // Pull the information back from the URL
-            return con.getInputStream();
+        // Pull the information back from the URL
+        try {
+            is = con.getInputStream();
+        } catch (Exception e) {
+            logger.warn("Connection failed. Resource: " + resource);
+            return null;
         }
-        else
-            return new URL(resource).openStream();
+
+        return is;
     }
 }

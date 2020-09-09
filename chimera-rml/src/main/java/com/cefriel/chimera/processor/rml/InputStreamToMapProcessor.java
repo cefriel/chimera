@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RMLInputStreamProcessor implements Processor {
+public class InputStreamToMapProcessor implements Processor {
 
     private String label;
 

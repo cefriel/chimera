@@ -1,0 +1,19 @@
+version: '2.2'
+
+services:
+  chimera-example: 
+    image: chimera/chimera-example
+    build: 
+        context: ./
+    mem_limit: 1g
+    volumes:
+      - ./src/main/resources/routes/camel-context.xml:/home/routes/camel-context.xml
+      - ./inbox/enrich.ttl:/home/enrich-default.ttl
+    ports:
+      - 8888:8888
+    networks:
+      - chimera-net
+
+networks:
+  chimera-net:
+    driver: bridge

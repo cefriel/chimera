@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.apache.camel.CamelContext;
-import org.apache.camel.spring.SpringCamelContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+package com.cefriel.chimera;
+import org.apache.camel.spring.Main;
 
 public class ConverterApplication {
 
 	public static void main(String[] args) throws Exception {
-		ApplicationContext appContext = new FileSystemXmlApplicationContext("./routes/camel-context.xml");
-		CamelContext camelContext = new SpringCamelContext(appContext);
-		camelContext.start();
+		Main main = new Main();
+		main.setFileApplicationContextUri("./routes/camel-context.xml");
+		main.run();
 	}
 
 }

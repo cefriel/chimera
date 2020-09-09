@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 public class StopProcessor implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(StopProcessor.class);
+
     private String routeId;
 
     public void process(Exchange exchange) throws Exception {
@@ -42,9 +43,9 @@ public class StopProcessor implements Processor {
         Thread stop = new Thread(() -> {
             try {
                 if (routeId != null)
-                    exchange.getContext().stopRoute(routeId);
+                    camelContext.getRouteController().stopRoute(routeId);
                 else
-                    exchange.getContext().stop();
+                    camelContext.stop();
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }

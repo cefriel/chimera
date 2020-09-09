@@ -19,5 +19,7 @@ public class TemplateProcessorConstants {
     // TEMPLATE
     public static final String TEMPLATE_CONFIG = "template_config";
     public static final String TEMPLATE_PATH = "template_path";
-    public static final String DEST_FILE_NAME = "dest_gen_filename";
+    public static final String LOWERING_TEMPLATE = "lowering_template";
+    public static final String DEST_FILE_NAME = "dest_file_name";
+    public static final String TEMPLATE_STREAM = "template_stream";
 }

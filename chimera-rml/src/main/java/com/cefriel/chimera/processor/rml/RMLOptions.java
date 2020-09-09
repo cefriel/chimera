@@ -15,6 +15,8 @@
  */
 package com.cefriel.chimera.processor.rml;
 
+import com.cefriel.chimera.util.RMLProcessorConstants;
+
 import java.util.List;
 
 public class RMLOptions {
@@ -27,9 +29,12 @@ public class RMLOptions {
     private boolean ordered;
     private String baseIRI;
     private String baseIRIPrefix;
-    private int corePoolSize = 4;
-    private int maximumPoolSize = 5;
-    private int keepAliveMinutes = 10;
+    private boolean emptyStrings;
+    private boolean concurrentWrites;
+    private boolean concurrentRecords;
+    private boolean defaultRecordFactory;
+    int numThreadsRecords = RMLProcessorConstants.DEFAULT_NUM_THREADS;
+    int numThreadsWrites = RMLProcessorConstants.DEFAULT_NUM_THREADS;
 
     public List<String> getMappings() {
         return mappings;
@@ -95,28 +100,52 @@ public class RMLOptions {
         this.baseIRIPrefix = baseIRIPrefix;
     }
 
-    public int getCorePoolSize() {
-        return corePoolSize;
+    public boolean isEmptyStrings() {
+        return emptyStrings;
     }
 
-    public void setCorePoolSize(int corePoolSize) {
-        this.corePoolSize = corePoolSize;
+    public void setEmptyStrings(boolean emptyStrings) {
+        this.emptyStrings = emptyStrings;
     }
 
-    public int getMaximumPoolSize() {
-        return maximumPoolSize;
+    public boolean isConcurrentWrites() {
+        return concurrentWrites;
     }
 
-    public void setMaximumPoolSize(int maximumPoolSize) {
-        this.maximumPoolSize = maximumPoolSize;
+    public void setConcurrentWrites(boolean concurrentWrites) {
+        this.concurrentWrites = concurrentWrites;
     }
 
-    public int getKeepAliveMinutes() {
-        return keepAliveMinutes;
+    public boolean isConcurrentRecords() {
+        return concurrentRecords;
     }
 
-    public void setKeepAliveMinutes(int keepAliveMinutes) {
-        this.keepAliveMinutes = keepAliveMinutes;
+    public void setConcurrentRecords(boolean concurrentRecords) {
+        this.concurrentRecords = concurrentRecords;
+    }
+
+    public boolean isDefaultRecordFactory() {
+        return defaultRecordFactory;
+    }
+
+    public void setDefaultRecordFactory(boolean defaultRecordFactory) {
+        this.defaultRecordFactory = defaultRecordFactory;
+    }
+
+    public int getNumThreadsRecords() {
+        return numThreadsRecords;
+    }
+
+    public void setNumThreadsRecords(int numThreadsRecords) {
+        this.numThreadsRecords = numThreadsRecords;
+    }
+
+    public int getNumThreadsWrites() {
+        return numThreadsWrites;
+    }
+
+    public void setNumThreadsWrites(int numThreadsWrites) {
+        this.numThreadsWrites = numThreadsWrites;
     }
 
 }

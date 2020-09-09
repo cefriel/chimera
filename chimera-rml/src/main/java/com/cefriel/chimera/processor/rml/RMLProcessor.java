@@ -15,50 +15,56 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.*;
 
+import be.ugent.rml.Initializer;
+import be.ugent.rml.access.AccessFactory;
+import be.ugent.rml.records.RecordsFactory;
 import be.ugent.rml.store.QuadStore;
+import be.ugent.rml.Mapper;
+import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.ugent.rml.Executor;
 import com.cefriel.chimera.util.RMLProcessorConstants;
 
 public class RMLProcessor implements Processor {
 
-    private Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
+    Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
-    private RMLOptions defaultRmlOptions;
-    
+    RMLOptions defaultRmlOptions;
+    Initializer rmlInitializer;
+
+    boolean singleRecordsFactory;
+
+    static ExecutorService executorService;
+    String concurrency;
+    int numThreads = RMLProcessorConstants.DEFAULT_NUM_THREADS;
+
+    @Override
     public void process(Exchange exchange) throws Exception {
-        Message in = exchange.getIn();
-        Map<String, InputStream> streamsMap = in.getBody(Map.class);
-
-        processRML(streamsMap, exchange);
+        String basePath = System.getProperty("user.dir");
+        processRML(exchange, new AccessFactory(basePath));
     }
 
-    public void processRML(Map<String, InputStream> streamsMap, Exchange exchange) throws Exception {
+    public void processRML(Exchange exchange, AccessFactory accessFactory) throws Exception {
         RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
         if (graph == null)
             throw new RuntimeException("RDF Graph not attached");
 
         // RML Processor configuration
-        RMLOptions rmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
-        if (rmlOptions != null)
-            exchange.getIn().removeHeader(RMLProcessorConstants.RML_CONFIG);
-        else {
-            rmlOptions = defaultRmlOptions;
-            if (rmlOptions == null)
-                throw new IllegalArgumentException("RMLOptions config should be provided in the header");
-        }
+        final RMLOptions rmlOptions;
+        RMLOptions messageRmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
+        if (messageRmlOptions != null)
+            rmlOptions = messageRmlOptions;
+        else
+            rmlOptions = (defaultRmlOptions != null) ?  defaultRmlOptions : new RMLOptions();
 
         String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
         String baseIRIPrefix = exchange.getMessage().getHeader(RMLProcessorConstants.PREFIX_BASE_IRI, String.class);
@@ -68,20 +74,94 @@ public class RMLProcessor implements Processor {
             rmlOptions.setBaseIRIPrefix(baseIRIPrefix);
 
         IRI context =  graph.getContext();
-        logger.info("MAP " + streamsMap.keySet());
-        Executor executor = RMLConfigurator.configure(graph, context, streamsMap, rmlOptions);
 
-        if(executor != null) {
-            QuadStore outputStore = executor.execute(null);
+        final Initializer initializer;
+        if (rmlInitializer != null) {
+            initializer = rmlInitializer;
+        } else {
+            initializer = RMLConfigurator.getInitializer(rmlOptions);
+            if (initializer == null)
+                throw new IllegalArgumentException("RML Initializer cannot be retrieved or generated using RMLOptions");
+        }
 
-            if (outputStore.isEmpty()) {
-                logger.info("No results!");
-                // Write even if no results
+        //Init executors if needed for writes or records
+        RMLConfigurator.initExecutors(rmlOptions);
+
+        if (concurrency != null) {
+            List<Future<String>> jobs = new ArrayList<Future<String>>();
+            if (executorService == null) {
+                executorService = Executors.newFixedThreadPool(numThreads);
+                logger.info("ExecutorService for RMLProcessor initialized [num_threads = " + numThreads + "]");
+            }
+            ExecutorCompletionService<String> completionService = new ExecutorCompletionService<>(executorService);
+
+            // Check option for single RecordsFactory
+            final RecordsFactory recordsFactory;
+            if (singleRecordsFactory) {
+                recordsFactory = RMLConfigurator.getRecordsFactory(accessFactory, rmlOptions);
+                logger.info("Single RecordsFactory instantiated");
+            }
+            else
+                recordsFactory = null;
+
+            if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_LOGICAL_SOURCE)) {
+                logger.info("Logical Source Concurrency enabled. Num threads: " + numThreads);
+                Map<String, List<Term>> orderedTriplesMaps = RMLConfigurator.getOrderedTriplesMaps(initializer);
+                for (String logicalSource : orderedTriplesMaps.keySet()) {
+                    jobs.add(completionService.submit(() -> {
+                        Mapper mapper;
+                        if (singleRecordsFactory)
+                            mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        else
+                            mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, orderedTriplesMaps.get(logicalSource));
+                        return "Job done for Logical Source " + logicalSource;
+                    }));
+                }
+            } else if (concurrency.toLowerCase().equals(RMLProcessorConstants.CONCURRENCY_TRIPLES_MAPS)) {
+                logger.info("Triples Maps Concurrency enabled. Num threads: " + numThreads);
+                List<Term> triplesMaps = initializer.getTriplesMaps();
+                for (Term triplesMap : triplesMaps) {
+                    List<Term> mappings = new ArrayList<>();
+                    mappings.add(triplesMap);
+                    jobs.add(completionService.submit(() -> {
+                        Mapper mapper;
+                        if (singleRecordsFactory)
+                            mapper = RMLConfigurator.configure(graph, context, recordsFactory, initializer, rmlOptions);
+                        else
+                            mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+                        if(mapper != null)
+                            executeMappings(mapper, mappings);
+                        return "Job done for Triples Map " + triplesMap.getValue();
+                    }));
+                }
             }
 
-            //Write quads to the context graph
-            outputStore.shutDown();
+            /* wait for all tasks to complete */
+            for (Future<String> task : jobs)
+                try {
+                    String result = task.get();
+                    logger.info(result);
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.error(e.getMessage(), e);
+                    e.printStackTrace();
+                }
+
+        } else {
+            Mapper mapper = RMLConfigurator.configure(graph, context, accessFactory, initializer, rmlOptions);
+            if(mapper != null)
+                executeMappings(mapper, null);
         }
+
+        logger.info("RML processing completed");
+    }
+
+    private void executeMappings(Mapper mapper, List<Term> triplesMaps) throws Exception {
+        QuadStore outputStore = mapper.execute(triplesMaps);
+
+        // Write quads to the context graph
+        outputStore.shutDown();
     }
 
     public RMLOptions getDefaultRmlOptions() {
@@ -90,6 +170,39 @@ public class RMLProcessor implements Processor {
 
     public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
         this.defaultRmlOptions = defaultRmlOptions;
+    }
+
+    public Initializer getRmlInitializer() {
+        return rmlInitializer;
+    }
+
+    public void setRmlInitializer(Initializer rmlInitializer) {
+        this.rmlInitializer = rmlInitializer;
+    }
+
+    public boolean isSingleRecordsFactory() {
+        return singleRecordsFactory;
+    }
+
+    public void setSingleRecordsFactory(boolean singleRecordsFactory) {
+        this.singleRecordsFactory = singleRecordsFactory;
+    }
+
+
+    public String getConcurrency() {
+        return concurrency;
+    }
+
+    public void setConcurrency(String concurrency) {
+        this.concurrency = concurrency;
+    }
+
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 
 }

@@ -37,7 +37,7 @@ public class RecordCollectorProcessor implements Processor {
         if (collectorId == null)
             collectorId = this.collectorId;
         if (collectorId == null) {
-            logger.info("Collector ID not found. Attach it to header using as key " + RecordProcessorConstants.COLLECTOR_ID);
+            logger.error("Collector ID not found. Attach it to header using as key " + RecordProcessorConstants.COLLECTOR_ID);
             return;
         }
 

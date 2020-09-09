@@ -15,53 +15,14 @@
  */
 package com.cefriel.chimera.processor.rml;
 
-import com.cefriel.chimera.util.RMLProcessorConstants;
+import com.cefriel.chimera.rml.CamelAccessFactory;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-public class RMLMessageProcessor implements Processor {
-
-    private RMLOptions defaultRmlOptions;
-    private String label;
+public class RMLMessageProcessor extends RMLProcessor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        Message in = exchange.getIn();
-        String streamLabel = exchange.getMessage().getHeader(RMLProcessorConstants.RML_LABEL, String.class);
-        Map<String, InputStream> streamsMap = new HashMap<>();
-        if (streamLabel != null) {
-            exchange.getMessage().removeHeader(RMLProcessorConstants.RML_LABEL);
-            streamsMap.put("is://" + streamLabel, in.getBody(InputStream.class));
-        } else {
-            streamsMap.put("is://" + label, in.getBody(InputStream.class));
-        }
-
-        RMLProcessor rmlProcessor = new RMLProcessor();
-        if (defaultRmlOptions != null)
-            rmlProcessor.setDefaultRmlOptions(defaultRmlOptions);
-        
-        rmlProcessor.processRML(streamsMap, exchange);
-    }
-
-    public RMLOptions getDefaultRmlOptions() {
-        return defaultRmlOptions;
-    }
-
-    public void setDefaultRmlOptions(RMLOptions defaultRmlOptions) {
-        this.defaultRmlOptions = defaultRmlOptions;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+        processRML(exchange, new CamelAccessFactory(exchange, true));
     }
     
 }
