@@ -6,5 +6,5 @@ COPY src/main/resources /home/
 
 EXPOSE 8888
 
-CMD [ "java",  "-cp",  "/home/chimera-example-1.0.0.jar",  "ConverterApplication"]
+CMD [ "java",  "-jar",  "/home/chimera-example-1.0.0.jar"]
 

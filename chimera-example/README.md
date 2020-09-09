@@ -7,7 +7,7 @@ docker push <repository>/chimera-example
 ```
 If you used a different image modify the file chimera-converter.yml (exposed port, resources needed/limits, Docker image, labels, etc.), otherwise you can directly use the provided file with the _marioscrock/chimera-example_ image. The file creates a Deployment using the converter image for the Pod, and a related Service.
 ```bash
-kubectl apply -f components.yaml
+kubectl apply -f chimera-converter.yaml
 ```
 If everything is fine, you can run `kubectl get pods` and `kubectl get services` to visualize the running pods. Example:
 ```

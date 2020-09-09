@@ -7,7 +7,8 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-  <bean class="com.cefriel.chimera.processor.rml.RMLMessageProcessor" id="rml_lifter"/>
+  <bean class="com.cefriel.chimera.processor.rml.RMLCamelProcessor" id="rml_lifter"/>
+  <bean class="com.cefriel.chimera.processor.rml.InputStreamToMapProcessor" id="is_processor"/>
   <bean class="com.cefriel.chimera.jwt.JWTHeaderAggregationStrategy" id="addJWT"/>
   <bean class="com.cefriel.chimera.processor.enrich.UrlDataEnricher" id="url_enricher"/>
   <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
@@ -30,7 +31,7 @@
     <property name="attachmentToExchange" value="true"/>
   </bean>
   <!-- Camel routes -->
-  <camelContext id="snap_converter_context" streamCache="true" trace="false" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="chimera_example_context" messageHistory="true" streamCache="true" trace="false" xmlns="http://camel.apache.org/schema/spring">
     <jmxAgent disabled="true" id="agent"/>
     <!-- Exceptions management -->
     <onException>
@@ -60,21 +61,21 @@
       <camel:to uri="direct:lifting_component?timeout=0"/>
       <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:process id="serialise_graph" ref="graph_dumper"/>
-      <camel:setHeader headerName="Content-Type">
+      <camel:setHeader name="Content-Type">
         <constant>application/zip</constant>
       </camel:setHeader>
-      <camel:setHeader headerName="Content-Disposition">
+      <camel:setHeader name="Content-Disposition">
         <simple>inline; filename="lifting-result-$simple{exchangeProperty.graph_id}"</simple>
       </camel:setHeader>
-      <camel:setHeader headerName="Exchange.FILE_NAME">
+      <camel:setHeader name="Exchange.FILE_NAME">
         <camel:simple>lifting-result-$simple{exchangeProperty.graph_id}.$simple{header.file_extension}</camel:simple>
       </camel:setHeader>
       <camel:convertBodyTo type="String" charset="UTF-8"/>
-      <camel:setProperty propertyName="CamelCharsetName">
+      <camel:setProperty name="CamelCharsetName">
         <constant>utf-8</constant>
       </camel:setProperty>
       <camel:marshal>
-        <zipFile/>
+        <zipfile/>
       </camel:marshal>
     </camel:route>
     <camel:route id="conversion">
@@ -97,17 +98,17 @@
       <camel:to uri="direct:lifting_component?timeout=0"/>
       <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:to uri="direct:lowering_component?timeout=0"/>
-      <camel:setHeader headerName="Content-Type">
+      <camel:setHeader name="Content-Type">
         <constant>application/zip</constant>
       </camel:setHeader>
-      <camel:setHeader headerName="Content-Disposition">
+      <camel:setHeader name="Content-Disposition">
         <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.graph_id}"</simple>
       </camel:setHeader>
-      <camel:setHeader headerName="Exchange.FILE_NAME">
+      <camel:setHeader name="Exchange.FILE_NAME">
         <camel:simple>roundtrip-result-$simple{exchangeProperty.graph_id}.txt</camel:simple>
       </camel:setHeader>
       <camel:marshal>
-        <zipFile/>
+        <zipfile/>
       </camel:marshal>
     </camel:route>
     <!-- LIFTING RML -->
@@ -122,11 +123,12 @@
               <camel:choice>
                 <camel:when>
                   <camel:simple>${body} != null</camel:simple>
-                  <camel:setHeader headerName="rml_label" id="stops_label">
+                  <camel:setHeader name="Exchange.FILE_NAME">
                     <camel:simple>${file:name}</camel:simple>
                   </camel:setHeader>
                   <camel:log loggingLevel="INFO" message="Converting ${file:name}"/>
-                  <camel:setHeader headerName="rml_config">
+                  <camel:process ref="is_processor"/>
+                  <camel:setHeader name="rml_config">
                     <simple>${ref:rml_config_gtfs_lifting}</simple>
                   </camel:setHeader>
                   <camel:process id="execute_mappings" ref="rml_lifter"/>
@@ -142,26 +144,26 @@
     <camel:route id="lowering_fragment">
       <camel:from uri="direct:lowering_component"/>
       <camel:log loggingLevel="INFO" message="Lowering to GTFS"/>
-      <camel:setHeader headerName="template_config">
+      <camel:setHeader name="template_config">
         <simple>${ref:template_config_gtfs_stops}</simple>
       </camel:setHeader>
       <camel:process ref="template_lower"/>
       <camel:log loggingLevel="INFO" message="Lowering completed"/>
-      <setBody>
-        <simple>${body[stops.txt]}</simple>
-      </setBody>
+      <camel:setBody>
+        <simple>${body}</simple>
+      </camel:setBody>
     </camel:route>
     <!-- ASSET MANAGER -->
     <!-- Call the Asset Manager to verify/renew the token -->
     <camel:route id="renew_token">
       <camel:from uri="direct:authService" />
-      <camel:setHeader headerName="CamelHttpMethod">
+      <camel:setHeader name="CamelHttpMethod">
         <camel:simple>POST</camel:simple>
       </camel:setHeader>
-      <camel:setHeader headerName="Content-Type">
+      <camel:setHeader name="Content-Type">
         <camel:constant>application/json</camel:constant>
       </camel:setHeader>
-      <camel:setHeader headerName="Accept">
+      <camel:setHeader name="Accept">
         <camel:constant>application/json</camel:constant>
       </camel:setHeader>
       <camel:setBody>
@@ -191,7 +193,7 @@
       <camel:choice>
         <camel:when>
           <camel:simple>${header.additional_source} != null &amp;&amp; ${header.additional_source} not contains '://'</camel:simple>
-          <camel:setHeader headerName="additional_source">
+          <camel:setHeader name="additional_source">
             <camel:simple>file:///home/$simple{header.additional_source}</camel:simple>
           </camel:setHeader>
         </camel:when>
