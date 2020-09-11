@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RMLInitializerProcessor implements Processor {
@@ -38,8 +39,10 @@ public class RMLInitializerProcessor implements Processor {
     private static final Logger logger = LoggerFactory.getLogger(RMLInitializerProcessor.class);
 
     private static Map<String, Initializer> cache = new HashMap<>();
-    private String rmlMappings;
     private String baseUrl;
+
+    private String rmlMappings;
+    private List<String> functionFiles;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -67,7 +70,6 @@ public class RMLInitializerProcessor implements Processor {
             baseUrl = "";
         baseUrl = Utils.trailingSlash(baseUrl);
         String mappingsUrl = baseUrl + "rml/" + rmlMappings;
-        String functionsUrl = baseUrl + "function/" + rmlMappings;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream rmlIS = UniLoader.open(mappingsUrl, token);
@@ -79,15 +81,9 @@ public class RMLInitializerProcessor implements Processor {
         RDF4JStore rmlStore = new RDF4JStore();
         rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
 
+        //TODO If remote (provided in the configuration) then choose the remote functions file
         FunctionLoader functionLoader;
-        InputStream functionsIS = UniLoader.open(functionsUrl, token);
-
-        if (functionsIS != null) {
-            RDF4JStore functionsStore = new RDF4JStore();
-            functionsStore.read(functionsIS, null, RDFFormat.TURTLE);
-            functionLoader = new FunctionLoader(functionsStore, null);
-        } else
-            functionLoader = new FunctionLoader();
+        functionLoader = RMLConfigurator.getFunctionLoader(functionFiles);
 
         logger.info("RML Initializer created");
         initializer = new Initializer(rmlStore, functionLoader);
@@ -113,5 +109,12 @@ public class RMLInitializerProcessor implements Processor {
         this.baseUrl = baseUrl;
     }
 
+    public List<String> getFunctionFiles() {
+        return functionFiles;
+    }
+
+    public void setFunctionFiles(List<String> functionFiles) {
+        this.functionFiles = functionFiles;
+    }
 
 }

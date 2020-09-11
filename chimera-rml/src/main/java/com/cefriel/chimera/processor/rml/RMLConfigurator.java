@@ -28,7 +28,6 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.RMLProcessorConstants;
 import org.apache.commons.cli.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -36,8 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -59,31 +56,8 @@ public class RMLConfigurator {
             RDF4JStore rmlStore = new RDF4JStore();
             rmlStore.read(is, null, RDFFormat.TURTLE);
 
-            String[] fOptionValue = null;
             List<String> functionFiles = options.getFunctionFiles();
-            if (functionFiles != null) {
-                fOptionValue = new String[functionFiles.size()];
-                fOptionValue = functionFiles.toArray(fOptionValue);
-            }
-            FunctionLoader functionLoader;
-
-            // Read function description files.
-            if (fOptionValue == null) {
-                functionLoader = new FunctionLoader();
-            } else {
-                logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
-                RDF4JStore functionDescriptionTriples = new RDF4JStore();
-                functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
-                Map<String, Class> libraryMap = new HashMap<>();
-                libraryMap.put("IDLabFunctions", IDLabFunctions.class);
-                List<InputStream> lisF = Arrays.stream(fOptionValue)
-                        .map(Utils::getInputStreamFromFileOrContentString)
-                        .collect(Collectors.toList());
-                for (int i = 0; i < lisF.size(); i++) {
-                    functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
-                }
-                functionLoader = new FunctionLoader(functionDescriptionTriples, libraryMap);
-            }
+            FunctionLoader functionLoader = getFunctionLoader(functionFiles);
 
             return new Initializer(rmlStore, functionLoader);
 
@@ -96,6 +70,31 @@ public class RMLConfigurator {
 
         return null;
 
+    }
+
+    static FunctionLoader getFunctionLoader(List<String> functionFiles) throws Exception {
+        String[] fOptionValue = null;
+        if (functionFiles != null) {
+            fOptionValue = new String[functionFiles.size()];
+            fOptionValue = functionFiles.toArray(fOptionValue);
+        }
+        // Read function description files.
+        if (fOptionValue == null) {
+            return new FunctionLoader();
+        } else {
+            logger.debug("Using custom path to functions.ttl file: " + Arrays.toString(fOptionValue));
+            RDF4JStore functionDescriptionTriples = new RDF4JStore();
+            functionDescriptionTriples.read(Utils.getInputStreamFromFile(Utils.getFile("functions_idlab.ttl")), null, RDFFormat.TURTLE);
+            Map<String, Class> libraryMap = new HashMap<>();
+            libraryMap.put("IDLabFunctions", IDLabFunctions.class);
+            List<InputStream> lisF = Arrays.stream(fOptionValue)
+                    .map(Utils::getInputStreamFromFileOrContentString)
+                    .collect(Collectors.toList());
+            for (int i = 0; i < lisF.size(); i++) {
+                functionDescriptionTriples.read(lisF.get(i), null, RDFFormat.TURTLE);
+            }
+            return new FunctionLoader(functionDescriptionTriples, libraryMap);
+        }
     }
 
     static RecordsFactory getRecordsFactory(AccessFactory accessFactory, RMLOptions options) {
