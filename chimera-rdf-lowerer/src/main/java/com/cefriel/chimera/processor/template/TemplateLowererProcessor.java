@@ -82,6 +82,8 @@ public class TemplateLowererProcessor implements Processor {
 
 		IRI contextIRI = graph.getContext();
 		RDFReader reader = new RDFReader(repo, contextIRI);
+		if (tlo.isVerboseQueries())
+			reader.setVerbose(true);
 		TemplateLowerer tl = new TemplateLowerer(reader, lu);
 
 		if (tlo.getKeyValueCsvPath() != null)
