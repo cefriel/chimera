@@ -86,6 +86,8 @@ public class RMLProcessor implements Processor {
 
         //Init executors if needed for writes or records
         RMLConfigurator.initExecutors(rmlOptions);
+        //Log current config
+        logger.info(getConfig(rmlOptions));
 
         if (concurrency != null) {
             List<Future<String>> jobs = new ArrayList<Future<String>>();
@@ -162,6 +164,15 @@ public class RMLProcessor implements Processor {
 
         // Write quads to the context graph
         outputStore.shutDown();
+    }
+
+    private String getConfig(RMLOptions o) {
+        return "Configuration RMLProcessor [" +
+                "batchSize=" + o.getBatchSize() + ", incrementalUpdate=" + o.isIncrementalUpdate() + ",\n" +
+                "noCache=" + o.isNoCache() + ", ordered=" + o.isOrdered() + ",\n" +
+                "concurrentWrites=" + o.isConcurrentWrites() + ", concurrentRecords=" + o.isConcurrentRecords() + ",\n" +
+                "concurrency=" + concurrency + ", singleRecordsFactory=" + singleRecordsFactory +
+                ']';
     }
 
     public RMLOptions getDefaultRmlOptions() {
