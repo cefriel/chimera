@@ -1,13 +1,35 @@
-## Running the Converter on Kubernetes
+## Build the Converter with Docker
 
-Build the converter and push it to a Docker registry. You can find the demo Docker image already built on Docker Hub  _marioscrock/chimera-example_
+Build the converter and push it to a local or remote Docker registry. You can find the demo Docker image already built on Docker Hub  _marioscrock/chimera-example_
 ```bash
 docker build -t <repository>/chimera-example .
 docker push <repository>/chimera-example
 ```
-If you used a different image modify the file chimera-converter.yml (exposed port, resources needed/limits, Docker image, labels, etc.), otherwise you can directly use the provided file with the _marioscrock/chimera-example_ image. The file creates a Deployment using the converter image for the Pod, and a related Service.
+
+## Running the Converter with docker-compose
+
+Once built the image, you can run the converter using the docker-compose file provided. If you want to use the  _marioscrock/chimera-example_ image available on Docker Hub you need to change the image for the container in the  _docker-compose.yml_ file.
+
+To run the converter execute the following command:
 ```bash
-kubectl apply -f chimera-converter.yaml
+docker-compose up
+```
+
+You can also run a scalable converter on a Swarm (for a local single-node Swarm run `docker swarm init`)  and the _docker-compose-converter-service.yml_ file. You can provide a different config changing the  _docker-compose-converter-service.yml_ and _nginx.conf_ files.
+```bash
+docker-compose -f docker-compose-converter-service.yml up
+```
+This command exploits an Nginx server configured as a reverse proxy to enable a multi-replicas converter with Docker services load balancing (round-robin). 
+To increase the number of replicas run:
+```bash
+docker-compose -f docker-compose-converter-service.yml up -d --scale chimera-example=3
+```
+
+## Running the Converter on Kubernetes
+
+If you used a different image modify the file chimera-converter.yml (exposed port, resources needed/limits, Docker image, labels, etc.), otherwise you can directly use the provided file with the  _marioscrock/chimera-example_ image available on Docker Hub. The file creates a Deployment using the converter image for the Pod, and a related Service.
+```bash
+kubectl apply -f chimera-converter.yml
 ```
 If everything is fine, you can run `kubectl get pods` and `kubectl get services` to visualize the running pods. Example:
 ```
