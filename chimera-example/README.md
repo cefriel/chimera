@@ -1,10 +1,19 @@
+## Executable Jar
+
+The executable jar can be obtained using Maven. Assuming Maven is installed you can run:
+```bash
+mvn clean install
+```
+After finishing the execution, the executable jar is in the _target_ folder.
+
 ## Build the Converter with Docker
 
-Build the converter and push it to a local or remote Docker registry. You can find the demo Docker image already built on Docker Hub  _marioscrock/chimera-example_
+Build the converter and push it to a local or remote Docker registry. Note that the provided Dockerfile assumes the executable jar is available in the _target_ folder.
 ```bash
 docker build -t <repository>/chimera-example .
 docker push <repository>/chimera-example
 ```
+You can find the demo Docker image already built on Docker Hub  _marioscrock/chimera-example_
 
 ## Running the Converter with docker-compose
 
@@ -14,6 +23,8 @@ To run the converter execute the following command:
 ```bash
 docker-compose up
 ```
+
+A different Chimera pipeline can be mounted changing the volumes section in the  _docker-compose.yml_ file.
 
 You can also run a scalable converter on a Swarm (for a local single-node Swarm run `docker swarm init`)  and the _docker-compose-converter-service.yml_ file. You can provide a different config changing the  _docker-compose-converter-service.yml_ and _nginx.conf_ files.
 ```bash
