@@ -34,6 +34,7 @@ public class AttachGraph implements Processor {
     private String sparqlEndpoint;
 
     private boolean context = true;
+    private String contextIRI;
 
     public void process(Exchange exchange) throws Exception {
         RDFGraph graph = null;
@@ -63,8 +64,10 @@ public class AttachGraph implements Processor {
     	exchange.setProperty(ProcessorConstants.CONTEXT_GRAPH, graph);
 
         exchange.setProperty(ProcessorConstants.GRAPH_ID, exchange.getExchangeId());
+        if (contextIRI == null)
+            contextIRI = ProcessorConstants.BASE_IRI_VALUE + exchange.getExchangeId();
     	if(context) {
-            graph.setContext(ProcessorConstants.BASE_IRI_VALUE + exchange.getExchangeId());
+            graph.setContext(contextIRI);
         }
     }
 
@@ -106,6 +109,14 @@ public class AttachGraph implements Processor {
 
     public void setContext(boolean context) {
         this.context = context;
+    }
+
+    public String getContextIRI() {
+        return contextIRI;
+    }
+
+    public void setContextIRI(String contextIRI) {
+        this.contextIRI = contextIRI;
     }
 
 }
