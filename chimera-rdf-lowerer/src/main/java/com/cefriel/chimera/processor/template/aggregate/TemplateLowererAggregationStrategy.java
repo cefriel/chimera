@@ -79,6 +79,7 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
             logger.error("Error in Template Lowering process");
             e.printStackTrace();
         }
+        exchange.getMessage().removeHeaders("*template*");
         return exchange;
     }
 

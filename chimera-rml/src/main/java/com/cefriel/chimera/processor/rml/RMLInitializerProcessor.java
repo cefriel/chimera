@@ -48,9 +48,9 @@ public class RMLInitializerProcessor implements Processor {
     public void process(Exchange exchange) throws Exception {
 
         String mappings = exchange.getMessage().getHeader(RMLProcessorConstants.RML_MAPPINGS, String.class);
-        if (mappings != null)
-            rmlMappings = mappings;
-        if (rmlMappings == null) {
+        if (mappings == null)
+            mappings = rmlMappings;
+        if (mappings == null) {
             logger.error("RML Mappings not specified. Cannot create Initializer.");
             exchange.getMessage().setBody(null);
             return;
@@ -58,18 +58,16 @@ public class RMLInitializerProcessor implements Processor {
 
         Initializer initializer = null;
         synchronized (cache) {
-            initializer = cache.get(rmlMappings);
+            initializer = cache.get(mappings);
             if (initializer != null) {
-                logger.info("Cached initializer used for: " + rmlMappings);
+                logger.info("Cached initializer used for: " + mappings);
                 exchange.getMessage().setBody(initializer, Initializer.class);
                 return;
             }
         }
 
-        if (baseUrl == null)
-            baseUrl = "";
-        baseUrl = Utils.trailingSlash(baseUrl);
-        String mappingsUrl = baseUrl + "rml/" + rmlMappings;
+        String mappingsUrl = "";
+        mappingsUrl = Utils.trailingSlash(baseUrl) + "rml/" + mappings;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream rmlIS = UniLoader.open(mappingsUrl, token);
@@ -87,8 +85,7 @@ public class RMLInitializerProcessor implements Processor {
 
         logger.info("RML Initializer created");
         initializer = new Initializer(rmlStore, functionLoader);
-        if (initializer != null)
-            cache.put(rmlMappings, initializer);
+        cache.put(mappings, initializer);
         exchange.getMessage().setBody(initializer, Initializer.class);
 
     }

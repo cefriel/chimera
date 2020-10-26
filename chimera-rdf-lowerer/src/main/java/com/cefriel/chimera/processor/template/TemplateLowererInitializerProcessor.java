@@ -44,9 +44,9 @@ public class TemplateLowererInitializerProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         String templateId = exchange.getMessage().getHeader(TemplateProcessorConstants.LOWERING_TEMPLATE, String.class);
-        if (templateId != null)
-            loweringTemplate = templateId;
-        if (loweringTemplate == null) {
+        if (templateId == null)
+            templateId = loweringTemplate;
+        if (templateId == null) {
             logger.error("Lowering Template not specified. Cannot create Template Lowerer Initializer.");
             exchange.getMessage().setBody(null);
             return;
@@ -54,18 +54,16 @@ public class TemplateLowererInitializerProcessor implements Processor {
 
         TemplateLowererInitializer initializer = null;
         synchronized (cache) {
-            initializer = cache.get(loweringTemplate);
+            initializer = cache.get(templateId);
             if (initializer != null) {
-                logger.info("Cached initializer used for: " + loweringTemplate);
+                logger.info("Cached initializer used for: " + templateId);
                 exchange.getMessage().setBody(initializer, TemplateLowererInitializer.class);
                 return;
             }
         }
 
-        if (baseUrl == null)
-            baseUrl = "";
-        baseUrl = Utils.trailingSlash(baseUrl);
-        String templateUrl = baseUrl + loweringTemplate;
+        String templateUrl = "";
+        templateUrl = Utils.trailingSlash(baseUrl) + templateId;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream tlIS = UniLoader.open(templateUrl, token);
@@ -77,8 +75,7 @@ public class TemplateLowererInitializerProcessor implements Processor {
 
         logger.info("Template Lowerer Initializer created");
         initializer = new TemplateLowererInitializer(tlIS);
-        if (initializer != null)
-            cache.put(loweringTemplate, initializer);
+        cache.put(templateId, initializer);
         exchange.getMessage().setBody(initializer, TemplateLowererInitializer.class);
 
     }

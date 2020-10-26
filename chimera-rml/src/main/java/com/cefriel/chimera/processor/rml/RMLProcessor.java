@@ -39,7 +39,7 @@ public class RMLProcessor implements Processor {
     Logger logger = LoggerFactory.getLogger(RMLProcessor.class);
 
     RMLOptions defaultRmlOptions;
-    Initializer rmlInitializer;
+    private Initializer rmlInitializer;
 
     boolean singleRecordsFactory;
 
@@ -60,11 +60,14 @@ public class RMLProcessor implements Processor {
 
         // RML Processor configuration
         final RMLOptions rmlOptions;
-        RMLOptions messageRmlOptions = exchange.getIn().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
-        if (messageRmlOptions != null)
-            rmlOptions = messageRmlOptions;
+        RMLOptions messageRmlOptions = exchange.getMessage().getHeader(RMLProcessorConstants.RML_CONFIG, RMLOptions.class);
+        if (messageRmlOptions == null)
+            messageRmlOptions = defaultRmlOptions;
         else
-            rmlOptions = (defaultRmlOptions != null) ?  defaultRmlOptions : new RMLOptions();
+            exchange.getMessage().removeHeader(RMLProcessorConstants.RML_CONFIG);
+        synchronized (messageRmlOptions) {
+            rmlOptions = new RMLOptions(messageRmlOptions);
+        }
 
         String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
         String baseIRIPrefix = exchange.getMessage().getHeader(RMLProcessorConstants.PREFIX_BASE_IRI, String.class);
@@ -198,7 +201,6 @@ public class RMLProcessor implements Processor {
     public void setSingleRecordsFactory(boolean singleRecordsFactory) {
         this.singleRecordsFactory = singleRecordsFactory;
     }
-
 
     public String getConcurrency() {
         return concurrency;

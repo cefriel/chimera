@@ -17,6 +17,7 @@ package com.cefriel.chimera.processor.rml;
 
 import com.cefriel.chimera.util.RMLProcessorConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RMLOptions {
@@ -35,6 +36,32 @@ public class RMLOptions {
     private boolean defaultRecordFactory;
     int numThreadsRecords = RMLProcessorConstants.DEFAULT_NUM_THREADS;
     int numThreadsWrites = RMLProcessorConstants.DEFAULT_NUM_THREADS;
+
+    public RMLOptions() {
+        mappings = new ArrayList<>();
+        functionFiles = new ArrayList<>();
+    }
+    public RMLOptions(RMLOptions options) {
+        this();
+        if(options != null) {
+            if (options.getMappings() != null)
+                mappings = new ArrayList<>(options.getMappings());
+            if (options.getFunctionFiles() != null)
+                functionFiles = new ArrayList<>(options.getFunctionFiles());
+            batchSize = options.getBatchSize();
+            incrementalUpdate = options.isIncrementalUpdate();
+            noCache = options.isNoCache();
+            ordered = options.isOrdered();
+            baseIRI = options.getBaseIRI();
+            baseIRIPrefix = options.getBaseIRIPrefix();
+            emptyStrings = options.isEmptyStrings();
+            concurrentWrites = options.isConcurrentWrites();
+            concurrentRecords = options.isConcurrentRecords();
+            defaultRecordFactory = options.isDefaultRecordFactory();
+            numThreadsRecords = options.getNumThreadsRecords();
+            numThreadsWrites = options.getNumThreadsWrites();
+        }
+    }
 
     public List<String> getMappings() {
         return mappings;

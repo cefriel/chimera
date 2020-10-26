@@ -28,6 +28,22 @@ public class TemplateLowererOptions {
     private boolean verboseQueries;
     private boolean attachmentToExchange;
 
+    // Default Constructor
+    public TemplateLowererOptions() {}
+
+    public TemplateLowererOptions(TemplateLowererOptions options) {
+        templatePath = options.getTemplatePath();
+        destFileName = options.getDestFileName();
+        keyValuePairsPath = options.getKeyValuePairsPath();
+        keyValueCsvPath = options.getKeyValueCsvPath();
+        format = options.getFormat();
+        utils = options.getUtils();
+        queryFile = options.getQueryFile();
+        trimTemplate = options.isTrimTemplate();
+        verboseQueries = options.isVerboseQueries();
+        attachmentToExchange = options.isAttachmentToExchange();
+    }
+
     public String getTemplatePath() {
         return templatePath;
     }

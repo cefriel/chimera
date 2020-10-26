@@ -43,6 +43,7 @@ public class RMLLiftingAggregationStrategy extends RMLProcessor implements Aggre
             logger.error("Error in RML lifting process");
             e.printStackTrace();
         }
+        exchange.getMessage().removeHeaders("rml_*");
         return exchange;
     }
 

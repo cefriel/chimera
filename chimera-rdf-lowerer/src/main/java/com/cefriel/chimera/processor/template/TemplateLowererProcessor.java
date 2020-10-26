@@ -56,15 +56,21 @@ public class TemplateLowererProcessor implements Processor {
 		Repository repo = graph.getRepository();
 
 		// Template Lowerer configuration
-		TemplateLowererOptions tlo = exchange.getIn()
+		TemplateLowererOptions tlo = exchange.getMessage()
 					.getHeader(TemplateProcessorConstants.TEMPLATE_CONFIG, TemplateLowererOptions.class);
 		if (tlo != null)
-			exchange.getIn().removeHeader(TemplateProcessorConstants.TEMPLATE_CONFIG);
+			exchange.getMessage().removeHeader(TemplateProcessorConstants.TEMPLATE_CONFIG);
 		else {
 			tlo = defaultTLOptions;
 			if (tlo == null)
 				throw new IllegalArgumentException("TemplateLowererOptions config should be provided in the header");
 		}
+
+		synchronized (tlo) {
+			tlo = new TemplateLowererOptions(tlo);
+		}
+
+		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 
 		LoweringUtils lu = new LoweringUtils();
 		if (tlo.getUtils() != null)
@@ -74,7 +80,6 @@ public class TemplateLowererProcessor implements Processor {
 					break;
 			}
 
-		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 		String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
 		if (baseIRI == null)
 			baseIRI = ProcessorConstants.BASE_IRI_VALUE;
