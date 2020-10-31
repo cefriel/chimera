@@ -6,36 +6,28 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://sprint-transport.eu/data/AMV> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/AMV";
-  gtfs:parentStation <http://sprint-transport.eu/data/AMV_STATION> .
+  foaf:page "http://my-source.com/stops/AMV".
 
 <http://sprint-transport.eu/data/BEATTY_AIRPORT> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/BEATTY_AIRPORT".
-
-<http://sprint-transport.eu/data/AMV_STATION> a gtfs:Stop;
-  dct:identifier "AMV_STATION";
-  geo:lat 3.6641496E1;
-  geo:long -1.1640094E2;
-  gtfs:locationType <http://transport.linkeddata.es/resource/LocationType/1> ;
-  foaf:name "AMV Station (Demo)" .
+  foaf:page "http://my-source.com/stops/BEATTY_AIRPORT".
 
 <http://sprint-transport.eu/data/BULLFROG> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/BULLFROG".
+  foaf:page "http://my-source.com/stops/BULLFROG".
 
 <http://sprint-transport.eu/data/DADAN> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/DADAN".
+  foaf:page "http://my-source.com/stops/DADAN".
 
 <http://sprint-transport.eu/data/EMSI> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/EMSI".
+  foaf:page "http://my-source.com/stops/EMSI".
 
 <http://sprint-transport.eu/data/FUR_CREEK_RES> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/FUR_CREEK_RES".
+  foaf:page "http://my-source.com/stops/FUR_CREEK_RES".
 
 <http://sprint-transport.eu/data/NADAV> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/NADAV".
+  foaf:page "http://my-source.com/stops/NADAV".
 
 <http://sprint-transport.eu/data/NANAA> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/NANAA".
+  foaf:page "http://my-source.com/stops/NANAA".
 
 <http://sprint-transport.eu/data/STAGECOACH> a gtfs:Stop;
-  foaf:page "http://samplefeed.com/stops/STAGECOACH".
+  foaf:page "http://my-source.com/stops/STAGECOACH".

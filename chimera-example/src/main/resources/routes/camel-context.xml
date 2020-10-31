@@ -14,6 +14,16 @@
   <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
   <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph"/>
   <bean class="com.cefriel.chimera.processor.DumpGraph" id="graph_dumper"/>
+  <bean class="com.cefriel.chimera.processor.rdf4j.InferenceEnricher" id="rdfsInferenceEnricher">
+    <property name="ontologyUrls">
+      <util:list>
+        <value>file:///home/ontology.owl</value>
+      </util:list>
+    </property>
+    <property name="ontologyRDFFormat">
+      <value>rdfxml</value>
+    </property>
+  </bean>
   <!-- Utilities -->
   <bean class="org.apache.camel.dataformat.zipfile.ZipSplitter" id="zip_splitter"/>
   <!-- Configuration -->
@@ -61,22 +71,10 @@
       <camel:to uri="direct:lifting_component?timeout=0"/>
       <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:process id="serialise_graph" ref="graph_dumper"/>
-      <camel:setHeader name="Content-Type">
-        <constant>application/zip</constant>
-      </camel:setHeader>
-      <camel:setHeader name="Content-Disposition">
-        <simple>inline; filename="lifting-result-$simple{exchangeProperty.graph_id}"</simple>
-      </camel:setHeader>
-      <camel:setHeader name="Exchange.FILE_NAME">
-        <camel:simple>lifting-result-$simple{exchangeProperty.graph_id}.$simple{header.file_extension}</camel:simple>
-      </camel:setHeader>
       <camel:convertBodyTo type="String" charset="UTF-8"/>
       <camel:setProperty name="CamelCharsetName">
         <constant>utf-8</constant>
       </camel:setProperty>
-      <camel:marshal>
-        <zipfile/>
-      </camel:marshal>
     </camel:route>
     <camel:route id="conversion">
       <camel:from uri="seda:conversion"/>
@@ -99,17 +97,8 @@
       <camel:to uri="direct:enrich_component?timeout=0"/>
       <camel:to uri="direct:lowering_component?timeout=0"/>
       <camel:setHeader name="Content-Type">
-        <constant>application/zip</constant>
+        <constant>text/csv</constant>
       </camel:setHeader>
-      <camel:setHeader name="Content-Disposition">
-        <simple>inline; filename="roundtrip-result-$simple{exchangeProperty.graph_id}"</simple>
-      </camel:setHeader>
-      <camel:setHeader name="Exchange.FILE_NAME">
-        <camel:simple>roundtrip-result-$simple{exchangeProperty.graph_id}.txt</camel:simple>
-      </camel:setHeader>
-      <camel:marshal>
-        <zipfile/>
-      </camel:marshal>
     </camel:route>
     <!-- LIFTING RML -->
     <camel:route id="lift_fragment">
@@ -169,8 +158,10 @@
       <camel:setBody>
         <camel:simple>{ "username": "${header.username}", "password": "${header.password}"}</camel:simple>
       </camel:setBody>
-      <camel:to id="post_am_token" uri="undertow:http://localhost:8000/api/token/" />
-      <convertBodyTo type="String"/>
+      <camel:to id="post_am_token" uri="http://example-auth-service,com:8000/api/token/?bridgeEndpoint=true"/>
+      <camel:unmarshal>
+        <camel:gzip/>
+      </camel:unmarshal>
       <camel:choice>
         <camel:when>
           <camel:simple>${header.CamelHttpResponseCode} == 200</camel:simple>
@@ -199,6 +190,12 @@
         </camel:when>
       </camel:choice>
       <camel:process id="enrich_kg" ref="url_enricher"/>
+      <camel:choice>
+        <camel:when>
+          <camel:simple>${header.inference} == true</camel:simple>
+          <camel:process id="add_inference" ref="rdfsInferenceEnricher"/>
+        </camel:when>
+      </camel:choice>
     </camel:route>
   </camelContext>
 </beans>

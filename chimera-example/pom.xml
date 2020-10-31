@@ -88,7 +88,7 @@
               <goal>repackage</goal>
             </goals>
             <configuration>
-              <mainClass>com.cefriel.chimera.ConverterApplication</mainClass>
+              <mainClass>com.cefriel.chimera.example.ConverterApplication</mainClass>
             </configuration>
           </execution>
         </executions>

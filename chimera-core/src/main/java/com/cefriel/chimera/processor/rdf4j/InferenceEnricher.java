@@ -45,15 +45,12 @@ public class InferenceEnricher implements Processor {
 	private List<String> ontologyUrls;
 	private String token;
 	private String ontologyRDFFormat;
+	private boolean allRules = true;
 
-	// Works only for IN-MEMORY Repositories
 	public void process(Exchange exchange) throws Exception {
-
-        ValueFactory vf = SimpleValueFactory.getInstance();
-		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
+		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 		if (graph == null)
 			throw new RuntimeException("RDF Graph not attached");
-		Sail data = graph.getData();
 		Repository repo = graph.getRepository();
 
 		if (ontologyUrls == null)
@@ -61,7 +58,10 @@ public class InferenceEnricher implements Processor {
 
 		IRI contextIRI = graph.getContext();
 
-		try (RepositoryConnection con = repo.getConnection()) {
+		ValueFactory vf = SimpleValueFactory.getInstance();
+		Repository schema = new SailRepository(new MemoryStore());
+		schema.init();
+		try (RepositoryConnection con = schema.getConnection()) {
         	for (String url: ontologyUrls) {
 				if (contextIRI != null)
 					con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), contextIRI, vf.createIRI(url));
@@ -70,8 +70,18 @@ public class InferenceEnricher implements Processor {
         	}
         }
 
-		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer((NotifyingSail) data, repo, false);
-		graph.setData(inferencer);
+		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
+		Repository inferenceRepo = new SailRepository(inferencer);
+		inferenceRepo.init();
+
+		RepositoryConnection source = repo.getConnection();
+		RepositoryConnection target = inferenceRepo.getConnection();
+		//Enable inference
+		target.add(source.getStatements(null, null, null, true));
+		//Copy back
+		source.add(target.getStatements(null, null, null, true));
+		source.close();
+		target.close();
 	}
 
 	public List<String> getOntologyUrls() {
@@ -96,6 +106,14 @@ public class InferenceEnricher implements Processor {
 
 	public void setOntologyRDFFormat(String ontologyRDFFormat) {
 		this.ontologyRDFFormat = ontologyRDFFormat;
+	}
+
+	public boolean isAllRules() {
+		return allRules;
+	}
+
+	public void setAllRules(boolean allRules) {
+		this.allRules = allRules;
 	}
 
 }
