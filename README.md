@@ -82,6 +82,7 @@ The  `chimera-example`  defines a conversion pipeline, exposed through an API, a
     Add as header additional_source:enrich.ttl
     ```
 You can also use a different additional source using two steps:
+
     1. Load an additional source
         ```
         POST http://localhost:8888/chimera-demo/load/ 
