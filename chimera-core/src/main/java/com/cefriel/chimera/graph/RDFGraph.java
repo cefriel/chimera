@@ -25,8 +25,6 @@ public abstract class RDFGraph {
     Repository repo;
     IRI context;
 
-    public abstract boolean isRemote();
-
     public Repository getRepository() {
         return repo;
     }

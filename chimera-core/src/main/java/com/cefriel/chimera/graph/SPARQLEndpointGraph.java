@@ -26,8 +26,4 @@ public class SPARQLEndpointGraph extends RDFGraph {
         // TODO Federation with FedX, requires rdf4j 3.1.0
     }
 
-    @Override
-    public boolean isRemote() {
-        return true;
-    }
 }

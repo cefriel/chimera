@@ -15,38 +15,33 @@
  */
 package com.cefriel.chimera.processor.rdf4j;
 
-import java.util.List;
-
 import com.cefriel.chimera.graph.RDFGraph;
+import com.cefriel.chimera.util.ProcessorConstants;
+import com.cefriel.chimera.util.SemanticLoader;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.impl.TreeModel;
-import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.NotifyingSail;
-import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 
-import com.cefriel.chimera.graph.MemoryRDFGraph;
-import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.SemanticLoader;
+import java.io.File;
+import java.util.List;
 
 public class InferenceEnricher implements Processor {
 
 	private List<String> ontologyUrls;
-	private String token;
 	private String ontologyRDFFormat;
 	private boolean allRules = true;
 
+	// Computes inference on triples in the repository using provided schema,
+	// adds resulting triples to the repository.
 	public void process(Exchange exchange) throws Exception {
 		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
 		if (graph == null)
@@ -56,20 +51,11 @@ public class InferenceEnricher implements Processor {
 		if (ontologyUrls == null)
 			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
 
+		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
+
 		IRI contextIRI = graph.getContext();
-
-		ValueFactory vf = SimpleValueFactory.getInstance();
-		Repository schema = new SailRepository(new MemoryStore());
-		schema.init();
-		try (RepositoryConnection con = schema.getConnection()) {
-        	for (String url: ontologyUrls) {
-				if (contextIRI != null)
-					con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), contextIRI, vf.createIRI(url));
-				else
-					con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
-        	}
-        }
-
+		Repository schema = Utils.getSchemaRepository(ontologyUrls,
+				ontologyRDFFormat, token);
 		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
 		Repository inferenceRepo = new SailRepository(inferencer);
 		inferenceRepo.init();
@@ -77,9 +63,15 @@ public class InferenceEnricher implements Processor {
 		RepositoryConnection source = repo.getConnection();
 		RepositoryConnection target = inferenceRepo.getConnection();
 		//Enable inference
-		target.add(source.getStatements(null, null, null, true));
+		if (contextIRI != null)
+			target.add(source.getStatements(null, null, null, true, contextIRI));
+		else
+			target.add(source.getStatements(null, null, null, true));
 		//Copy back
-		source.add(target.getStatements(null, null, null, true));
+		if (contextIRI != null)
+			source.add(target.getStatements(null, null, null, true), contextIRI);
+		else
+			source.add(target.getStatements(null, null, null, true));
 		source.close();
 		target.close();
 	}
@@ -90,14 +82,6 @@ public class InferenceEnricher implements Processor {
 
 	public void setOntologyUrls(List<String> ontologyUrls) {
 		this.ontologyUrls = ontologyUrls;
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
 	}
 
 	public String getOntologyRDFFormat() {

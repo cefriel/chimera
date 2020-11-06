@@ -15,6 +15,7 @@
  */
 package com.cefriel.chimera.graph;
 
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
@@ -37,8 +38,4 @@ public class MemoryRDFGraph extends RDFGraph {
 		this.data = data;
 	}
 
-	@Override
-	public boolean isRemote() {
-		return false;
-	}
 }

@@ -29,9 +29,4 @@ public class HTTPRDFGraph extends RDFGraph {
         repo.init();
     }
 
-    @Override
-    public boolean isRemote() {
-        return true;
-    }
-
 }

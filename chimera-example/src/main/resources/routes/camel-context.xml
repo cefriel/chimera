@@ -12,7 +12,18 @@
   <bean class="com.cefriel.chimera.jwt.JWTHeaderAggregationStrategy" id="addJWT"/>
   <bean class="com.cefriel.chimera.processor.enrich.UrlDataEnricher" id="url_enricher"/>
   <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
-  <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph"/>
+  <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph">
+    <!--
+    <property name="ontologyUrls">
+      <util:list>
+        <value>file:///home/ontology.owl</value>
+      </util:list>
+    </property>
+    <property name="ontologyRDFFormat">
+      <value>rdfxml</value>
+    </property>
+    -->
+  </bean>
   <bean class="com.cefriel.chimera.processor.DumpGraph" id="graph_dumper"/>
   <bean class="com.cefriel.chimera.processor.rdf4j.InferenceEnricher" id="rdfsInferenceEnricher">
     <property name="ontologyUrls">
@@ -75,6 +86,9 @@
       <camel:setProperty name="CamelCharsetName">
         <constant>utf-8</constant>
       </camel:setProperty>
+      <camel:setHeader name="Content-Disposition">
+        <simple>inline; filename="dump.ttl"</simple>
+      </camel:setHeader>
     </camel:route>
     <camel:route id="conversion">
       <camel:from uri="seda:conversion"/>
@@ -98,6 +112,9 @@
       <camel:to uri="direct:lowering_component?timeout=0"/>
       <camel:setHeader name="Content-Type">
         <constant>text/csv</constant>
+      </camel:setHeader>
+      <camel:setHeader name="Content-Disposition">
+        <simple>inline; filename="stops.txt"</simple>
       </camel:setHeader>
     </camel:route>
     <!-- LIFTING RML -->

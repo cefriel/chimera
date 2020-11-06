@@ -16,9 +16,20 @@
 package com.cefriel.chimera.util;
 
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class Utils {
 
@@ -56,6 +67,29 @@ public class Utils {
                 return RDFFormat.RDFA;
             default:
                 return null;
+        }
+    }
+
+    public static Repository getSchemaRepository(List<String> ontologyUrls, String ontologyRDFFormat, String token) throws IOException {
+        ValueFactory vf = SimpleValueFactory.getInstance();
+        Repository schema = new SailRepository(new MemoryStore());
+        schema.init();
+        try (RepositoryConnection con = schema.getConnection()) {
+            for (String url: ontologyUrls)
+                con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(url));
+        }
+        return schema;
+    }
+
+    public static void addSchemaToRepository(Repository repo, String context, List<String> ontologyUrls, String ontologyRDFFormat, String token) throws IOException {
+        ValueFactory vf = SimpleValueFactory.getInstance();
+        try (RepositoryConnection con = repo.getConnection()) {
+            for (String url: ontologyUrls) {
+                if (context != null)
+                    con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token), vf.createIRI(context));
+                else
+                    con.add(SemanticLoader.secure_load_data(url, ontologyRDFFormat, token));
+            }
         }
     }
 }

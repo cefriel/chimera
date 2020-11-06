@@ -63,7 +63,7 @@ Last but not least, the `chimera-example` provides an example of conversion pipe
 The  `chimera-example`  defines a conversion pipeline, exposed through an API, and considering a sample [GTFS](https://developers.google.com/transit/gtfs) feed as input and the [Linked GTFS](https://github.com/OpenTransport/linked-gtfs) vocabulary as the reference ontology.
 
 - Use the _RML lifter_ block to obtain a Linked GTFS representation of the `stops.txt` file in the sample GTFS feed.
-    
+  
     ```
     POST http://localhost:8888/chimera-demo/lift/gtfs/ 
     Attach the file chimera-example/inbox/sample-gtfs-feed.zip
@@ -103,7 +103,7 @@ You can also use a different additional source using two steps:
         additional_source:enrich.ttl
         inference:true
     ```
-    
+**Note** The `InferenceEnricher` block enabled in this pipeline performs a one-time inference evaluation against the schema adding the resulting triples to the graph. To improve performances and guarantee inference throughout the entire pipeline, it is recommended to configure the `AttachGraph` block (a _commented_ example can be found in the `.xml` file of the route).
 - Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back an _enriched_ GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation and downloading the additional source from a server requiring _JWT based authentication_. To run this example you need to configure the authorization server URL in the chimera pipeline (`chimera-example/src/main/resources/routes/camel-context.xml`)
     - Perform the enriched conversion
         ```

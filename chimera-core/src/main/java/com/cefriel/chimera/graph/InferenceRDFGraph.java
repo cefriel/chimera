@@ -13,31 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package com.cefriel.chimera.graph;
 
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.Sail;
+import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 
 import java.io.File;
 
-public class NativeRDFGraph extends RDFGraph {
+public class InferenceRDFGraph extends RDFGraph {
 
-	private Sail data;
-
-	public NativeRDFGraph(String pathDataDir) {
-		File dataDir = new File(pathDataDir);
-		data = new NativeStore(dataDir);
-		repo = new SailRepository(data);
-		repo.init();
-	}
-
-	public Sail getData() {
-		return data;
-	}
-
-	public void setData(Sail data) {
-		this.data = data;
-	}
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules) {
+        SchemaCachingRDFSInferencer inferencer;
+        if (pathDataDir == null)
+            inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
+        else
+            inferencer = new SchemaCachingRDFSInferencer(new NativeStore(new File(pathDataDir)),
+                    schema, allRules);
+        this.repo = new SailRepository(inferencer);
+        this.repo.init();
+    }
 
 }
