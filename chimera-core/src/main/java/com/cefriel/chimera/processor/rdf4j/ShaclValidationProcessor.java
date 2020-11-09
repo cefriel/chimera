@@ -37,6 +37,7 @@ import com.cefriel.chimera.graph.MemoryRDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.SemanticLoader;
 
+// BETA Version
 public class ShaclValidationProcessor implements Processor {
 
 	private List<String> shaclRulesUrls;
@@ -49,6 +50,7 @@ public class ShaclValidationProcessor implements Processor {
 		MemoryRDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, MemoryRDFGraph.class);
 		if (graph == null)
 			throw new RuntimeException("RDF Graph not attached");
+		// TODO Check this part
 		NotifyingSail data = (NotifyingSail) graph.getData();
 		ShaclSail shaclSail = new ShaclSail(data);
 		shaclSail.setIgnoreNoShapesLoadedException(true);
