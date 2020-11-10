@@ -32,17 +32,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TemplateLowererInitializerProcessor implements Processor {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateLowererInitializerProcessor.class);
 
-    private static Map<String, TemplateLowererInitializer> cache = new HashMap<>();
+    private static Map<String, TemplateLowererInitializer> cache = new ConcurrentHashMap<>();
     private String loweringTemplate;
     private String baseUrl;
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
+        String cacheInvalidation = exchange.getMessage().getHeader(ProcessorConstants.CACHE_INVALIDATION, String.class);
+        if (cacheInvalidation.toLowerCase().equals("true")) {
+            cache = new ConcurrentHashMap<>();
+            logger.info("Cache invalidated.");
+        }
+
         String templateId = exchange.getMessage().getHeader(TemplateProcessorConstants.LOWERING_TEMPLATE, String.class);
         if (templateId == null)
             templateId = loweringTemplate;

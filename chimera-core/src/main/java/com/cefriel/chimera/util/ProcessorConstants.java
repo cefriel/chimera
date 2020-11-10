@@ -43,6 +43,8 @@ public class ProcessorConstants {
 
     public static final String JWT_TOKEN = "JWT_TOKEN";
 
+    public static final String CACHE_INVALIDATION = "cache_invalidation";
+
     public static String getBaseIriValue() {
         return BASE_IRI_VALUE;
     }

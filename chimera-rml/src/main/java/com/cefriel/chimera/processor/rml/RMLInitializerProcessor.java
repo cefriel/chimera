@@ -33,12 +33,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RMLInitializerProcessor implements Processor {
 
     private static final Logger logger = LoggerFactory.getLogger(RMLInitializerProcessor.class);
 
-    private static Map<String, Initializer> cache = new HashMap<>();
+    private static Map<String, Initializer> cache = new ConcurrentHashMap<>();
     private String baseUrl;
 
     private String rmlMappings;
@@ -46,6 +47,12 @@ public class RMLInitializerProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
+        String cacheInvalidation = exchange.getMessage().getHeader(ProcessorConstants.CACHE_INVALIDATION, String.class);
+        if (cacheInvalidation.toLowerCase().equals("true")) {
+            cache = new ConcurrentHashMap<>();
+            logger.info("Cache invalidated.");
+        }
 
         String mappings = exchange.getMessage().getHeader(RMLProcessorConstants.RML_MAPPINGS, String.class);
         if (mappings == null)
@@ -67,7 +74,7 @@ public class RMLInitializerProcessor implements Processor {
         }
 
         String mappingsUrl = "";
-        mappingsUrl = Utils.trailingSlash(baseUrl) + "rml/" + mappings;
+        mappingsUrl = Utils.trailingSlash(baseUrl) + mappings;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
         InputStream rmlIS = UniLoader.open(mappingsUrl, token);
@@ -79,7 +86,6 @@ public class RMLInitializerProcessor implements Processor {
         RDF4JStore rmlStore = new RDF4JStore();
         rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
 
-        //TODO If remote (provided in the configuration) then choose the remote functions file
         FunctionLoader functionLoader;
         functionLoader = RMLConfigurator.getFunctionLoader(functionFiles);
 
