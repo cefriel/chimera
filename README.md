@@ -40,83 +40,15 @@ The main sub-project is `chimera-core` that contains the basic blocks of the Chi
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
 - `chimera-records` contains a set of utility blocks to gather data (timestamps, RDF graph data,...)  within a Chimera pipeline
 
-Last but not least, the `chimera-example` provides an example of conversion pipeline implemented configuring the different blocks with a [Spring XML Camel Context](https://camel.apache.org/components/latest/spring-summary.html). Complete instructions to run the example below, additional options to deploy and customize the `chimera-example` can be found in `chimera-example/README.md`.
+Last but not least, the `chimera-example` provides an example of conversion pipeline implemented configuring the different blocks with a [Spring XML Camel Context](https://camel.apache.org/components/latest/spring-summary.html). Complete instructions to run the example can be found in `chimera-example/README.md` (includes also instructions for deployment and monitoring).
 
-### How to run it
+### How to compile the project
 - Clone the repository and the required git submodules
     ```
     git clone --recurse-submodules https://github.com/cefriel/chimera.git
     ```
 - Remove comments from the parent `pom.xml` if required libraries (git submodules) are not already installed in the local Maven repository
 - Run `mvn:install` in the root folder to build all the sub-projects and libraries
-- Build the chimera-example image
-    ```
-    cd chimera-example && docker build --no-cache -t chimera-example .
-    ```
-- Run the `chimera-example` container
-    ```
-    docker run -p 8888:8888 chimera-example
-    ```
-
-### How to test it
-
-The  `chimera-example`  defines a conversion pipeline, exposed through an API, and considering a sample [GTFS](https://developers.google.com/transit/gtfs) feed as input and the [Linked GTFS](https://github.com/OpenTransport/linked-gtfs) vocabulary as the reference ontology.
-
-- Use the _RML lifter_ block to obtain a Linked GTFS representation of the `stops.txt` file in the sample GTFS feed.
-  
-    ```
-    POST http://localhost:8888/chimera-demo/lift/gtfs/ 
-    Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-    ```
-    
-- Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back a GTFS representation of the `stops.txt` file in the sample GTFS feed after a roundtrip through a Linked GTFS representation.
-    ```
-    POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
-    Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-    ```
-    
-- Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back an _enriched_ GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation. In this example, we use the example data in `chimera-example/src/main/resources/enrich.ttl`.
-    ```
-    POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
-    Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-    Add as header additional_source:enrich.ttl
-    ```
-    You can also use a different additional source using two steps:
-
-    1. Load an additional source
-        ```
-        POST http://localhost:8888/chimera-demo/load/ 
-        For example, attach the file chimera-example/inbox/mysource.ttl
-        Add as header filename:my-source.ttl
-        ```
-    2. Perform the enriched conversion
-        ```
-        POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
-        Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-        Add as header additional_source:my-source.ttl
-        ```
-    
-- Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back an _enriched_ GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation and enabling RDFS inference. In this example, we use an example ontology (`chimera-example/src/main/resources/ontology.owl`) defining an axiom for the definition of a `range` on the `gtfs:parentStation` property. Using the enricher block with data in the additional source, and enabling inference with that ontology, we can retrieve an additional `gtfs:Stop` in the lowering of the `stops.txt` file.
-    ```
-    POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
-    Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-    Add as header 
-        additional_source:enrich.ttl
-        inference:true
-    ```
-    **Note** The `InferenceEnricher` block enabled in this pipeline performs a one-time inference evaluation against the schema adding the resulting triples to the graph. To improve performances and guarantee inference throughout the entire pipeline, it is recommended to configure the `AttachGraph` block (a _commented_ example can be found in the `.xml` file of the route).
-- Use the _RML lifter_ block and the _rdf-lowerer_ block to obtain back an _enriched_ GTFS representation of a sample GTFS feed after a roundtrip through a Linked GTFS representation and downloading the additional source from a server requiring _JWT based authentication_. To run this example you need to configure the authorization server URL in the chimera pipeline (`chimera-example/src/main/resources/routes/camel-context.xml`)
-    - Perform the enriched conversion
-        ```
-        POST http://localhost:8888/chimera-demo/roundtrip/gtfs/ 
-        Attach the file chimera-example/inbox/sample-gtfs-feed.zip
-        Add as header 
-            additional_source:<url_server_source>
-            username:<server_username>
-            password:<server_password>
-        ```
-    
-- Enrichment and Inference can also be applied using the same headers to the lifting route (http://localhost:8888/chimera-demo/lift/gtfs/)
 
 ### References
 
