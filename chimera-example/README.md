@@ -97,7 +97,7 @@ The Camel Context can be enabled by changing the `volume` directive in the docke
 - ./src/main/resources/routes/camel-context-monitor.xml:/home/routes/camel-context.xml
 ```
 
-The endpoint is available at `http://localhost:8888/chimera-demo/metrics` and can be easily configured with Prometheus for scraping. The endpoint exposes default metrics on the JVM and on Camel Routes and Messages. Moreover, the pipeline it's configured to expose also custom metrics: number of lift/roundtrip conversions executed (`counter`), lift/roundtrip conversion timer (`timer`), metrics on the `seda` queues enabled for the different endpoints (`summary`).
+The endpoint is available at `http://localhost:8888/chimera-demo/metrics` and can be easily configured with Prometheus for scraping. The endpoint exposes default metrics on the JVM and on Camel Routes and Messages. Moreover, the pipeline it's configured to expose also custom metrics: number of lift/roundtrip conversions executed (num_executions `counter`), lift/roundtrip conversion timer (processing_time `timer`), metrics on the `seda` queues enabled for the different endpoints (seda_queue_size `summary`). Each metric is tagged using a different `routeId` for the lift and roundtrip conversion endpoints.
 
 The Micrometer registry configuration can be modified in class `MicrometerConfig`. The class `SedaMetricsProcessor` showcases how to define a custom Camel Processor and it is used in the pipeline to feed the related custom metrics.
 

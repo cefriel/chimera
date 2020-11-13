@@ -60,6 +60,10 @@ Projects using Chimera:
 Publications:
 - `Scrocca M., Comerio M., Carenini A., Celino I. (2020) Turning Transport Data to Comply with EU Standards While Enabling a Multimodal Transport Knowledge Graph. In: The Semantic Web – ISWC 2020. Springer. https://doi.org/10.1007/978-3-030-62466-8_26`
 
+### Commercial Support
+
+If you need commercial support for Chimera contact us at [info@cefriel.com](mailto:info@cefriel.com).
+
 ### License
 
 _Copyright 2020 Cefriel._
