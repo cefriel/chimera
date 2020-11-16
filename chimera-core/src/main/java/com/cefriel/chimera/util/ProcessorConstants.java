@@ -24,9 +24,6 @@ public class ProcessorConstants {
 
     public static final String BASE_IRI = "base_iri";
 
-    public static final String SOURCE_STD = "source_standard";
-    public static final String DEST_STD = "destination_standard";
-
     public static final String GRAPH_ID = "graph_id";
     public static final String CONTEXT_GRAPH = "context_graph";
 
@@ -44,6 +41,20 @@ public class ProcessorConstants {
     public static final String JWT_TOKEN = "JWT_TOKEN";
 
     public static final String CACHE_INVALIDATION = "cache_invalidation";
+
+    public static final String RDF_FORMAT_BINARY = "binary";
+    public static final String RDF_FORMAT_JSONLD = "jsonld";
+    public static final String RDF_FORMAT_N3 = "n3";
+    public static final String RDF_FORMAT_NQUADS = "nquads";
+    public static final String RDF_FORMAT_NTRIPLES = "ntriples";
+    public static final String RDF_FORMAT_RDFXML = "rdfxml";
+    public static final String RDF_FORMAT_TURTLE = "turtle";
+    public static final String RDF_FORMAT_RDFA = "rdfa";
+
+    public static final String RML_SERIALIZATION_KEY = "rml";
+    public static final String RDF_LOWERER_SERIALIZATION_KEY = "rdf_lowerer";
+
+    public static final String CONVERTER_CONFIGURATION = "converter_configuration";
 
     public static String getBaseIriValue() {
         return BASE_IRI_VALUE;

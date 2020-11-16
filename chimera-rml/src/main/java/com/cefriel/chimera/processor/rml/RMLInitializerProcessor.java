@@ -19,10 +19,7 @@ package com.cefriel.chimera.processor.rml;
 import be.ugent.rml.Initializer;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.store.RDF4JStore;
-import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.RMLProcessorConstants;
-import com.cefriel.chimera.util.UniLoader;
-import com.cefriel.chimera.util.Utils;
+import com.cefriel.chimera.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -30,10 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class RMLInitializerProcessor implements Processor {
 
@@ -47,53 +46,64 @@ public class RMLInitializerProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-
         String cacheInvalidation = exchange.getMessage().getHeader(ProcessorConstants.CACHE_INVALIDATION, String.class);
-        if (cacheInvalidation.toLowerCase().equals("true")) {
+        if (cacheInvalidation != null)
+            if (cacheInvalidation.toLowerCase().equals("true")) {
             cache = new ConcurrentHashMap<>();
             logger.info("Cache invalidated.");
         }
 
-        String mappings = exchange.getMessage().getHeader(RMLProcessorConstants.RML_MAPPINGS, String.class);
-        if (mappings == null)
-            mappings = rmlMappings;
-        if (mappings == null) {
-            logger.error("RML Mappings not specified. Cannot create Initializer.");
-            exchange.getMessage().setBody(null);
-            return;
+        String mappingsId = "";
+        List<String> mappingsUrl = new ArrayList<>();
+        ConverterConfiguration configuration =
+                exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
+        if (configuration != null) {
+            logger.info("Converter configuration found in the exchange");
+            mappingsId = configuration.getConverterId();
+            mappingsUrl = configuration.getLiftingMappings().stream()
+                    .filter(r -> r.getSerialization().equals(ProcessorConstants.RML_SERIALIZATION_KEY))
+                    .map(r -> r.getUrl())
+                    .collect(Collectors.toList());
+        }
+        if (mappingsUrl.isEmpty()) {
+            mappingsId = exchange.getMessage().getHeader(RMLProcessorConstants.RML_MAPPINGS, String.class);
+            if (mappingsId == null)
+                mappingsId = rmlMappings;
+            if (mappingsId == null)
+                throw new IllegalArgumentException("RML Mappings not specified. Cannot create Initializer.");
+            mappingsUrl.add(Utils.trailingSlash(baseUrl) + mappingsId);
         }
 
         Initializer initializer = null;
         synchronized (cache) {
-            initializer = cache.get(mappings);
+            initializer = cache.get(mappingsId);
             if (initializer != null) {
-                logger.info("Cached initializer used for: " + mappings);
+                logger.info("Cached initializer used for: " + mappingsId);
                 exchange.getMessage().setBody(initializer, Initializer.class);
                 return;
             }
         }
 
-        String mappingsUrl = "";
-        mappingsUrl = Utils.trailingSlash(baseUrl) + mappings;
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
-
-        InputStream rmlIS = UniLoader.open(mappingsUrl, token);
-        if (rmlIS == null) {
-            logger.error("RML Mappings not found. Cannot create Initializer.");
-            exchange.getMessage().setBody(null);
-            return;
-        }
         RDF4JStore rmlStore = new RDF4JStore();
-        rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
+
+        for(String url : mappingsUrl) {
+            InputStream rmlIS = UniLoader.open(url, token);
+            if (rmlIS == null) {
+                logger.error("RML mappings [" + url +  "] not found. Cannot create Initializer.");
+                exchange.getMessage().setBody(null);
+                return;
+            }
+            rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
+        }
 
         FunctionLoader functionLoader;
         functionLoader = RMLConfigurator.getFunctionLoader(functionFiles);
 
         logger.info("RML Initializer created");
         initializer = new Initializer(rmlStore, functionLoader);
-        cache.put(mappings, initializer);
+        cache.put(mappingsId, initializer);
         exchange.getMessage().setBody(initializer, Initializer.class);
-
     }
 
     public String getRmlMappings() {

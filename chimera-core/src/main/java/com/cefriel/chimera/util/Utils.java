@@ -49,21 +49,21 @@ public class Utils {
 
     public static RDFFormat getRDFFormat(String format) {
         switch (format.toLowerCase()) {
-            case "binary":
+            case ProcessorConstants.RDF_FORMAT_BINARY:
                 return RDFFormat.BINARY;
-            case "jsonld":
+            case ProcessorConstants.RDF_FORMAT_JSONLD:
                 return RDFFormat.JSONLD;
-            case "n3":
+            case ProcessorConstants.RDF_FORMAT_N3:
                 return RDFFormat.N3;
-            case "nquads":
+            case ProcessorConstants.RDF_FORMAT_NQUADS:
                 return RDFFormat.NQUADS;
-            case "ntriples":
+            case ProcessorConstants.RDF_FORMAT_NTRIPLES:
                 return RDFFormat.NTRIPLES;
-            case "rdfxml":
+            case ProcessorConstants.RDF_FORMAT_RDFXML:
                 return RDFFormat.RDFXML;
-            case "turtle":
+            case ProcessorConstants.RDF_FORMAT_TURTLE:
                 return RDFFormat.TURTLE;
-            case "rdfa":
+            case ProcessorConstants.RDF_FORMAT_RDFA:
                 return RDFFormat.RDFA;
             default:
                 return null;
