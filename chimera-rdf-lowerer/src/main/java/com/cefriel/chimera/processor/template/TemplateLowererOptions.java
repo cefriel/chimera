@@ -25,6 +25,7 @@ public class TemplateLowererOptions {
     private String utils;
     private String queryFile;
     private boolean trimTemplate;
+    private boolean resourceTemplate;
     private boolean verboseQueries;
     private boolean attachmentToExchange;
 
@@ -40,6 +41,7 @@ public class TemplateLowererOptions {
         utils = options.getUtils();
         queryFile = options.getQueryFile();
         trimTemplate = options.isTrimTemplate();
+        resourceTemplate = options.isResourceTemplate();
         verboseQueries = options.isVerboseQueries();
         attachmentToExchange = options.isAttachmentToExchange();
     }
@@ -122,6 +124,14 @@ public class TemplateLowererOptions {
 
     public void setAttachmentToExchange(boolean attachmentToExchange) {
         this.attachmentToExchange = attachmentToExchange;
+    }
+
+    public boolean isResourceTemplate() {
+        return resourceTemplate;
+    }
+
+    public void setResourceTemplate(boolean resourceTemplate) {
+        this.resourceTemplate = resourceTemplate;
     }
 
 }

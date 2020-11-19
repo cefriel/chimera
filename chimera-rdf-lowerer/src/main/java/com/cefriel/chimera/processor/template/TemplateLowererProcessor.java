@@ -99,6 +99,8 @@ public class TemplateLowererProcessor implements Processor {
 			tl.setFormat(tlo.getFormat());
 		if (tlo.isTrimTemplate())
 			tl.setTrimTemplate(true);
+		if (tlo.isResourceTemplate())
+			tl.setResourceTemplate(true);
 
 		String templatePath = exchange.getIn().getHeader(TemplateProcessorConstants.TEMPLATE_PATH, String.class);
 		if (templatePath == null)
@@ -139,7 +141,7 @@ public class TemplateLowererProcessor implements Processor {
 
 			if (tlo.isAttachmentToExchange()) {
 				if (tlo.getQueryFile() != null) {
-					//Attach all file created with parametric template
+					//Attach all the files created with parametric template
 					String filename = destFileName.replaceFirst("[.][^.]+$", "");
 					List<String> result;
 					try (Stream<Path> walk = Files.walk(Paths.get(localDestPath))) {
