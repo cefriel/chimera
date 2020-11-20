@@ -20,18 +20,23 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TemplateLowererInitializer {
 
-    private byte[] bytes;
+    private List<byte[]> templates;
 
-    public TemplateLowererInitializer(InputStream templateStream) throws IOException {
-        if (templateStream == null)
-            this.bytes = null;
+    public TemplateLowererInitializer(List<InputStream> templateStreams) throws IOException {
+        if (templateStreams == null)
+            this.templates = null;
         else {
-            ByteArrayOutputStream baos = getOutputStream(templateStream);
-            this.bytes = baos.toByteArray();
-            baos.close();
+            templates = new ArrayList<>();
+            for (InputStream is : templateStreams) {
+                ByteArrayOutputStream baos = getOutputStream(is);
+                templates.add(baos.toByteArray());
+                baos.close();
+            }
         }
     }
 
@@ -46,10 +51,17 @@ public class TemplateLowererInitializer {
         return baos;
     }
 
-    public InputStream getTemplateStream() throws IOException {
-        if (this.bytes != null)
-            return new ByteArrayInputStream(bytes);
+    public InputStream getTemplateStream(int index) throws IOException {
+        if (this.templates != null)
+            return new ByteArrayInputStream(templates.get(index));
         else
             throw new IOException("InputStream not initialized");
+    }
+
+    public int getNumberTemplates () {
+        if (templates != null)
+            return templates.size();
+        else
+            return 0;
     }
 }

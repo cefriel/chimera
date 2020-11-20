@@ -83,19 +83,18 @@ public class TemplateLowererInitializerProcessor implements Processor {
             }
         }
 
-        //TODO Create Initializer for multiple templates
-        String templateUrl = templateUrls.get(0);
+        List<InputStream> templateStreams = new ArrayList<>();
         String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
-        InputStream tlIS = UniLoader.open(templateUrl, token);
-        if (tlIS == null) {
-            logger.error("Lowering Template not found. Cannot create Template Lowerer Initializer.");
-            exchange.getMessage().setBody(null);
-            return;
+        for (String url : templateUrls) {
+            InputStream tlIS = UniLoader.open(url, token);
+            if (tlIS == null)
+                throw new IllegalArgumentException("Lowering Template not found. Cannot create Template Lowerer Initializer.");
+            templateStreams.add(tlIS);
         }
 
         logger.info("Template Lowerer Initializer created");
-        initializer = new TemplateLowererInitializer(tlIS);
+        initializer = new TemplateLowererInitializer(templateStreams);
         cache.put(templateId, initializer);
         exchange.getMessage().setBody(initializer, TemplateLowererInitializer.class);
 

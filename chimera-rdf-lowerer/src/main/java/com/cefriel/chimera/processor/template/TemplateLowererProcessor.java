@@ -18,6 +18,7 @@ package com.cefriel.chimera.processor.template;
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.util.ProcessorConstants;
 import com.cefriel.chimera.util.UniLoader;
+import com.cefriel.chimera.util.Utils;
 import com.cefriel.lowerer.TemplateLowerer;
 import com.cefriel.utils.LoweringUtils;
 import com.cefriel.utils.TransmodelLoweringUtils;
@@ -91,16 +92,7 @@ public class TemplateLowererProcessor implements Processor {
 			reader.setVerbose(true);
 		TemplateLowerer tl = new TemplateLowerer(reader, lu);
 
-		if (tlo.getKeyValueCsvPath() != null)
-			tl.setKeyValueCsvPath(tlo.getKeyValueCsvPath());
-		if (tlo.getKeyValuePairsPath() != null)
-			tl.setKeyValuePairsPath(tlo.getKeyValuePairsPath());
-		if (tlo.getFormat() != null)
-			tl.setFormat(tlo.getFormat());
-		if (tlo.isTrimTemplate())
-			tl.setTrimTemplate(true);
-		if (tlo.isResourceTemplate())
-			tl.setResourceTemplate(true);
+		configureTemplateLowerer(tl,tlo);
 
 		String templatePath = exchange.getIn().getHeader(TemplateProcessorConstants.TEMPLATE_PATH, String.class);
 		if (templatePath == null)
@@ -112,15 +104,15 @@ public class TemplateLowererProcessor implements Processor {
 		if (destFileName == null)
 			destFileName = "output.txt";
 
-		String localDestPath = destinationPath;
-		if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
-			localDestPath += '/';
+		String localDestPath = Utils.trailingSlash(destinationPath);
 		if (graphID != null)
 			localDestPath = localDestPath + graphID + "/";
-
 		new File(localDestPath).mkdirs();
-
 		String filepath = localDestPath + destFileName;
+
+		String destFileNameId = exchange.getIn().getHeader(TemplateProcessorConstants.DEST_FILE_NAME, String.class);
+		if (destFileNameId != null)
+			filepath = tl.getPathId(filepath, destFileNameId);
 
 		if (stream) {
 			logger.info("Template processed as a stream");
@@ -138,7 +130,6 @@ public class TemplateLowererProcessor implements Processor {
 			}
 		} else {
 			tl.lower(templatePath, filepath, tlo.getQueryFile());
-
 			if (tlo.isAttachmentToExchange()) {
 				if (tlo.getQueryFile() != null) {
 					//Attach all the files created with parametric template
@@ -159,6 +150,19 @@ public class TemplateLowererProcessor implements Processor {
 				}
 			}
 		}
+	}
+
+	private void configureTemplateLowerer(TemplateLowerer tl, TemplateLowererOptions tlo) {
+		if (tlo.getKeyValueCsvPath() != null)
+			tl.setKeyValueCsvPath(tlo.getKeyValueCsvPath());
+		if (tlo.getKeyValuePairsPath() != null)
+			tl.setKeyValuePairsPath(tlo.getKeyValuePairsPath());
+		if (tlo.getFormat() != null)
+			tl.setFormat(tlo.getFormat());
+		if (tlo.isTrimTemplate())
+			tl.setTrimTemplate(true);
+		if (tlo.isResourceTemplate())
+			tl.setResourceTemplate(true);
 	}
 
 	public TemplateLowererOptions getDefaultTLOptions() {

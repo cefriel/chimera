@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
@@ -41,44 +43,51 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
         if (tlInitializer != null) {
             TemplateLowererInitializer initializer = tlInitializer.getIn().getBody(TemplateLowererInitializer.class);
             if (initializer != null) {
-                logger.info("Template Lowerer Initialization extracted");
-                InputStream tlIS = null;
-                try {
-                    tlIS = initializer.getTemplateStream();
-                } catch (IOException e) {
-                    logger.error("Exception accessing template stream");
-                }
-                if (!stream) {
-                    byte[] buffer = new byte[0];
+                logger.info("Template Lowerer Initializer extracted");
+                for(int k = 0; k < initializer.getNumberTemplates(); k++) {
+                    InputStream tlIS = null;
                     try {
-                        buffer = new byte[tlIS.available()];
-                        tlIS.read(buffer);
+                        tlIS = initializer.getTemplateStream(k);
                     } catch (IOException e) {
-                        logger.error("Exception reading template stream");
+                        logger.error("Exception accessing template stream");
                     }
-                    String templatePath = "./tmp/tmp-template-" + exchange.getExchangeId() + ".vm";
-                    File templateFile = new File(templatePath);
-                    templateFile.getParentFile().mkdirs();
+                    if (!stream) {
+                        byte[] buffer = new byte[0];
+                        try {
+                            buffer = new byte[tlIS.available()];
+                            tlIS.read(buffer);
+                        } catch (IOException e) {
+                            logger.error("Exception reading template stream");
+                        }
+                        String templatePath = "./tmp/tmp-template-" + exchange.getExchangeId() + "-" + k + ".vm";
+                        File templateFile = new File(templatePath);
+                        templateFile.getParentFile().mkdirs();
+                        try {
+                            OutputStream outStream = new FileOutputStream(templateFile);
+                            outStream.write(buffer);
+                            outStream.close();
+                        } catch (IOException e) {
+                            logger.error("Exception writing template stream to file");
+                        }
+                        exchange.getMessage().setHeader(TemplateProcessorConstants.TEMPLATE_PATH, templatePath);
+                    } else {
+                        processor.setStream(true);
+                        exchange.setProperty(TemplateProcessorConstants.TEMPLATE_STREAM, tlIS);
+                    }
+
+                    if(initializer.getNumberTemplates() > 1)
+                        exchange.setProperty(TemplateProcessorConstants.DEST_FILE_NAME_ID, Integer.toString(k));
+
                     try {
-                        OutputStream outStream = new FileOutputStream(templateFile);
-                        outStream.write(buffer);
-                        outStream.close();
-                    } catch (IOException e) {
-                        logger.error("Exception writing template stream to file");
+                        processor.process(exchange);
+                    } catch (Exception e) {
+                        logger.error("Error in Template Lowering process");
+                        e.printStackTrace();
                     }
-                    exchange.getMessage().setHeader(TemplateProcessorConstants.TEMPLATE_PATH, templatePath);
-                } else {
-                    processor.setStream(stream);
-                    exchange.setProperty(TemplateProcessorConstants.TEMPLATE_STREAM, tlIS);
                 }
             }
         }
-        try {
-            processor.process(exchange);
-        } catch (Exception e) {
-            logger.error("Error in Template Lowering process");
-            e.printStackTrace();
-        }
+
         exchange.getMessage().removeHeaders("*template*");
         return exchange;
     }

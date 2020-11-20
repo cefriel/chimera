@@ -89,11 +89,8 @@ public class RMLInitializerProcessor implements Processor {
 
         for(String url : mappingsUrl) {
             InputStream rmlIS = UniLoader.open(url, token);
-            if (rmlIS == null) {
-                logger.error("RML mappings [" + url +  "] not found. Cannot create Initializer.");
-                exchange.getMessage().setBody(null);
-                return;
-            }
+            if (rmlIS == null)
+                throw new IllegalArgumentException("RML mappings [" + url +  "] not found. Cannot create Initializer.");
             rmlStore.read(rmlIS, null, RDFFormat.TURTLE);
         }
 
