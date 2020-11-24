@@ -16,7 +16,7 @@ spec:
     chimera-infra: chimera-example-pod
   type: NodePort
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chimera-example
@@ -27,6 +27,9 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      app: chimera-converter
   template:
     metadata:
       labels:
