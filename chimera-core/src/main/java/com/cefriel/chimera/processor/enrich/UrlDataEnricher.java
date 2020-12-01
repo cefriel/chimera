@@ -17,9 +17,12 @@ package com.cefriel.chimera.processor.enrich;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.cefriel.chimera.graph.RDFGraph;
 import com.cefriel.chimera.processor.onexception.OnExceptionInspectProcessor;
+import com.cefriel.chimera.util.ConverterConfiguration;
+import com.cefriel.chimera.util.ConverterResource;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
@@ -36,6 +39,7 @@ public class UrlDataEnricher implements Processor {
 
 	private Logger logger = LoggerFactory.getLogger(UrlDataEnricher.class);
 
+	private String rdfFormat;
 	private List<String> additionalSourcesUrls;
 
 	public void process(Exchange exchange) throws Exception {
@@ -46,13 +50,16 @@ public class UrlDataEnricher implements Processor {
 		Repository repo = graph.getRepository();
 
 		List<String> urls;
-		if (additionalSourcesUrls == null)
-			urls = exchange.getProperty(ProcessorConstants.ADDITIONAL_SOURCES, List.class);
-		else
-			urls = additionalSourcesUrls;
-
-		if (urls == null)
-			urls = new ArrayList<>();
+		ConverterConfiguration configuration =
+				exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
+		if (configuration != null && configuration.getAdditionalDataSources() != null) {
+			logger.info("Converter configuration found in the exchange, additional sources extracted");
+			rdfFormat = configuration.getAdditionalDataSources().get(0).getSerialization();
+			urls = configuration.getAdditionalDataSources().stream()
+					.map(ConverterResource::getUrl)
+					.collect(Collectors.toList());
+		} else
+			urls = new ArrayList<>(additionalSourcesUrls);
 
 		String additionalSource = exchange.getMessage().getHeader(ProcessorConstants.ADDITIONAL_SOURCE, String.class);
 		if (additionalSource != null)
@@ -61,12 +68,15 @@ public class UrlDataEnricher implements Processor {
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		try (RepositoryConnection con = repo.getConnection()) {
+			IRI contextIRI = graph.getContext();
 			for (String url : urls) {
-				additionalDataset = SemanticLoader.load_data(url, token);
+				if (rdfFormat != null)
+					additionalDataset = SemanticLoader.secure_load_data(url, rdfFormat, token);
+				else
+					additionalDataset = SemanticLoader.secure_load_data(url, token);
 				if (additionalDataset == null)
 					logger.error("No data loaded! URL: " + url);
 				else {
-					IRI contextIRI = graph.getContext();
 					if (contextIRI != null)
 						con.add(additionalDataset, contextIRI);
 					else
@@ -82,5 +92,13 @@ public class UrlDataEnricher implements Processor {
 
 	public void setAdditionalSourcesUrls(List<String> additionalSourcesUrls) {
 		this.additionalSourcesUrls = additionalSourcesUrls;
+	}
+
+	public String getRdfFormat() {
+		return rdfFormat;
+	}
+
+	public void setRdfFormat(String rdfFormat) {
+		this.rdfFormat = rdfFormat;
 	}
 }

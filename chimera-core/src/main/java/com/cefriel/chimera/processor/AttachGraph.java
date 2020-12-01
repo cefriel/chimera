@@ -16,6 +16,8 @@
 package com.cefriel.chimera.processor;
 
 import com.cefriel.chimera.graph.*;
+import com.cefriel.chimera.util.ConverterConfiguration;
+import com.cefriel.chimera.util.ConverterResource;
 import com.cefriel.chimera.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -26,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class AttachGraph implements Processor {
@@ -41,6 +44,8 @@ public class AttachGraph implements Processor {
     private String ontologyRDFFormat;
     private boolean allRules = true;
 
+    private boolean getConverterConfig = true;
+
     private boolean context = true;
     private String contextIRI;
 
@@ -50,6 +55,18 @@ public class AttachGraph implements Processor {
             exchange.setProperty(ProcessorConstants.GRAPH_ID, exchange.getExchangeId());
             if (contextIRI == null)
                 contextIRI = ProcessorConstants.BASE_IRI_VALUE + exchange.getExchangeId();
+        }
+
+        if (getConverterConfig) {
+            ConverterConfiguration configuration =
+                    exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
+            if (configuration != null && configuration.getOntologies() != null) {
+                logger.info("Converter configuration found in the exchange, ontologies extracted");
+                ontologyRDFFormat = configuration.getOntologies().get(0).getSerialization();
+                ontologyUrls = configuration.getOntologies().stream()
+                        .map(ConverterResource::getUrl)
+                        .collect(Collectors.toList());
+            }
         }
 
         RDFGraph graph = null;
@@ -170,6 +187,14 @@ public class AttachGraph implements Processor {
 
     public void setAllRules(boolean allRules) {
         this.allRules = allRules;
+    }
+
+    public boolean isGetConverterConfig() {
+        return getConverterConfig;
+    }
+
+    public void setGetConverterConfig(boolean getConverterConfig) {
+        this.getConverterConfig = getConverterConfig;
     }
 
 }

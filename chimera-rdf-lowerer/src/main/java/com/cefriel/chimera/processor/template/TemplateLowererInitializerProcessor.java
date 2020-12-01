@@ -56,8 +56,8 @@ public class TemplateLowererInitializerProcessor implements Processor {
         List<String> templateUrls = new ArrayList<>();
         ConverterConfiguration configuration =
                 exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
-        if (configuration != null) {
-            logger.info("Converter configuration found in the exchange");
+        if (configuration != null && configuration.getLoweringMappings() != null) {
+            logger.info("Converter configuration found in the exchange, lowering mappings extracted");
             templateId = configuration.getConverterId();
             templateUrls = configuration.getLoweringMappings().stream()
                     .filter(r -> r.getSerialization().equals(ProcessorConstants.RDF_LOWERER_SERIALIZATION_KEY))

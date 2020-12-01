@@ -57,8 +57,8 @@ public class RMLInitializerProcessor implements Processor {
         List<String> mappingsUrl = new ArrayList<>();
         ConverterConfiguration configuration =
                 exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
-        if (configuration != null) {
-            logger.info("Converter configuration found in the exchange");
+        if (configuration != null && configuration.getLiftingMappings() != null) {
+            logger.info("Converter configuration found in the exchange, lifting mappings extracted");
             mappingsId = configuration.getConverterId();
             mappingsUrl = configuration.getLiftingMappings().stream()
                     .filter(r -> r.getSerialization().equals(ProcessorConstants.RML_SERIALIZATION_KEY))

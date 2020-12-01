@@ -16,25 +16,25 @@
 package com.cefriel.chimera.processor.rdf4j;
 
 import com.cefriel.chimera.graph.RDFGraph;
-import com.cefriel.chimera.util.ProcessorConstants;
-import com.cefriel.chimera.util.SemanticLoader;
-import com.cefriel.chimera.util.Utils;
+import com.cefriel.chimera.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InferenceEnricher implements Processor {
+
+	private Logger logger = LoggerFactory.getLogger(InferenceEnricher.class);
 
 	private List<String> ontologyUrls;
 	private String ontologyRDFFormat;
@@ -48,13 +48,22 @@ public class InferenceEnricher implements Processor {
 			throw new RuntimeException("RDF Graph not attached");
 		Repository repo = graph.getRepository();
 
-		if (ontologyUrls == null)
-			ontologyUrls = exchange.getProperty(ProcessorConstants.ONTOLOGY_URLS, List.class);
+		List<String> urls;
+		ConverterConfiguration configuration =
+				exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
+		if (configuration != null && configuration.getOntologies() != null) {
+			logger.info("Converter configuration found in the exchange, ontologies extracted");
+			ontologyRDFFormat = configuration.getOntologies().get(0).getSerialization();
+			urls = configuration.getOntologies().stream()
+					.map(ConverterResource::getUrl)
+					.collect(Collectors.toList());
+		} else
+			urls = new ArrayList<>(ontologyUrls);
 
 		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
 		IRI contextIRI = graph.getContext();
-		Repository schema = Utils.getSchemaRepository(ontologyUrls,
+		Repository schema = Utils.getSchemaRepository(urls,
 				ontologyRDFFormat, token);
 		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
 		Repository inferenceRepo = new SailRepository(inferencer);
