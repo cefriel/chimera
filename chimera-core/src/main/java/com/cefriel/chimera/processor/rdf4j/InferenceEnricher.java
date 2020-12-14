@@ -51,38 +51,45 @@ public class InferenceEnricher implements Processor {
 		List<String> urls;
 		ConverterConfiguration configuration =
 				exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
-		if (configuration != null && configuration.getOntologies() != null) {
+		if (configuration != null
+				&& configuration.getOntologies() != null
+				&& configuration.getOntologies().size() > 0) {
 			logger.info("Converter configuration found in the exchange, ontologies extracted");
 			ontologyRDFFormat = configuration.getOntologies().get(0).getSerialization();
 			urls = configuration.getOntologies().stream()
 					.map(ConverterResource::getUrl)
 					.collect(Collectors.toList());
-		} else
-			urls = new ArrayList<>(ontologyUrls);
+		} else {
+			urls = new ArrayList<>();
+			if (ontologyUrls != null)
+				urls.addAll(ontologyUrls);
+		}
 
-		String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
+		if (!urls.isEmpty()) {
+			String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
-		IRI contextIRI = graph.getContext();
-		Repository schema = Utils.getSchemaRepository(urls,
-				ontologyRDFFormat, token);
-		SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
-		Repository inferenceRepo = new SailRepository(inferencer);
-		inferenceRepo.init();
+			IRI contextIRI = graph.getContext();
+			Repository schema = Utils.getSchemaRepository(urls,
+					ontologyRDFFormat, token);
+			SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
+			Repository inferenceRepo = new SailRepository(inferencer);
+			inferenceRepo.init();
 
-		RepositoryConnection source = repo.getConnection();
-		RepositoryConnection target = inferenceRepo.getConnection();
-		//Enable inference
-		if (contextIRI != null)
-			target.add(source.getStatements(null, null, null, true, contextIRI));
-		else
-			target.add(source.getStatements(null, null, null, true));
-		//Copy back
-		if (contextIRI != null)
-			source.add(target.getStatements(null, null, null, true), contextIRI);
-		else
-			source.add(target.getStatements(null, null, null, true));
-		source.close();
-		target.close();
+			RepositoryConnection source = repo.getConnection();
+			RepositoryConnection target = inferenceRepo.getConnection();
+			//Enable inference
+			if (contextIRI != null)
+				target.add(source.getStatements(null, null, null, true, contextIRI));
+			else
+				target.add(source.getStatements(null, null, null, true));
+			//Copy back
+			if (contextIRI != null)
+				source.add(target.getStatements(null, null, null, true), contextIRI);
+			else
+				source.add(target.getStatements(null, null, null, true));
+			source.close();
+			target.close();
+		}
 	}
 
 	public List<String> getOntologyUrls() {

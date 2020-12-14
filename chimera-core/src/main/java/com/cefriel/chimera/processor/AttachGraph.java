@@ -60,7 +60,9 @@ public class AttachGraph implements Processor {
         if (getConverterConfig) {
             ConverterConfiguration configuration =
                     exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
-            if (configuration != null && configuration.getOntologies() != null) {
+            if (configuration != null
+                    && configuration.getOntologies() != null
+                    && configuration.getOntologies().size() > 0) {
                 logger.info("Converter configuration found in the exchange, ontologies extracted");
                 ontologyRDFFormat = configuration.getOntologies().get(0).getSerialization();
                 ontologyUrls = configuration.getOntologies().stream()

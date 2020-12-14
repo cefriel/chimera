@@ -49,6 +49,7 @@ public class TemplateLowererProcessor implements Processor {
 	private TemplateLowererOptions defaultTLOptions;
 	private String destinationPath = "./tmp/";
 	private boolean stream;
+	private boolean attachmentToExchange;
 
 	public void process(Exchange exchange) throws Exception {
 		RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
@@ -121,7 +122,7 @@ public class TemplateLowererProcessor implements Processor {
 				logger.warn("Parametric templates not supported for streams");
 			if (template != null) {
 				String result = tl.lower(template);
-				if (tlo.isAttachmentToExchange())
+				if (attachmentToExchange)
 					exchange.getMessage().setBody(result, String.class);
 				else
 					try (PrintWriter out = new PrintWriter(filepath)) {
@@ -130,7 +131,7 @@ public class TemplateLowererProcessor implements Processor {
 			}
 		} else {
 			tl.lower(templatePath, filepath, tlo.getQueryFile());
-			if (tlo.isAttachmentToExchange()) {
+			if (attachmentToExchange) {
 				if (tlo.getQueryFile() != null) {
 					//Attach all the files created with parametric template
 					String filename = destFileName.replaceFirst("[.][^.]+$", "");
@@ -187,6 +188,14 @@ public class TemplateLowererProcessor implements Processor {
 
 	public void setStream(boolean stream) {
 		this.stream = stream;
+	}
+
+	public boolean isAttachmentToExchange() {
+		return attachmentToExchange;
+	}
+
+	public void setAttachmentToExchange(boolean attachmentToExchange) {
+		this.attachmentToExchange = attachmentToExchange;
 	}
 
 }

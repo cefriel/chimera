@@ -11,7 +11,9 @@
   <bean class="com.cefriel.chimera.processor.rml.InputStreamToMapProcessor" id="is_processor"/>
   <bean class="com.cefriel.chimera.jwt.JWTHeaderAggregationStrategy" id="addJWT"/>
   <bean class="com.cefriel.chimera.processor.enrich.UrlDataEnricher" id="url_enricher"/>
-  <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower"/>
+  <bean class="com.cefriel.chimera.processor.template.TemplateLowererProcessor" id="template_lower">
+    <property name="attachmentToExchange" value="true"/>
+  </bean>
   <bean class="com.cefriel.chimera.processor.AttachGraph" id="attachGraph">
     <!--
     <property name="ontologyUrls">
@@ -49,7 +51,6 @@
     <property name="templatePath" value="./template-stops.vm"/>
     <property name="destFileName" value="stops.txt"/>
     <property name="trimTemplate" value="false"/>
-    <property name="attachmentToExchange" value="true"/>
   </bean>
   <!-- Camel routes -->
   <camelContext id="chimera_example_context" messageHistory="true" streamCache="true" trace="false" xmlns="http://camel.apache.org/schema/spring">

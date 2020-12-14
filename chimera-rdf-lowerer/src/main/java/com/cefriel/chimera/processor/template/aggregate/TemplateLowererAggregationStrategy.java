@@ -35,6 +35,7 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
     private TemplateLowererOptions tlOptions;
     private boolean stream;
+    private boolean attachmentToExchange;
 
     public Exchange aggregate(Exchange exchange, Exchange tlInitializer) {
         TemplateLowererProcessor processor = new TemplateLowererProcessor();
@@ -78,6 +79,8 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
                     if(initializer.getNumberTemplates() > 1)
                         exchange.setProperty(TemplateProcessorConstants.DEST_FILE_NAME_ID, Integer.toString(k));
 
+                    processor.setAttachmentToExchange(attachmentToExchange);
+
                     try {
                         processor.process(exchange);
                     } catch (Exception e) {
@@ -106,5 +109,13 @@ public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
     public void setStream(boolean stream) {
         this.stream = stream;
+    }
+
+    public boolean isAttachmentToExchange() {
+        return attachmentToExchange;
+    }
+
+    public void setAttachmentToExchange(boolean attachmentToExchange) {
+        this.attachmentToExchange = attachmentToExchange;
     }
 }

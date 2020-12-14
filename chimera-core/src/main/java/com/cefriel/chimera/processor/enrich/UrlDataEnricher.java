@@ -52,14 +52,19 @@ public class UrlDataEnricher implements Processor {
 		List<String> urls;
 		ConverterConfiguration configuration =
 				exchange.getMessage().getHeader(ProcessorConstants.CONVERTER_CONFIGURATION, ConverterConfiguration.class);
-		if (configuration != null && configuration.getAdditionalDataSources() != null) {
+		if (configuration != null
+				&& configuration.getAdditionalDataSources() != null
+				&& configuration.getAdditionalDataSources().size() > 0) {
 			logger.info("Converter configuration found in the exchange, additional sources extracted");
 			rdfFormat = configuration.getAdditionalDataSources().get(0).getSerialization();
 			urls = configuration.getAdditionalDataSources().stream()
 					.map(ConverterResource::getUrl)
 					.collect(Collectors.toList());
-		} else
-			urls = new ArrayList<>(additionalSourcesUrls);
+		} else {
+			urls = new ArrayList<>();
+			if (additionalSourcesUrls != null)
+				urls.addAll(additionalSourcesUrls);
+		}
 
 		String additionalSource = exchange.getMessage().getHeader(ProcessorConstants.ADDITIONAL_SOURCE, String.class);
 		if (additionalSource != null)

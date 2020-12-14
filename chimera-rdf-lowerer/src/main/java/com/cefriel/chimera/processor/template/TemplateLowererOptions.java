@@ -27,7 +27,6 @@ public class TemplateLowererOptions {
     private boolean trimTemplate;
     private boolean resourceTemplate;
     private boolean verboseQueries;
-    private boolean attachmentToExchange;
 
     // Default Constructor
     public TemplateLowererOptions() {}
@@ -43,7 +42,6 @@ public class TemplateLowererOptions {
         trimTemplate = options.isTrimTemplate();
         resourceTemplate = options.isResourceTemplate();
         verboseQueries = options.isVerboseQueries();
-        attachmentToExchange = options.isAttachmentToExchange();
     }
 
     public String getTemplatePath() {
@@ -116,14 +114,6 @@ public class TemplateLowererOptions {
 
     public void setVerboseQueries(boolean verboseQueries) {
         this.verboseQueries = verboseQueries;
-    }
-
-    public boolean isAttachmentToExchange() {
-        return attachmentToExchange;
-    }
-
-    public void setAttachmentToExchange(boolean attachmentToExchange) {
-        this.attachmentToExchange = attachmentToExchange;
     }
 
     public boolean isResourceTemplate() {

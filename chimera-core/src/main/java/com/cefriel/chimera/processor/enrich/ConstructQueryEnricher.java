@@ -72,7 +72,7 @@ public class ConstructQueryEnricher implements Processor {
                     String queriesUrl = baseUrl + queriesId;
                     String token = exchange.getProperty(ProcessorConstants.JWT_TOKEN, String.class);
 
-                    Model model = SemanticLoader.secure_load_data(queriesUrl, "turtle", token);
+                    Model model = SemanticLoader.secure_load_data(queriesUrl, ProcessorConstants.RDF_FORMAT_TURTLE, token);
                     logger.info("Triples loaded from source " + queriesUrl + ": " + model.size());
 
                     ValueFactory factory = SimpleValueFactory.getInstance();
