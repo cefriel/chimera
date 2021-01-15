@@ -25,10 +25,23 @@ public class ConverterAggregationStrategy implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange original, Exchange resource) {
+        // Extract configuration
         ConverterConfiguration configuration = resource.getMessage().getBody(ConverterConfiguration.class);
         if (configuration == null)
             throw new IllegalArgumentException("Converter Configuration not found!");
         original.getMessage().setHeader(ProcessorConstants.CONVERTER_CONFIGURATION, configuration);
+
+        // Extract token
+        String token = resource.getMessage().getHeader(ProcessorConstants.JWT_TOKEN, String.class);
+        if (token != null)
+            original.setProperty(ProcessorConstants.JWT_TOKEN, token);
+
+        // Check if cache should be invalidated
+        String cacheInvalidation = resource.getMessage().getHeader(ProcessorConstants.CACHE_INVALIDATION, String.class);
+        if (cacheInvalidation != null)
+            if (cacheInvalidation.toLowerCase().equals("true"))
+                original.getMessage().setHeader(ProcessorConstants.CACHE_INVALIDATION, cacheInvalidation);
+
         return original;
     }
 }
