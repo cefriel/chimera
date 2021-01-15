@@ -147,7 +147,7 @@ public class RMLProcessor implements Processor {
             for (Future<String> task : jobs)
                 try {
                     String result = task.get();
-                    logger.info(result);
+                    logger.debug(result);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error(e.getMessage(), e);
                     e.printStackTrace();
