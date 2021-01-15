@@ -160,8 +160,8 @@
         <simple>${body}</simple>
       </camel:setBody>
     </camel:route>
-    <!-- ASSET MANAGER -->
-    <!-- Call the Asset Manager to verify/renew the token -->
+    <!-- AUTHORIZATION -->
+    <!-- Call an AUTH SERVICE to verify/renew the token -->
     <camel:route id="renew_token">
       <camel:from uri="direct:authService" />
       <camel:setHeader name="CamelHttpMethod">
