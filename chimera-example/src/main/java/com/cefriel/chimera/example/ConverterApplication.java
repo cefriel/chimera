@@ -18,11 +18,19 @@ package com.cefriel.chimera.example;
 
 import org.apache.camel.spring.Main;
 
+import java.io.File;
+
 public class ConverterApplication {
 
 	public static void main(String[] args) throws Exception {
 		Main main = new Main();
-		main.setFileApplicationContextUri("./routes/camel-context.xml");
+		String path = "routes/camel-context.xml";
+		File f = new File("./" + path);
+		if(f.exists() && !f.isDirectory()) {
+			main.setFileApplicationContextUri("./" + path);
+		} else {
+			main.setApplicationContextUri("routes/camel-context.xml");
+		}
 		main.run();
 	}
 
