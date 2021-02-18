@@ -134,7 +134,9 @@ public class RMLConfigurator {
                 logger.debug("Base IRI set to value: " + options.getBaseIRI());
             }
             else {
-                baseIRI = ProcessorConstants.BASE_IRI_VALUE;
+                baseIRI = getBaseIRIFromMappings(options);
+                if (baseIRI == null)
+                    baseIRI = ProcessorConstants.BASE_IRI_VALUE;
             }
 
             outputStore.copyNameSpaces(initializer.getRMLStore());
@@ -164,6 +166,15 @@ public class RMLConfigurator {
         }
 
         return null;
+    }
+
+    private static String getBaseIRIFromMappings(RMLOptions options) {
+        List<InputStream> lis = options.getMappings().stream()
+                .map(Utils::getInputStreamFromFileOrContentString)
+                .collect(Collectors.toList());
+        InputStream is = new SequenceInputStream(Collections.enumeration(lis));
+
+        return Utils.getBaseDirectiveTurtle(is);
     }
 
     public static void initExecutors (RMLOptions options) {
