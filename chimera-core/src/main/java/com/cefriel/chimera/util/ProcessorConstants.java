@@ -29,7 +29,9 @@ public class ProcessorConstants {
 
     public static final String ENRICHMENT_FORMAT = "enrichment_format";
     public static final String QUERIES_ID = "queries_id";
+
     public static final String DUMP_FORMAT = "dump_format";
+    public static final String DUMP_FILENAME = "dump_filename";
 
     public static final String FILE_EXTENSION = "file_extension";
 

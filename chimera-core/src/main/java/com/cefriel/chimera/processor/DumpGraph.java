@@ -42,6 +42,8 @@ public class DumpGraph implements Processor {
 
     private Logger logger = LoggerFactory.getLogger(DumpGraph.class);
 	private String destinationPath;
+	private String filename;
+	private String format = "turtle";
 
     public void process(Exchange exchange) throws Exception {
     	RDFGraph graph = exchange.getProperty(ProcessorConstants.CONTEXT_GRAPH, RDFGraph.class);
@@ -53,9 +55,12 @@ public class DumpGraph implements Processor {
 
 		String format = exchange.getMessage().getHeader(ProcessorConstants.DUMP_FORMAT, String.class);
 		if (format == null)
-			format = "turtle";
+			format = this.format;
 		RDFFormat rdfFormat = Utils.getRDFFormat(format);
 
+		String fn = exchange.getMessage().getHeader(ProcessorConstants.DUMP_FILENAME, String.class);
+		if (fn == null)
+			fn = filename;
 
 		try (RepositoryConnection con = repo.getConnection()) {
 			RepositoryResult<Statement> dump;
@@ -84,9 +89,13 @@ public class DumpGraph implements Processor {
 				if (!(localDestPath.substring(localDestPath.length() - 1)).equals("/"))
 					localDestPath += '/';
 				new File(localDestPath).mkdirs();
-				localDestPath += "graph-dump";
-				if (graphID != null)
-					localDestPath = localDestPath + "-" + graphID;
+				if (fn != null) {
+					localDestPath += fn;
+				} else {
+					localDestPath += "graph-dump";
+					if (graphID != null)
+						localDestPath = localDestPath + "-" + graphID;
+				}
 				localDestPath = localDestPath + "." + rdfFormat.getDefaultFileExtension();
 				OutputStream fileOutputStream = new FileOutputStream(new File(localDestPath));
 				outstream.writeTo(fileOutputStream);
@@ -102,5 +111,22 @@ public class DumpGraph implements Processor {
 	public void setDestinationPath(String destinationPath) {
 		this.destinationPath = destinationPath;
 	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
 
 }
