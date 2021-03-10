@@ -26,6 +26,7 @@ import java.util.Map;
 public class InputStreamToMapProcessor implements Processor {
 
     private String label;
+    private String prefix = "is://";
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -35,7 +36,7 @@ public class InputStreamToMapProcessor implements Processor {
             sourceLabel = label;
         if (is != null && sourceLabel != null) {
             Map<String, InputStream> map = new HashMap<>();
-            map.put("is://" + sourceLabel, is);
+            map.put(prefix + sourceLabel, is);
             exchange.getMessage().setBody(map, Map.class);
         }
     }
@@ -46,5 +47,13 @@ public class InputStreamToMapProcessor implements Processor {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }
