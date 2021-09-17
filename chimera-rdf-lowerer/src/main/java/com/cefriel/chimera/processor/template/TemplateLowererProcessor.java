@@ -74,13 +74,9 @@ public class TemplateLowererProcessor implements Processor {
 
 		String graphID = exchange.getProperty(ProcessorConstants.GRAPH_ID, String.class);
 
-		LoweringUtils lu = new LoweringUtils();
-		if (tlo.getUtils() != null)
-			switch (tlo.getUtils()) {
-				case "transmodel":
-					lu = new TransmodelLoweringUtils();
-					break;
-			}
+		LoweringUtils lu = tlo.getUtils();
+		if (lu == null)
+			lu = new LoweringUtils();
 
 		String baseIRI = exchange.getMessage().getHeader(ProcessorConstants.BASE_IRI, String.class);
 		if (baseIRI == null)

@@ -15,6 +15,8 @@
  */
 package com.cefriel.chimera.processor.template;
 
+import com.cefriel.utils.LoweringUtils;
+
 public class TemplateLowererOptions {
 
     private String templatePath;
@@ -22,7 +24,7 @@ public class TemplateLowererOptions {
     private String keyValuePairsPath;
     private String keyValueCsvPath;
     private String format;
-    private String utils;
+    private LoweringUtils utils;
     private String queryFile;
     private boolean trimTemplate;
     private boolean resourceTemplate;
@@ -84,11 +86,11 @@ public class TemplateLowererOptions {
         this.format = format;
     }
 
-    public String getUtils() {
+    public LoweringUtils getUtils() {
         return utils;
     }
 
-    public void setUtils(String utils) {
+    public void setUtils(LoweringUtils utils) {
         this.utils = utils;
     }
 
