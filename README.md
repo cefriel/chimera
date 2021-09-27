@@ -66,7 +66,7 @@ If you need commercial support for Chimera contact us at [info@cefriel.com](mail
 
 ### License
 
-_Copyright 2020 Cefriel._
+_Copyright (c) 2019-2021 Cefriel._
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
