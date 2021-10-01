@@ -12,23 +12,19 @@
     <modules>
         <module>chimera-core</module>
 
-        <!-- Remove comment if not already installed in maven local repository
+        <!-- Add comment if submodules not available -->
         <module>libs/rmlmapper-cefriel</module>
-        -->
+
         <module>chimera-rml</module>
 
-        <!-- Remove comment if not already installed in maven local repository
+        <!-- Add comment if submodules not available -->
         <module>libs/rdf-lowerer</module>
-        -->
+
         <module>chimera-rdf-lowerer</module>
 
         <module>chimera-records</module>
 
         <module>chimera-example</module>
-
-        <!-- TODO
-        <module>libs/st4rt</module>
-        <module>chimera-st4rt</module>
-        -->
+        
     </modules>
 </project>
