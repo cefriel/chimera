@@ -1,6 +1,8 @@
 _Chimera_: Composable Semantic Data Transformation
 ===
-Chimera is a tool offering building blocks to compose conversion pipelines based on Semantic Web solutions and implemented on top of [Apache Camel](https://camel.apache.org/).
+Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) and offering components to compose conversion pipelines based on Semantic Web solutions.
+
+:arrow_forward: The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) repository provides a complete example of a Chimera conversion pipeline.
 
 ### Goals
 The motivating scenario is about many stakeholders with an interoperability need. To avoid the definition of point-to-point conversions, an **any-to-one centralized mapping approach** based on Semantic Web technologies (and a reference ontology used as global conceptual model) offers the following advantages:
@@ -15,9 +17,9 @@ The main goal of Chimera is to facilitate the definition of conversion pipelines
 * to minimise the amount of code to be written, in principle, the aim is to completely avoid coding by just configuring the various components provided.
 
 ### Architecture
-The main assumption of Chimera is that it is possible to break down a converter (or mediator, using the naming conventions specific to Enterprise Service Buses) into smaller, composable and reusable entities. The inspiration to this approach is taken from the Enterprise Integration Patterns, breaking a data-based process into blocks to be composed, that are implemented in Apache Camel. Chimera provides additional blocks for the Apache Camel framework enabling the reuse of production-ready Camel components already defined (e.g., integration with input/sink data sources) and/or the implementation of additional blocks (e.g., custom pre-processing).
+The main assumption of Chimera is that it is possible to break down a converter (or mediator, using the naming conventions specific to Enterprise Service Buses) into smaller, composable and reusable entities. The inspiration to this approach is taken from the [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/), breaking a data-based process into blocks to be composed, that are implemented in Apache Camel. Chimera provides additional blocks for the Apache Camel framework enabling the reuse of production-ready Camel components already defined (e.g., integration with input/sink data sources) and/or the implementation of additional blocks (e.g., custom pre-processing).
 
-The architecture of Chimera is heavily inspired by the Enterprise Integration Pattern [Content Enricher](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DataEnricher.html). The RDF graph can be interpreted as a variable which is shared among all the blocks in a conversion process. A basic conversion process based on Semantic Web technologies generates triples from the incoming message/dataset (lifting) and uses the resulting graph to extract data which is used to populate the structure of the destination message/dataset (lowering). Furthermore, the conversion can require enrichment with some background knowledge (being either a set of ontologies or a set of master/lookup data).
+The RDF graph can be interpreted as a variable which is shared among all the blocks in a conversion process. A basic conversion process based on Semantic Web technologies generates triples from the incoming message/dataset (lifting) and uses the resulting graph to extract data which is used to populate the structure of the destination message/dataset (lowering). Furthermore, the conversion can require enrichment with some background knowledge (being either a set of ontologies or a set of master/lookup data).
 
 With this high-level process in mind, we defined a core set of blocks:
 
@@ -39,8 +41,6 @@ The main sub-project is `chimera-core` that contains the basic blocks of the Chi
 - `chimera-rdf-lowerer` contains the blocks to implement lowering using the [rdf-lowerer](https://github.com/cefriel/rdf-lowerer) library 
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
 - `chimera-records` contains a set of utility blocks to gather data (timestamps, RDF graph data,...)  within a Chimera pipeline
-
-Last but not least, the `chimera-example` provides an example of conversion pipeline implemented configuring the different blocks with a [Spring XML Camel Context](https://camel.apache.org/components/latest/spring-summary.html). Complete instructions to run the example can be found in `chimera-example/README.md` (includes also instructions for deployment and monitoring).
 
 ### How to compile the project
 - Clone the repository and the required git submodules
@@ -66,7 +66,7 @@ If you need commercial support for Chimera contact us at [info@cefriel.com](mail
 
 ### License
 
-_Copyright (c) 2019-2021 Cefriel._
+_Copyright (c) 2019-2022 Cefriel._
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
