@@ -6,23 +6,21 @@
 
     <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
-    <version>1.0.0</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>chimera-core</module>
+        <module>graph-component</module>
 
         <!-- Add comment if submodules not available -->
         <module>libs/rmlmapper-cefriel</module>
 
-        <module>chimera-rml</module>
+        <module>rml-component</module>
 
         <!-- Add comment if submodules not available -->
-        <module>libs/rdf-lowerer</module>
+        <module>libs/rdf-template</module>
 
-        <module>chimera-rdf-lowerer</module>
-
-        <module>chimera-records</module>
+        <module>rdft-component</module>
         
     </modules>
 </project>
