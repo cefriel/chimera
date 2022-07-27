@@ -2,3 +2,6 @@
 	path = libs/rmlmapper-cefriel
 	url = https://github.com/cefriel/rmlmapper-cefriel.git
 	branch = master
+[submodule "libs/rdf-template"]
+	path = libs/rdf-template
+	url = https://github.com/cefriel/rdf-template.git
