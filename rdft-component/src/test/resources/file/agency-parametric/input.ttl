@@ -1,0 +1,24 @@
+@prefix base: <http://sprint-transport.eu/data/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://sprint-transport.eu/data/agencies/BEST-AGENCY> a gtfs:Agency;
+  dct:identifier "BEST-AGENCY";
+  dct:language "en";
+  gtfs:timeZone "Europe/Madrid";
+  foaf:name "Best Agency";
+  foaf:page <http://www.bestagency.com> ;
+  gtfs:fareUrl <http://www.bestagency.com/fares> .
+
+<http://sprint-transport.eu/data/agencies/WOW-AGENCY> a gtfs:Agency;
+  dct:identifier "WOW-AGENCY";
+  dct:language "en";
+  gtfs:timeZone "Europe/Madrid";
+  foaf:name "Wow Agency";
+  foaf:page <http://www.wowagency.com> ;
+  gtfs:fareUrl <http://www.wowagency.com/fares> .

@@ -1,0 +1,33 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://sprint-transport.eu/data/AMV> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/AMV".
+
+<http://sprint-transport.eu/data/BEATTY_AIRPORT> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/BEATTY_AIRPORT".
+
+<http://sprint-transport.eu/data/BULLFROG> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/BULLFROG".
+
+<http://sprint-transport.eu/data/DADAN> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/DADAN".
+
+<http://sprint-transport.eu/data/EMSI> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/EMSI".
+
+<http://sprint-transport.eu/data/FUR_CREEK_RES> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/FUR_CREEK_RES".
+
+<http://sprint-transport.eu/data/NADAV> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/NADAV".
+
+<http://sprint-transport.eu/data/NANAA> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/NANAA".
+
+<http://sprint-transport.eu/data/STAGECOACH> a gtfs:Stop;
+  foaf:page "http://my-source.com/stops/STAGECOACH".

@@ -1,0 +1,60 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gtfs: <http://vocab.gtfs.org/terms#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://sprint-transport.eu/data/AMV> a gtfs:Stop;
+  dct:identifier "AMV";
+  geo:lat 3.6641496E1;
+  geo:long -1.1640094E2;
+  foaf:name "Amargosa Valley (Demo)" .
+
+<http://sprint-transport.eu/data/BEATTY_AIRPORT> a gtfs:Stop;
+  dct:identifier "BEATTY_AIRPORT";
+  geo:lat 3.6868446E1;
+  geo:long -1.16784582E2;
+  foaf:name "Nye County Airport (Demo)" .
+
+<http://sprint-transport.eu/data/BULLFROG> a gtfs:Stop;
+  dct:identifier "BULLFROG";
+  geo:lat 3.688108E1;
+  geo:long -1.1681797E2;
+  foaf:name "Bullfrog (Demo)" .
+
+<http://sprint-transport.eu/data/DADAN> a gtfs:Stop;
+  dct:identifier "DADAN";
+  geo:lat 3.6909489E1;
+  geo:long -1.16768242E2;
+  foaf:name "Doing Ave / D Ave N (Demo)" .
+
+<http://sprint-transport.eu/data/EMSI> a gtfs:Stop;
+  dct:identifier "EMSI";
+  geo:lat 3.6905697E1;
+  geo:long -1.1676218E2;
+  foaf:name "E Main St / S Irving St (Demo)" .
+
+<http://sprint-transport.eu/data/FUR_CREEK_RES> a gtfs:Stop;
+  dct:identifier "FUR_CREEK_RES";
+  geo:lat 3.6425288E1;
+  geo:long -1.17133162E2;
+  foaf:name "Furnace Creek Resort (Demo)" .
+
+<http://sprint-transport.eu/data/NADAV> a gtfs:Stop;
+  dct:identifier "NADAV";
+  geo:lat 3.6914893E1;
+  geo:long -1.1676821E2;
+  foaf:name "North Ave / D Ave N (Demo)" .
+
+<http://sprint-transport.eu/data/NANAA> a gtfs:Stop;
+  dct:identifier "NANAA";
+  geo:lat 3.6914944E1;
+  geo:long -1.16761472E2;
+  foaf:name "North Ave / N A Ave (Demo)" .
+
+<http://sprint-transport.eu/data/STAGECOACH> a gtfs:Stop;
+  dct:identifier "STAGECOACH";
+  geo:lat 3.6915682E1;
+  geo:long -1.16751677E2;
+  foaf:name "Stagecoach Hotel & Casino (Demo)" .

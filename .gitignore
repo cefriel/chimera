@@ -1,4 +1,7 @@
 **/.idea
 **.iml
 **/target
-
+rdft-component/src/test/resources/file/result
+rdft-component/src/test/resources/file/secret
+graph-component/src/test/resources/file/result
+rml-component/src/test/resources/file/result

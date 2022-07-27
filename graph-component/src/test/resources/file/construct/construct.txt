@@ -1,0 +1,11 @@
+PREFIX gtfs: <http://vocab.gtfs.org/terms#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX schema: <https://schema.org/>
+
+CONSTRUCT {
+  ?s schema:name ?name .
+}
+WHERE {
+  ?s a gtfs:Stop ;
+   foaf:name ?name .
+}

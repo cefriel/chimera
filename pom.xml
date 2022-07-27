@@ -12,10 +12,10 @@
     <modules>
         <module>graph-component</module>
 
-        <!-- Add comment if submodules not available -->
+        <!-- Add comment if submodules not available
         <module>libs/rmlmapper-cefriel</module>
 
-        <module>rml-component</module>
+        <module>rml-component</module> -->
 
         <!-- Add comment if submodules not available -->
         <module>libs/rdf-template</module>

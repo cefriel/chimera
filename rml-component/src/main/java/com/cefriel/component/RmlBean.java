@@ -1,0 +1,332 @@
+/*
+ * Copyright (c) 2019-2022 Cefriel.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package com.cefriel.component;
+
+import com.cefriel.util.ChimeraRmlConstants;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class RmlBean {
+
+    private String basePath;
+    private List<String> inputFiles;
+    private boolean useMessage;
+    private List<String> mappings;
+    private List<String> functionFiles;
+    private int batchSize;
+    private boolean incrementalUpdate;
+    private boolean noCache;
+    private boolean ordered;
+    private String baseIri;
+    private String baseIriPrefix;
+    private boolean emptyStrings;
+    private boolean concurrentWrites;
+    private boolean concurrentRecords;
+    private boolean defaultRecordFactory;
+    private int numThreadsRecords = ChimeraRmlConstants.DEFAULT_NUM_THREADS;
+    private int numThreadsWrites = ChimeraRmlConstants.DEFAULT_NUM_THREADS;
+    private String concurrency;
+    private boolean singleRecordsFactory;
+    private String streamName;
+    private String baseUrl;
+    private String prefixLogicalSource;
+
+    public RmlBean() {
+        mappings = new ArrayList<>();
+        functionFiles = new ArrayList<>();
+        inputFiles = new ArrayList<>();
+    }
+
+    public RmlBean(RmlBean options) {
+        this();
+        if(options != null) {
+            if (options.getInputFiles() != null)
+                inputFiles = new ArrayList<>(options.getInputFiles());
+            if (options.getMappings() != null)
+                mappings = new ArrayList<>(options.getMappings());
+            if (options.getFunctionFiles() != null)
+                functionFiles = new ArrayList<>(options.getFunctionFiles());
+            basePath = options.getBasePath();
+            useMessage = options.isUseMessage();
+            batchSize = options.getBatchSize();
+            incrementalUpdate = options.isIncrementalUpdate();
+            noCache = options.isNoCache();
+            ordered = options.isOrdered();
+            baseIri = options.getBaseIri();
+            baseIriPrefix = options.getBaseIriPrefix();
+            emptyStrings = options.isEmptyStrings();
+            concurrentWrites = options.isConcurrentWrites();
+            concurrentRecords = options.isConcurrentRecords();
+            defaultRecordFactory = options.isDefaultRecordFactory();
+            numThreadsRecords = options.getNumThreadsRecords();
+            numThreadsWrites = options.getNumThreadsWrites();
+            concurrency = options.getConcurrency();
+            singleRecordsFactory = options.isSingleRecordsFactory();
+            streamName = options.getStreamName();
+            baseUrl = options.getBaseUrl();
+            prefixLogicalSource = options.getPrefixLogicalSource();
+        }
+    }
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public List<String> getInputFiles() {
+        return inputFiles;
+    }
+
+    public void setInputFiles(List<String> inputFiles) {
+        this.inputFiles = inputFiles;
+    }
+
+    public boolean isUseMessage() {
+        return useMessage;
+    }
+
+    public void setUseMessage(boolean useMessage) {
+        this.useMessage = useMessage;
+    }
+
+    public List<String> getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(List<String> mappings) {
+        this.mappings = mappings;
+    }
+
+    public List<String> getFunctionFiles() {
+        return functionFiles;
+    }
+
+    public void setFunctionFiles(List<String> functionFiles) {
+        this.functionFiles = functionFiles;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public boolean isIncrementalUpdate() {
+        return incrementalUpdate;
+    }
+
+    public void setIncrementalUpdate(boolean incrementalUpdate) {
+        this.incrementalUpdate = incrementalUpdate;
+    }
+
+    public boolean isNoCache() {
+        return noCache;
+    }
+
+    public void setNoCache(boolean noCache) {
+        this.noCache = noCache;
+    }
+
+    public boolean isOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(boolean ordered) {
+        this.ordered = ordered;
+    }
+
+    public String getBaseIri() {
+        return baseIri;
+    }
+
+    public void setBaseIri(String baseIri) {
+        this.baseIri = baseIri;
+    }
+
+    public String getBaseIriPrefix() {
+        return baseIriPrefix;
+    }
+
+    public void setBaseIriPrefix(String baseIriPrefix) {
+        this.baseIriPrefix = baseIriPrefix;
+    }
+
+    public boolean isEmptyStrings() {
+        return emptyStrings;
+    }
+
+    public void setEmptyStrings(boolean emptyStrings) {
+        this.emptyStrings = emptyStrings;
+    }
+
+    public boolean isConcurrentWrites() {
+        return concurrentWrites;
+    }
+
+    public void setConcurrentWrites(boolean concurrentWrites) {
+        this.concurrentWrites = concurrentWrites;
+    }
+
+    public boolean isConcurrentRecords() {
+        return concurrentRecords;
+    }
+
+    public void setConcurrentRecords(boolean concurrentRecords) {
+        this.concurrentRecords = concurrentRecords;
+    }
+
+    public boolean isDefaultRecordFactory() {
+        return defaultRecordFactory;
+    }
+
+    public void setDefaultRecordFactory(boolean defaultRecordFactory) {
+        this.defaultRecordFactory = defaultRecordFactory;
+    }
+
+    public int getNumThreadsRecords() {
+        return numThreadsRecords;
+    }
+
+    public void setNumThreadsRecords(int numThreadsRecords) {
+        this.numThreadsRecords = numThreadsRecords;
+    }
+
+    public int getNumThreadsWrites() {
+        return numThreadsWrites;
+    }
+
+    public void setNumThreadsWrites(int numThreadsWrites) {
+        this.numThreadsWrites = numThreadsWrites;
+    }
+
+    public String getConcurrency() {
+        return concurrency;
+    }
+
+    public void setConcurrency(String concurrency) {
+        this.concurrency = concurrency;
+    }
+
+    public boolean isSingleRecordsFactory() {
+        return singleRecordsFactory;
+    }
+
+    public void setSingleRecordsFactory(boolean singleRecordsFactory) {
+        this.singleRecordsFactory = singleRecordsFactory;
+    }
+
+    public String getStreamName() {
+        return streamName;
+    }
+
+    public void setStreamName(String streamName) {
+        this.streamName = streamName;
+    }
+
+    public String getPrefixLogicalSource() {
+        return prefixLogicalSource;
+    }
+
+    public void setPrefixLogicalSource(String prefixLogicalSource) {
+        this.prefixLogicalSource = prefixLogicalSource;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setConfig(RmlEndpoint endpoint){
+
+        if (endpoint.getBasePath()!=null) {
+            this.setBasePath(endpoint.getBasePath());
+        }
+        if (endpoint.getInputFiles()!=null) {
+            this.setInputFiles(Arrays.asList(endpoint.getInputFiles().split("\\|")));
+        }
+        if (endpoint.isUseMessage()){
+            this.setUseMessage(endpoint.isUseMessage());
+        }
+        if (endpoint.getMappings()!=null) {
+            this.setMappings(Arrays.asList(endpoint.getMappings().split("\\|")));
+        }
+        if (endpoint.getFunctionFiles()!=null) {
+            this.setFunctionFiles(Arrays.asList(endpoint.getFunctionFiles().split("\\|")));
+        }
+        if (endpoint.getBatchSize()!=0) {
+            this.setBatchSize(endpoint.getBatchSize());
+        }
+        if (endpoint.isIncrementalUpdate()) {
+            this.setIncrementalUpdate(endpoint.isIncrementalUpdate());
+        }
+        if (endpoint.isNoCache()) {
+            this.setNoCache(endpoint.isNoCache());
+        }
+        if (endpoint.isOrdered()) {
+            this.setOrdered(endpoint.isOrdered());
+        }
+        if (endpoint.getBaseIri()!=null) {
+            this.setBaseIri(endpoint.getBaseIri());
+        }
+        if (endpoint.getBaseIriPrefix()!=null) {
+            this.setBaseIriPrefix(endpoint.getBaseIriPrefix());
+        }
+        if (endpoint.isEmptyStrings()) {
+            this.setEmptyStrings(endpoint.isEmptyStrings());
+        }
+        if (endpoint.isConcurrentRecords()) {
+            this.setConcurrentRecords(endpoint.isConcurrentRecords());
+        }
+        if (endpoint.isConcurrentWrites()) {
+            this.setConcurrentWrites(endpoint.isConcurrentWrites());
+        }
+        if (endpoint.isDefaultRecordFactory()) {
+            this.setDefaultRecordFactory(endpoint.isDefaultRecordFactory());
+        }
+        if (endpoint.getNumThreadsRecords()!=0) {
+            this.setNumThreadsRecords(endpoint.getNumThreadsRecords());
+        }
+        if (endpoint.getNumThreadsWrites()!=0) {
+            this.setNumThreadsWrites(endpoint.getNumThreadsWrites());
+        }
+        if (endpoint.getConcurrency()!=null) {
+            this.setConcurrency(endpoint.getConcurrency());
+        }
+        if (endpoint.isSingleRecordsFactory()) {
+            this.setSingleRecordsFactory(endpoint.isSingleRecordsFactory());
+        }
+        if (endpoint.getStreamName()!=null) {
+            this.setStreamName(endpoint.getStreamName());
+        }
+        if (endpoint.getPrefixLogicalSource()!=null) {
+            this.setPrefixLogicalSource(endpoint.getPrefixLogicalSource());
+        }
+        if (endpoint.getBaseUrl()!=null) {
+            this.setBaseUrl(endpoint.getBaseUrl());
+        }
+    }
+}
