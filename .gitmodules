@@ -2,7 +2,3 @@
 	path = libs/rmlmapper-cefriel
 	url = https://github.com/cefriel/rmlmapper-cefriel.git
 	branch = master
-[submodule "libs/rdf-lowerer"]
-	path = libs/rdf-lowerer
-	url = https://github.com/cefriel/rdf-lowerer.git
-	branch = master
