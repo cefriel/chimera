@@ -16,7 +16,6 @@
 
 package com.cefriel.component;
 
-import com.apicatalog.jsonld.JsonLdOptions;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -75,9 +74,6 @@ public class GraphEndpoint extends DefaultEndpoint {
     private String filename;
     @UriParam(defaultValue = "null")
     private GraphBean baseConfig;
-    @UriParam(defaultValue = "null")
-    private JsonLdOptions jsonLdOptions;
-
     public GraphEndpoint() {
     }
 
@@ -325,16 +321,5 @@ public class GraphEndpoint extends DefaultEndpoint {
 
     public void setBaseConfig(GraphBean baseConfig) {
         this.baseConfig = baseConfig;
-    }
-
-    /**
-     * Parameter used to set the base configuration of this endpoint
-     */
-    public JsonLdOptions getJsonLdOptions() {
-        return jsonLdOptions;
-    }
-
-    public void setJsonLdOptions(JsonLdOptions jsonLdOptions) {
-        this.jsonLdOptions = jsonLdOptions;
     }
 }

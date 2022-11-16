@@ -16,8 +16,6 @@
 
 package com.cefriel.component;
 
-import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.operations.*;
 import com.cefriel.util.*;
@@ -99,12 +97,6 @@ public class GraphProducer extends DefaultProducer {
             case "shacl":
                 //TODO Add tests
                 GraphShacl.graphShacl(exchange);
-                break;
-            case "frame":
-                //TODO Add tests
-                //TODO Get the graph as input, serialise as JSON-LD, apply the frame
-                List<JsonDocument> doc = exchange.getMessage().getHeader("doc", List.class);
-                exchange.getMessage().setBody(JsonLd.frame(doc.get(0), doc.get(1)).get());
                 break;
             default:
                 throw new NoSuchEndpointException("This endpoint doesn't exist");
