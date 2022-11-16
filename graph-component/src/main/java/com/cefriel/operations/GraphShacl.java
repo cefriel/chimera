@@ -22,7 +22,7 @@ import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.UniLoader;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.exceptions.ValidationException;
+import org.eclipse.rdf4j.common.exception.ValidationException;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.repository.Repository;
