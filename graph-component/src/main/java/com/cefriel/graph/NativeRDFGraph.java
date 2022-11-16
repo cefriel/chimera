@@ -16,6 +16,8 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
@@ -26,11 +28,22 @@ public class NativeRDFGraph extends RDFGraph {
 
     private Sail data;
 
+    // todo should probably accept a path instead of a plain String
     public NativeRDFGraph(String pathDataDir) {
         File dataDir = new File(pathDataDir);
-        data = new NativeStore(dataDir);
-        repo = new SailRepository(data);
-        repo.init();
+        this.data = new NativeStore(dataDir);
+        this.repo = new SailRepository(data);
+        this.repo.init();
+    }
+    public NativeRDFGraph(String pathDataDir, IRI namedGraph, IRI baseIRI) {
+        this(pathDataDir);
+        this.namedGraph = namedGraph;
+        this.setNamedGraph(namedGraph);
+        this.baseIRI = baseIRI;
+    }
+
+    public NativeRDFGraph(String pathDataDir, String namedGraph, String baseIRI) {
+        this(pathDataDir, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
     }
 
     public Sail getData() {

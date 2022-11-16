@@ -18,13 +18,13 @@ package com.cefriel.component;
 
 import com.cefriel.graph.*;
 import com.cefriel.operations.GraphGet;
+import com.cefriel.operations.GraphObtain;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.support.DefaultConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class GraphConsumer extends DefaultConsumer {
     private final GraphEndpoint endpoint;
@@ -34,35 +34,41 @@ public class GraphConsumer extends DefaultConsumer {
         super(endpoint, processor);
         this.endpoint = endpoint;
     }
+    // todo only allow get
 
     @Override
     protected void doStart() throws Exception {
 
         super.doStart();
         final Exchange exchange = createExchange(false);
-        GraphBean configuration;
+        GraphBean operationConfig;
         if (endpoint.getBaseConfig() != null) {
-            configuration = new GraphBean(endpoint.getBaseConfig());
+            operationConfig = new GraphBean(endpoint.getBaseConfig());
             exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
             LOG.info("getting a base configuration");
         } else {
-            configuration = new GraphBean();
+            operationConfig = new GraphBean();
         }
-        configuration.setConfig(endpoint);
-        exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, configuration);
-        RDFGraph graph = GraphGet.graphCreate(exchange);
-        exchange.getMessage().setBody(graph);
+
+        operationConfig.setEndpointParameters(endpoint);
+        // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
+        // RDFGraph graph = GraphGet.graphCreate(exchange);
+        var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig);
+        RDFGraph graph = rdfGraphAndExchange.graph();
+        Exchange ex = rdfGraphAndExchange.exchange();
+        ex.getMessage().setBody(graph);
+        // exchange.getMessage().setBody(graph);
 
         try {
             // send message to next processor in the route
-            getProcessor().process(exchange);
+            getProcessor().process(ex);
         } catch (Exception e) {
             exchange.setException(e);
         } finally {
             if (exchange.getException() != null) {
-                getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
+                getExceptionHandler().handleException("Error processing exchange", ex, ex.getException());
             }
-            releaseExchange(exchange, false);
+            releaseExchange(ex, false);
         }
         doStop();
     }

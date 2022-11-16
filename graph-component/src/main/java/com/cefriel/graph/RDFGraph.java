@@ -23,11 +23,9 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 
 public abstract class RDFGraph {
-
     Repository repo;
     IRI namedGraph;
     IRI baseIRI;
-
     public Repository getRepository() {
         return repo;
     }
@@ -43,6 +41,8 @@ public abstract class RDFGraph {
     public void setBaseIRI(IRI baseIRI) {
         this.baseIRI = baseIRI;
     }
+
+    // todo handle this logic at construction time
 
     public void setNamedGraph(String namedGraph) {
         if (namedGraph != null && !namedGraph.equals("")) {
@@ -61,5 +61,31 @@ public abstract class RDFGraph {
             this.repo = cRep;
         }
     }
+// todo decide on weather to use the graph context naming convention of namedGraph naming convention
+
+    private Repository addContextToRepository(Repository repo, IRI namedGraph) {
+        if (repo != null) {
+            ContextAwareRepository cRep = new ContextAwareRepository(repo);
+            cRep.setReadContexts(namedGraph);
+            cRep.setInsertContext(namedGraph);
+            return cRep;
+        }
+        else {
+            return null;
+        }
+        // what happens if the repo is null
+    }
+
+    private Repository addContextToRepository(Repository repo, String namedGraph) {
+        if (namedGraph != null && !namedGraph.equals("")) {
+            ValueFactory vf = SimpleValueFactory.getInstance();
+            return addContextToRepository(repo, vf.createIRI(namedGraph));
+        }
+        else{
+            return null;
+        }
+    }
+
+
 
 }

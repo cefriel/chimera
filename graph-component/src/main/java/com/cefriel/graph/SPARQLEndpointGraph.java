@@ -16,6 +16,8 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 
@@ -25,6 +27,16 @@ public class SPARQLEndpointGraph extends RDFGraph {
         repo = new SPARQLRepository(endpoint);
         repo.init();
         // TODO Federation with FedX, requires rdf4j 3.1.0
+    }
+
+    public SPARQLEndpointGraph(String endpoint, IRI namedGraph, IRI baseIRI) {
+        this(endpoint);
+        this.namedGraph = namedGraph;
+        this.setNamedGraph(namedGraph);
+        this.baseIRI = baseIRI;
+    }
+    public SPARQLEndpointGraph(String endpoint, String namedGraph, String baseIRI) {
+        this(endpoint, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
     }
 
 }

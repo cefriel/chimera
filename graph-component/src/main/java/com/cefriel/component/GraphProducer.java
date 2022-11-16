@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GraphProducer extends DefaultProducer {
@@ -45,26 +44,27 @@ public class GraphProducer extends DefaultProducer {
     public void process(Exchange exchange) throws Exception {
         InputStream inputStream;
         Model model;
-        GraphBean configuration;
-        if (endpoint.getBaseConfig() != null){
-            configuration = new GraphBean(endpoint.getBaseConfig());
-            LOG.info("There is a base configuration");
-        } else if( exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION)!=null ){
-            configuration = new GraphBean(exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION, GraphBean.class));
+        GraphBean operationConfig;
+
+        if( exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION)!=null ){
+            operationConfig = new GraphBean(exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION, GraphBean.class));
             LOG.info("Configuration from exchange");
         } else {
-            configuration = new GraphBean();
+            operationConfig = new GraphBean();
             LOG.info("No GraphBean detected");
         }
-        configuration.setConfig(endpoint);
-        exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, configuration);
+        operationConfig.setEndpointParameters(endpoint);
+
+        //todo check where ChimeraConstants configuration is used
+        // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
+
         switch (endpoint.getName()){
             case "config":
                 exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
                 break;
             case "get":
                 inputStream = exchange.getMessage().getBody(InputStream.class);
-                Utils.setConfigurationRDFHeader(exchange, configuration.getRdfFormat());
+                Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 model = StreamParser.parse(inputStream, exchange);
                 exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
                 RDFGraph graph = GraphGet.graphCreate(exchange);
@@ -72,8 +72,8 @@ public class GraphProducer extends DefaultProducer {
                 exchange.getMessage().setBody(graph);
                 break;
             case "add":
-                Utils.setConfigurationRDFHeader(exchange, configuration.getRdfFormat());
-                for (String path: configuration.getResources()) {
+                Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
+                for (String path: operationConfig.getResources()) {
                     inputStream = UniLoader.open(path, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class));
                     LOG.info("InputStream loaded from path " + path);
                     Rio.getParserFormatForFileName(path)

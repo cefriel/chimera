@@ -16,6 +16,8 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
@@ -25,11 +27,19 @@ public class MemoryRDFGraph extends RDFGraph {
     private Sail data;
 
     public MemoryRDFGraph() {
-        data = new MemoryStore();
-        repo = new SailRepository(data);
-        repo.init();
+        this.data = new MemoryStore();
+        this.repo = new SailRepository(data);
+        this.repo.init();
     }
-
+    public MemoryRDFGraph(IRI namedGraph, IRI baseIRI) {
+        this();
+        this.namedGraph = namedGraph;
+        this.setNamedGraph(namedGraph);
+        this.baseIRI = baseIRI;
+    }
+    public MemoryRDFGraph(String namedGraph, String baseIRI) {
+        this(Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
     public Sail getData() {
         return data;
     }

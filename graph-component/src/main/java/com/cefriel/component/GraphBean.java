@@ -345,7 +345,7 @@ public class GraphBean {
         }
     }
 
-    public void setConfig(GraphEndpoint endpoint){
+    public void setEndpointParameters(GraphEndpoint endpoint){
         if(endpoint.getNamedGraph()!=null){
             this.setNamedGraph(endpoint.getNamedGraph());
         }

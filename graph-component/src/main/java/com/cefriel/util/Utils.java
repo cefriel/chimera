@@ -51,6 +51,9 @@ public class Utils {
         }
         return repository;
     }
+    public static IRI stringToIRI(String sIRI) {
+        return SimpleValueFactory.getInstance().createIRI(sIRI);
+    }
 
     public static String trailingSlash(String url) {
         return url.endsWith("/") ? url : url + "/";
@@ -73,7 +76,8 @@ public class Utils {
         try (RepositoryConnection con = repo.getConnection()) {
             for (String url: configuration.getResources()) {
                 if (configuration.getNamedGraph() != null)
-                    con.add(StreamParser.parse(UniLoader.open(url, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange) , vf.createIRI(configuration.getNamedGraph()));
+                    con.add(StreamParser.parse(UniLoader.open(url,
+                            exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange) , vf.createIRI(configuration.getNamedGraph()));
                 else
                     con.add(StreamParser.parse(UniLoader.open(url, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange));
             }

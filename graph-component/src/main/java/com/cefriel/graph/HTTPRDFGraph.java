@@ -16,6 +16,8 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 public class HTTPRDFGraph extends RDFGraph {
@@ -29,5 +31,13 @@ public class HTTPRDFGraph extends RDFGraph {
         repo = new HTTPRepository(rrAddress, repositoryId);
         repo.init();
     }
-
+    public HTTPRDFGraph(String rrAddress, String repositoryId, IRI namedGraph, IRI baseIRI) {
+        this(rrAddress, repositoryId);
+        this.namedGraph = namedGraph;
+        this.setNamedGraph(namedGraph);
+        this.baseIRI = baseIRI;
+    }
+    public HTTPRDFGraph(String rrAddress, String repositoryId, String namedGraph, String baseIRI) {
+        this(rrAddress, repositoryId, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
 }

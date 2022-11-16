@@ -21,6 +21,7 @@ import com.cefriel.graph.*;
 import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GraphGet {
 

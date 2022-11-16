@@ -33,6 +33,8 @@ import java.io.InputStream;
 public final class StreamParser implements TypeConverters{
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamParser.class);
+
+    // todo refactor param list, should not accept the whole exchange but just the data from the exchange that it needs
     @Converter
     public static Model parse(InputStream inputStream, Exchange exchange) throws IOException {
 

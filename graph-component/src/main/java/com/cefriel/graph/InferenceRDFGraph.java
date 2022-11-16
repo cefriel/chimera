@@ -16,6 +16,8 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
@@ -25,10 +27,6 @@ import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import java.io.File;
 
 public class InferenceRDFGraph extends RDFGraph {
-
-    public InferenceRDFGraph(Repository schema, boolean allRules) {
-        this(schema, null, allRules);
-    }
 
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules) {
         SchemaCachingRDFSInferencer inferencer;
@@ -40,5 +38,14 @@ public class InferenceRDFGraph extends RDFGraph {
         this.repo = new SailRepository(inferencer);
         this.repo.init();
     }
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI namedGraph, IRI baseIRI) {
+        this(schema, pathDataDir, allRules);
+        this.namedGraph = namedGraph;
+        this.setNamedGraph(namedGraph);
+        this.baseIRI = baseIRI;
+    }
 
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String namedGraph, String baseIRI) {
+        this(schema, pathDataDir, allRules, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
 }
