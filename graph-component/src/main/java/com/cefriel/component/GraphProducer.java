@@ -56,13 +56,13 @@ public class GraphProducer extends DefaultProducer {
         operationConfig.setEndpointParameters(endpoint);
 
         // todo check where ChimeraConstants configuration is used
-        // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
+        // this is done to propagate the configuration from one producer operation to the other
+        exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
 
         switch (endpoint.getName()){
-            case "config":
-                exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
-                break;
-            case "get":
+            case "config" -> exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
+
+            case "get" -> {
                 inputStream = exchange.getMessage().getBody(InputStream.class);
                 Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 model = StreamParser.parse(inputStream, exchange);
@@ -72,10 +72,12 @@ public class GraphProducer extends DefaultProducer {
                 RDFGraph graph = rdfGraphAndExchange.graph();
                 Exchange ex = rdfGraphAndExchange.exchange();
                 ex.getMessage().setBody(graph);
-                GraphAdd.graphAdd(graph, model);
+                // GraphAdd.graphAdd(graph, model);
+                GraphAdd.graphAdd(graph, ex, operationConfig);
                 exchange.getMessage().setBody(graph);
-                break;
-            case "add":
+                }
+            case "add" -> {
+                /*
                 Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 for (String path: operationConfig.getResources()) {
                     inputStream = UniLoader.open(path, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class));
@@ -85,25 +87,20 @@ public class GraphProducer extends DefaultProducer {
                     model = StreamParser.parse(inputStream, exchange);
                     GraphAdd.graphAdd(exchange.getMessage().getBody(RDFGraph.class), model);
                 }
-                break;
-            case "construct":
-                GraphConstruct.graphConstruct(exchange);
-                break;
-            case "detach":
-                GraphDetach.graphDetach(exchange);
-                break;
-            case "dump":
-                GraphDump.graphDump(exchange);
-                break;
-            case "inference":
-                GraphInference.graphInference(exchange);
-                break;
-            case "shacl":
-                //TODO Add tests
+                 */
+                RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
+                // todo option to copy original exchange and then modify it and the forward it, see if this makes sense
+                var rdfGraphAndExchange = GraphAdd.graphAdd(graph, exchange, operationConfig);
+            }
+
+            case "construct" -> GraphConstruct.graphConstruct(exchange, operationConfig);
+            case "detach" -> GraphDetach.graphDetach(exchange);
+            case "dump" -> GraphDump.graphDump(exchange);
+            case "inference" -> GraphInference.graphInference(exchange);
+            case "shacl" -> { //TODO Add tests
                 GraphShacl.graphShacl(exchange);
-                break;
-            default:
-                throw new NoSuchEndpointException("This endpoint doesn't exist");
+            }
+            default -> throw new NoSuchEndpointException("This endpoint does not exist");
         }
     }
 }
