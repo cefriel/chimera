@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class GraphObtain {
+    // todo ontologyFormat is a good candidate for a sum type, possible values may be Turtle | RDF | (possible types in chimera constants) ...
+    // todo In powerpoint presentation the ontologyUrl (same as resources) param is described but never used in the code
 
     record GraphObtainHeaderParams (String namedGraph, String baseIRI, String rdfFormat, String jwtToken, String graphId) {}
     record GraphObtainParams (String namedGraph, String baseIri, String rdfFormat, Boolean defaultGraph,
@@ -82,8 +84,9 @@ public class GraphObtain {
                 graphObtainParams.allRules(),
                 headerParams.jwtToken(),
                 headerParams.graphId());
-
     }
+
+    // uniloader get resources outside and pass in
 
     private static Boolean isNativeRDFGraph (GraphObtainParams params) {
         return params.pathDataDir != null;
@@ -107,7 +110,7 @@ public class GraphObtain {
     private static void populateRepository(Repository repo, Exchange exchange, String namedGraph, List<String> ontologyPaths, String jwtToken) throws IOException {
         ValueFactory vf = SimpleValueFactory.getInstance();
         try (RepositoryConnection con = repo.getConnection()) {
-            for (String url: ontologyPaths) {
+            for (String url: ontologyPaths) { // todo check why namespace is not handled here
                 if (namedGraph != null)
                     con.add(StreamParser.parse(UniLoader.open(url, jwtToken), exchange), vf.createIRI(namedGraph));
                 else
@@ -136,12 +139,14 @@ public class GraphObtain {
         }
         else {
             returnBaseIRI = ChimeraConstants.DEFAULT_BASE_IRI;
-            returnNamedGraph = returnBaseIRI + graphID;
+            returnNamedGraph = returnBaseIRI + graphID; // TODO graphID should be exchange id
         }
 
         return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
     }
     public record RDFGraphAndExchange (RDFGraph graph, Exchange exchange) {}
+
+    // called by the consumer
     public static RDFGraphAndExchange obtainGraph(Exchange exchange, GraphBean operationConfiguration) throws IOException {
         GraphObtainParams params = mergeHeaderParams(exchangeToGraphObtainHeaderParams(exchange), configToGraphObtainParams(operationConfiguration));
         return obtainGraph(params, exchange);
@@ -156,17 +161,17 @@ public class GraphObtain {
         }
         else {
             namedGraph = null;
-            baseIRI = null;
+            baseIRI = params.baseIri(); // todo or default from chimera constants
         }
 
         RDFGraph graph;
-        Exchange returnExchange = exchange.copy();
+        
 
         // set header params for the exchange which will be forwarded down the route
         if (params.rdfFormat() != null)
-            returnExchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, params.rdfFormat);
+            exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, params.rdfFormat());
         if (params.graphID() != null)
-            returnExchange.getMessage().setHeader(ChimeraConstants.GRAPH_ID, params.graphID());
+            exchange.getMessage().setHeader(ChimeraConstants.GRAPH_ID, params.graphID());
 
         if (isInferenceRDFGraph(params)) {
             Repository schema = createSchemaRepository(exchange, params.namedGraph(), params.ontologyPaths, params.jwtToken());
@@ -176,32 +181,36 @@ public class GraphObtain {
                 graph = new InferenceRDFGraph(schema, params.pathDataDir(), params.allRules());
         }
 
-        if (isHTTPRDFGraph(params)) {
+        // todo base iri could be available
+
+        else if (isHTTPRDFGraph(params)) {
             if (namedGraph != null && baseIRI != null)
                 graph = new HTTPRDFGraph(params.serverURL(), params.repositoryId(), namedGraph, baseIRI);
             else
                 graph = new HTTPRDFGraph(params.serverURL(), params.repositoryId());
         }
 
-        if (isSPARQLEndpointGraph(params)) {
+        else if (isSPARQLEndpointGraph(params)) {
             if (namedGraph != null && baseIRI != null)
                 graph = new SPARQLEndpointGraph(params.sparqlEndpoint(), namedGraph, baseIRI);
             else
                 graph = new SPARQLEndpointGraph(params.sparqlEndpoint());
         }
 
-        if (isNativeRDFGraph(params)) {
+        else if (isNativeRDFGraph(params)) {
             if (namedGraph != null && baseIRI != null)
                 graph = new NativeRDFGraph(params.pathDataDir(), namedGraph, baseIRI);
             else
                 graph = new NativeRDFGraph(params.pathDataDir());
         }
 
-        if (namedGraph != null && baseIRI != null)
-            graph = new MemoryRDFGraph(namedGraph, baseIRI);
-        else
-            graph = new MemoryRDFGraph();
+        else {
+            if (namedGraph != null && baseIRI != null)
+                graph = new MemoryRDFGraph(namedGraph, baseIRI);
+            else
+                graph = new MemoryRDFGraph();
+        }
 
-        return new RDFGraphAndExchange(graph, returnExchange);
+        return new RDFGraphAndExchange(graph, exchange);
     }
 }
