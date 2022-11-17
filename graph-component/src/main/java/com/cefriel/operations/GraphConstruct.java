@@ -39,94 +39,88 @@ public class GraphConstruct {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConstruct.class);
     private static final Map<String, List<String>> cache = new HashMap<>();
+    // todo if the same query is given both with the query parameter and in the query list extracted from files deduplicate
 
-    public static void graphConstruct(Exchange exchange) throws IOException {
+   // todo check header params
+   //  private record GraphConstructHeaderParams()
+    private record GraphConstructParams(RDFGraph graph, String query, List<String> queryFilePaths, boolean newGraph) {}
+     private static  GraphConstructParams configToGraphConstructParams(GraphBean operationConfig, Exchange e) {
+         return new GraphConstructParams(
+                 e.getMessage().getBody(RDFGraph.class),
+                 operationConfig.getQuery(),
+                 operationConfig.getResources(), // todo maybe add new queryFilePaths variable in config
+                 operationConfig.isNewGraph()); // todo isNewGraph, maybe a better name would be inPlace (return new graph or do construct in place)
+     }
+
+    private boolean validParams(GraphConstructParams params) {
+        if (params.graph() == null)
+            throw new RuntimeException("graph in Exchange body cannot be null");
+
+        if (params.query() == null || params.queryFilePaths() == null || params.queryFilePaths().size() == 0)
+            // todo throw exception and print warning
+            throw new IllegalArgumentException("No query and no queryFilePaths specified");
+
+        return true;
+    }
+    private static List<String> mergeQueries (String query, List<String> queries) {
+        if (queries != null && query != null){
+            queries.add(query);
+            return queries.stream().distinct().toList();
+        } else if (query != null){
+            return List.of(query);
+        } else return List.of();
+    }
+    public static List<String> readSparqlQueries(List<String> queryFilePaths, String jwtToken) throws IOException {
 
         List<String> sparqlQueries = new ArrayList<>();
-        /*String baseUrl = "";
-        String queriesUrl;*/
-        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
-        GraphBean configuration = exchange.getMessage().getHeader(ChimeraConstants.CONFIGURATION, GraphBean.class);
 
-        if (graph == null)
-            throw new RuntimeException("RDF Graph not attached");
-        Repository repo = graph.getRepository();
-        RDFGraph newGraph;
-
-        String token = exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class);
-        Utils.setConfigurationRDFHeader(exchange, configuration.getRdfFormat());
-
-        //queriesId is in endpoint & removed msgQueriesId
-        //TODO: add constructquery in converterConfiguration
-        /*if (configuration.getQueriesId()!= null) {
-            synchronized (cache) {
-                List<String> cachedQueries = cache.get(configuration.getQueriesId());
-                if (cachedQueries != null) {
-                    LOG.info("Cached queries used for: " + configuration.getQueriesId());
-                    sparqlQueries.addAll(cachedQueries);
-                }
-
-                else {
-                    if(configuration.getSparqlFile()!=null){
-                        queriesUrl = configuration.getSparqlFile();
-                    }
-
-                    else {
-                        baseUrl = Utils.trailingSlash(baseUrl);
-                        queriesUrl = baseUrl + configuration.getQueriesId();
-                    }
-                    //Model model = SemanticLoader.secure_load_data(queriesUrl, ChimeraConstants.RDF_FORMAT_TURTLE, token);
-                    InputStream inputStream = UniLoader.open(queriesUrl, token);
-                }
+        for (String query : queryFilePaths){
+            InputStream inputStream = UniLoader.open(query, jwtToken);
+            //Creating a Scanner object
+            Scanner scanner = new Scanner(inputStream);
+            //Reading line by line from scanner to StringBuffer
+            StringBuilder stringBuilder = new StringBuilder();
+            while(scanner.hasNext()){
+                stringBuilder.append(scanner.nextLine());
             }
-        }*/
-
-        if(configuration.getQuery()!=null){
-            sparqlQueries.add(configuration.getQuery());
-            LOG.info("Query passed");
+            sparqlQueries.add(stringBuilder.toString());
         }
+        LOG.info("All queries extracted");
+        return sparqlQueries;
+    }
+    // can either return a reference to the same input graph or a reference to a new graph
+    public static RDFGraph executeQuery(RDFGraph graph, String query, boolean inPlace) {
+        Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
 
-        if(configuration.getResources()!=null){
-            for (String query : configuration.getResources()){
-                InputStream inputStream = UniLoader.open(query, token);
-                //Creating a Scanner object
-                Scanner scanner = new Scanner(inputStream);
-                //Reading line by line from scanner to StringBuffer
-                StringBuilder stringBuilder = new StringBuilder();
-                while(scanner.hasNext()){
-                    stringBuilder.append(scanner.nextLine());
-                }
-                sparqlQueries.add(stringBuilder.toString());
+        if (inPlace) {
+            MemoryRDFGraph newGraph = new MemoryRDFGraph();
+            try (RepositoryConnection con = newGraph.getRepository().getConnection()) {
+                LOG.info("Added " + m.size() + " triples");
+                con.add(m);
+                return newGraph;
             }
-            LOG.info("All queries extracted");
         }
-
-
-        if(configuration.isNewGraph()){
-            //TODO Use graph.create currently problem with config
-            newGraph = new MemoryRDFGraph();
-            Repository repo2 = newGraph.getRepository();
-            for(String query : sparqlQueries) {
-                LOG.info("Executing query on the graph: " + query);
-                Model m = Repositories.graphQuery(repo, query, QueryResults::asModel);
-                try (RepositoryConnection con = repo2.getConnection()) {
-                    LOG.info("Added " + m.size() + " triples");
-                    con.add(m);
-                }
-            }
-            exchange.getMessage().setBody(newGraph, RDFGraph.class);
-        }
-
         else {
-            for (String query : sparqlQueries) {
-                LOG.info("Executing query on the graph: " + query);
-                Model m = Repositories.graphQuery(repo, query, QueryResults::asModel);
-                try (RepositoryConnection con = repo.getConnection()) {
-                    LOG.info("Added " + m.size() + " triples");
-                    con.add(m);
-                }
+            try (RepositoryConnection con = graph.getRepository().getConnection()) {
+                LOG.info("Added " + m.size() + " triples");
+                con.add(m);
+                return graph;
             }
-            exchange.getMessage().setBody(graph);
         }
+    }
+    private static void graphConstruct(GraphConstructParams params, Exchange exchange) throws IOException {
+        RDFGraph graph = params.graph();
+        String token = exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class);
+        List<String> sparqlQueries = mergeQueries(params.query(), readSparqlQueries(params.queryFilePaths(), token));
+
+        for (String query : sparqlQueries) {
+            graph = executeQuery(graph, query, params.newGraph());
+        }
+        // todo check maybe if some headers have to be removed or not
+        exchange.getMessage().setBody(graph, RDFGraph.class);
+    }
+    public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws IOException {
+        GraphConstructParams params = configToGraphConstructParams(operationConfig, exchange);
+        graphConstruct(params, exchange);
     }
 }
