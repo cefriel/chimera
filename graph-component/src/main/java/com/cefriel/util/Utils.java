@@ -83,7 +83,7 @@ public class Utils {
             }
         }
     }
-
+    // todo check if everywhere this logic is superseded by header and param merge handling and validating (probably)
     public static void setConfigurationRDFHeader(Exchange exchange, String format){
         if(exchange.getMessage().getHeader(ChimeraConstants.RDF_FORMAT) == null){
             exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, format);

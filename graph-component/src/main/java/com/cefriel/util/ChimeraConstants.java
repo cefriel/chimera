@@ -16,6 +16,9 @@
 
 package com.cefriel.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ChimeraConstants {
 
     //TODO Remove unused constants
@@ -46,6 +49,7 @@ public class ChimeraConstants {
     public static final String ONTOLOGY_RDF_FORMAT = "ontologyRdfFormat";
     public static final String RDF_FORMAT = "rdfFormat";
     public static final String RDF_FORMAT_BINARY = "binary";
+    // TODO IS JSONLD FORMAT STILL SUPPORTED ?
     public static final String RDF_FORMAT_JSONLD = "jsonld";
     public static final String RDF_FORMAT_N3 = "n3";
     public static final String RDF_FORMAT_NQUADS = "nquads";
@@ -53,6 +57,11 @@ public class ChimeraConstants {
     public static final String RDF_FORMAT_RDFXML = "rdfxml";
     public static final String RDF_FORMAT_TURTLE = "turtle";
     public static final String RDF_FORMAT_RDFA = "rdfa";
+
+    public static final List<String> SUPPORTED_RDF_FORMATS = Arrays.asList(
+            RDF_FORMAT_BINARY, RDF_FORMAT_JSONLD, RDF_FORMAT_N3,
+            RDF_FORMAT_NQUADS, RDF_FORMAT_NTRIPLES, RDF_FORMAT_RDFXML,
+            RDF_FORMAT_TURTLE, RDF_FORMAT_RDFA);
 
     public static final String CONVERTER_CONFIGURATION = "converter_configuration";
     public static final String CONFIGURATION = "configuration";
