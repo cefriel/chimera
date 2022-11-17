@@ -35,6 +35,18 @@ public class GraphConsumer extends DefaultConsumer {
         this.endpoint = endpoint;
     }
     // todo only allow get
+    sealed interface ConsumerAllowedOperations
+            permits GetOperation {}
+    private record GetOperation() implements ConsumerAllowedOperations {}
+
+    // todo check if params are sufficient for the get operation
+    public static ConsumerAllowedOperations whichOperation (String operationName) {
+        return switch(operationName) {
+            case "get" -> new GetOperation();
+            // todo should throw something like UnsupportedOperationException
+            default -> null;
+        };
+    }
 
     @Override
     protected void doStart() throws Exception {
@@ -49,28 +61,31 @@ public class GraphConsumer extends DefaultConsumer {
         } else {
             operationConfig = new GraphBean();
         }
-
         operationConfig.setEndpointParameters(endpoint);
-        // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
-        // RDFGraph graph = GraphGet.graphCreate(exchange);
-        var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig);
-        RDFGraph graph = rdfGraphAndExchange.graph();
-        Exchange ex = rdfGraphAndExchange.exchange();
-        ex.getMessage().setBody(graph);
-        // exchange.getMessage().setBody(graph);
 
-        try {
-            // send message to next processor in the route
-            getProcessor().process(ex);
-        } catch (Exception e) {
-            exchange.setException(e);
-        } finally {
-            if (exchange.getException() != null) {
-                getExceptionHandler().handleException("Error processing exchange", ex, ex.getException());
+        if (whichOperation(endpoint.getName()) instanceof GetOperation) {
+            Exchange returnExchange = exchange.copy();
+            // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
+            // RDFGraph graph = GraphGet.graphCreate(exchange);
+            var rdfGraphAndExchange = GraphObtain.obtainGraph(returnExchange, operationConfig);
+            RDFGraph graph = rdfGraphAndExchange.graph();
+            returnExchange = rdfGraphAndExchange.exchange();
+            returnExchange.getMessage().setBody(graph);
+            // exchange.getMessage().setBody(graph);
+
+            try {
+                // send message to next processor in the route
+                getProcessor().process(returnExchange);
+            } catch (Exception e) {
+                exchange.setException(e);
+            } finally {
+                if (exchange.getException() != null) {
+                    getExceptionHandler().handleException("Error processing exchange", returnExchange, returnExchange.getException());
+                }
+                releaseExchange(returnExchange, false);
             }
-            releaseExchange(ex, false);
+            doStop();
         }
-        doStop();
     }
 
     @Override

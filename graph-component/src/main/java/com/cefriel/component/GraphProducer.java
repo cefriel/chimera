@@ -55,7 +55,7 @@ public class GraphProducer extends DefaultProducer {
         }
         operationConfig.setEndpointParameters(endpoint);
 
-        //todo check where ChimeraConstants configuration is used
+        // todo check where ChimeraConstants configuration is used
         // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
 
         switch (endpoint.getName()){
@@ -67,7 +67,11 @@ public class GraphProducer extends DefaultProducer {
                 Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 model = StreamParser.parse(inputStream, exchange);
                 exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
-                RDFGraph graph = GraphGet.graphCreate(exchange);
+                // RDFGraph graph = GraphGet.graphCreate(exchange);
+                var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig);
+                RDFGraph graph = rdfGraphAndExchange.graph();
+                Exchange ex = rdfGraphAndExchange.exchange();
+                ex.getMessage().setBody(graph);
                 GraphAdd.graphAdd(graph, model);
                 exchange.getMessage().setBody(graph);
                 break;
