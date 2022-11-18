@@ -106,8 +106,11 @@ public class GraphGetTest extends CamelTestSupport {
                 from("graph://get?sparqlEndpoint=MY_SPARQL_ENDPOINT")
                         .to("mock:sparql");
                 from("direct:start")
-                        .to("graph://get?rdfFormat=turtle")
+                        .to("graph://get?rdfFormat=turtle&resources=file://./src/test/resources/file/base/test.ttl")
                         .to("mock:toMemory");
+                // .to("graph://get?rdfFormat=turtle")
+                // .to("graph://get?rdfFormat=turtle&resources=file://./src/test/resources/file/base/test.ttl")
+
             }
         };
     }

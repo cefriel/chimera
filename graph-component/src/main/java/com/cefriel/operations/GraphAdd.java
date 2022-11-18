@@ -41,65 +41,76 @@ public class GraphAdd {
     // needs jwt token, rdf format, resources (ontologyUrls),
     // contentType (MimeType) set to outoging exchange
     private record GraphAddHeaderParams(String rdfFormat) {}
-    private record GraphAddParams(String rdfFormat,
-                                  List<String> ontologyPaths,
-                                  RDFGraph graph) {}
-
-
-    private boolean validParams(GraphAddParams params) {
+    private record GraphAddParams(String rdfFormat, List<String> ontologyPaths) {}
+    private record GraphAddOperationParams(RDFGraph graph, String jwtToken, GraphAddParams operationParams) {}
+    private static boolean validParams(GraphAddOperationParams params) {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
 
-        if (params.rdfFormat() == null)
+        if (params.operationParams().rdfFormat() == null)
             // todo throw exception and print warning
             throw new IllegalArgumentException("rdfFormat parameter can not be null");
 
-        if (!ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(params.rdfFormat()))
+        if (!ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(params.operationParams().rdfFormat()))
             throw new IllegalArgumentException("Invalid specified rdfFormat, supported formats are: " +
                     String.join(",", ChimeraConstants.SUPPORTED_RDF_FORMATS));
 
-        if (params.ontologyPaths() == null || params.ontologyPaths().size() == 0)
+        if (params.operationParams().ontologyPaths() == null || params.operationParams().ontologyPaths().size() == 0)
             // todo throw exception and print warning
             throw new IllegalArgumentException("No ontology url specified");
 
         return true;
     }
+    private static GraphAddOperationParams getGraphAddOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
+        return new GraphAddOperationParams(
+                graph,
+                exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
+                mergeHeaderParams(exchangeToGraphAddHeaderParams(exchange), configToGraphAddParams(operationConfig)));
+    }
 
     private static GraphAddHeaderParams exchangeToGraphAddHeaderParams(Exchange e) {
         return new GraphAddHeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
     }
-    private static GraphAddParams configToGraphAddParams(GraphBean config, Exchange e) {
-        return new GraphAddParams(config.getRdfFormat(), config.getResources(),
-                e.getMessage().getBody(RDFGraph.class));
+    private static GraphAddParams configToGraphAddParams(GraphBean config) {
+        return new GraphAddParams(config.getRdfFormat(), config.getResources());
     }
 
     private static GraphAddParams mergeHeaderParams(GraphAddHeaderParams headerParams, GraphAddParams params) {
         return new GraphAddParams(
                 headerParams.rdfFormat() != null ? headerParams.rdfFormat() : params.rdfFormat(),
-                params.ontologyPaths(),
-                params.graph());
+                params.ontologyPaths());
     }
     record GraphAndExchange (RDFGraph graph, Exchange exchange) {}
-    public static GraphAndExchange graphAdd(RDFGraph graph, Exchange exchange, GraphBean config) throws IOException {
 
-        // todo handle this in validParams, graph as param
-        if (graph == null)
-            throw new RuntimeException("RDF Graph not attached");
-
-        GraphAddParams params = mergeHeaderParams(exchangeToGraphAddHeaderParams(exchange), configToGraphAddParams(config, exchange));
-        for (String ontologyUrl : params.ontologyPaths()) {
-            Model model = parseOntology(exchange, ontologyUrl, params.rdfFormat(), exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class));
-            Repository repo = graph.getRepository();
-            try (RepositoryConnection con = repo.getConnection()) {
-                con.add(model);
-                for (Namespace ns : model.getNamespaces()) {
-                    con.setNamespace(ns.getPrefix(), ns.getName());
-                }
-            }
-            LOG.info(model.size() + " triples added to the graph");
-        }
-        return new GraphAndExchange(graph, exchange);
+    public static GraphAndExchange graphAdd(Exchange exchange, GraphBean operationConfig) throws IOException {
+        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
+        return graphAdd(graph, exchange, operationConfig);
     }
+
+    public static GraphAndExchange graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws IOException {
+        var p = getGraphAddOperationParams(graph, exchange, operationConfig);
+        return graphAdd(p, exchange);
+    }
+    private static GraphAndExchange graphAdd(GraphAddOperationParams params, Exchange exchange) throws IOException {
+        if (validParams(params)){
+            for (String ontologyUrl : params.operationParams().ontologyPaths()) {
+                Model model = parseOntology(exchange, ontologyUrl, params.operationParams().rdfFormat(), params.jwtToken());
+                Repository repo = params.graph().getRepository();
+                try (RepositoryConnection con = repo.getConnection()) {
+                    con.add(model);
+                    for (Namespace ns : model.getNamespaces()) {
+                        con.setNamespace(ns.getPrefix(), ns.getName());
+                    }
+                }
+                LOG.info(model.size() + " triples added to the graph");
+            }
+            return new GraphAndExchange(params.graph(), exchange);
+        }
+        throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
+    }
+
+
+
     // todo this method might be refactored to utils
     public static Model parseOntology(Exchange exchange, String ontologyUrl, String rdfFormat, String jwtToken) throws IOException {
         InputStream inputStream = UniLoader.open(ontologyUrl, jwtToken);

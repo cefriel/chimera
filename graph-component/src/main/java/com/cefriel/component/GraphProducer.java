@@ -88,9 +88,9 @@ public class GraphProducer extends DefaultProducer {
                     GraphAdd.graphAdd(exchange.getMessage().getBody(RDFGraph.class), model);
                 }
                  */
-                RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
+
                 // todo option to copy original exchange and then modify it and the forward it, see if this makes sense
-                var rdfGraphAndExchange = GraphAdd.graphAdd(graph, exchange, operationConfig);
+                var rdfGraphAndExchange = GraphAdd.graphAdd(exchange, operationConfig);
             }
 
             case "construct" -> GraphConstruct.graphConstruct(exchange, operationConfig);
