@@ -8,12 +8,14 @@ import com.cefriel.util.UniLoader;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class GraphObtain {
@@ -145,12 +147,25 @@ public class GraphObtain {
         return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
     }
     public record RDFGraphAndExchange (RDFGraph graph, Exchange exchange) {}
+    // called by the producer
+    public static RDFGraphAndExchange obtainGraph(Exchange exchange, GraphBean operationConfiguration, InputStream inputStream) throws IOException {
+        GraphObtainParams params = mergeHeaderParams(exchangeToGraphObtainHeaderParams(exchange), configToGraphObtainParams(operationConfiguration));
+        return obtainGraph(params, exchange, inputStream);
+    }
+
+    public static RDFGraphAndExchange obtainGraph(GraphObtainParams params, Exchange exchange, InputStream inputStream) throws IOException {
+        RDFGraph graph = obtainGraph(params, exchange).graph();
+        populateRepository(graph.getRepository(), exchange, params.namedGraph(), params.ontologyPaths(), params.jwtToken());
+        return new RDFGraphAndExchange(graph, exchange);
+    }
 
     // called by the consumer
     public static RDFGraphAndExchange obtainGraph(Exchange exchange, GraphBean operationConfiguration) throws IOException {
         GraphObtainParams params = mergeHeaderParams(exchangeToGraphObtainHeaderParams(exchange), configToGraphObtainParams(operationConfiguration));
         return obtainGraph(params, exchange);
     }
+
+
     public static RDFGraphAndExchange obtainGraph(GraphObtainParams params, Exchange exchange) throws IOException {
 
         String namedGraph, baseIRI;

@@ -68,12 +68,12 @@ public class GraphProducer extends DefaultProducer {
                 model = StreamParser.parse(inputStream, exchange);
                 exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
                 // RDFGraph graph = GraphGet.graphCreate(exchange);
-                var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig);
+                var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig, inputStream);
                 RDFGraph graph = rdfGraphAndExchange.graph();
                 Exchange ex = rdfGraphAndExchange.exchange();
-                ex.getMessage().setBody(graph);
+                // ex.getMessage().setBody(graph);
                 // GraphAdd.graphAdd(graph, model);
-                GraphAdd.graphAdd(graph, ex, operationConfig);
+                // GraphAdd.graphAdd(graph, ex, operationConfig);
                 exchange.getMessage().setBody(graph);
                 }
             case "add" -> {
