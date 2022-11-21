@@ -17,6 +17,7 @@
 package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
+import com.cefriel.component.GraphEndpoint;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.RDFSerializer;
@@ -44,7 +45,76 @@ public class GraphDump {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphDump.class);
 
-    public static void graphDump(Exchange exchange) throws IOException {
+    // todo removed rdfFormat from headers because it would cause problems in a multicast operation (dump and add for example)
+    private record HeaderParams(String fileName) {}
+    private record EndpointParams(String dumpRDFFormat, String basePath, String fileName) {}
+    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
+
+    private static HeaderParams getHeaderParams(Exchange e) {
+        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.FILENAME, String.class));
+    }
+
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(
+                operationConfig.getDumpFormat(),
+                operationConfig.getBasePath(),
+                operationConfig.getFilename());
+    }
+
+    private static EndpointParams mergeHeaders(HeaderParams h, EndpointParams p) {
+        return new EndpointParams(
+                p.dumpRDFFormat(),
+                p.basePath(),
+                h.fileName() == null ? p.fileName() : h.fileName());
+    }
+    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
+        return new OperationParams(
+                e.getMessage().getBody(RDFGraph.class),
+                mergeHeaders(getHeaderParams(e), getEndpointParams(operationConfig)));
+    }
+
+    private static Boolean validParams(OperationParams params) {
+        if (params.graph == null)
+            throw new IllegalArgumentException("Graph in body of exchange can not be null");
+
+        if (params.endpointParams().dumpRDFFormat() == null)
+            throw new IllegalArgumentException("No dumpFormat parameter supplied to DUMP operation");
+
+        if (params.endpointParams().fileName() == null)
+            throw new IllegalArgumentException("No fileName parameter supplied to DUMP operation");
+
+        return true;
+    }
+
+    public static void graphDump(Exchange exchange, GraphBean operationConfig) throws IOException {
+         OperationParams params = getOperationParams(exchange, operationConfig);
+         if (validParams(params))
+             graphDump(params, exchange);
+    }
+
+    private static void graphDump(OperationParams params, Exchange exchange) throws IOException {
+        try(RepositoryConnection con = params.graph().getRepository().getConnection()) {
+            RepositoryResult<Statement> dump;
+            dump = con.getStatements(null, null, null);
+            Model dumpModel = QueryResults.asModel(dump);
+
+            RepositoryResult<Namespace> namespaces = con.getNamespaces();
+            for (Namespace n : Iterations.asList(namespaces))
+                dumpModel.setNamespace(n);
+
+
+            //TODO Change this, add specific option to save as file or set as body
+            if (params.endpointParams().basePath() != null) {
+                String path = Utils.writeModelToDestination(exchange, dumpModel, "graph-dump");
+                LOG.info("Graph dumped to file " + path);
+            } else {
+                InputStream inputStream = RDFSerializer.serialize(dumpModel, exchange);
+                exchange.getMessage().setBody(inputStream);
+                LOG.info("Model dump set as body");
+            }
+        }
+    }
+    private static void graphDump(Exchange exchange) throws IOException {
 
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
         if (graph == null)
