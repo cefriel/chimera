@@ -19,7 +19,6 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.ConverterConfiguration;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.repository.Repository;
@@ -31,11 +30,66 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GraphInference {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphInference.class);
+    // todo rdfFormat can be a header param, used like ontologyFormat
+    private record HeaderParams(String rdfFormat) {}
+    private record EndpointParams(String ontologyFormat, List<String> ontologyUrls, boolean allRules){}
+    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams endpointParams){}
+    private static HeaderParams getHeaderParams(Exchange e) {
+        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
+    }
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(
+                operationConfig.getOntologyFormat(),
+                operationConfig.getResources(),
+                operationConfig.isAllRules());
+    }
+    private static EndpointParams mergeHeaders(HeaderParams h, EndpointParams p) {
+        return new EndpointParams(
+                h.rdfFormat() == null ? p.ontologyFormat() : h.rdfFormat(),
+                p.ontologyUrls(),
+                p.allRules());
+    }
+    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
+        return new OperationParams(
+                e.getMessage().getBody(RDFGraph.class),
+                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
+                mergeHeaders(getHeaderParams(e), getEndpointParams(operationConfig)));
+    }
 
+    private static boolean validParams(OperationParams params) {
+        if (params.endpointParams().ontologyFormat() == null)
+            throw new IllegalArgumentException("No rdfFormat specified for INFERENCE operation");
+
+        return true;
+    }
+    public static void graphInference(Exchange exchange, GraphBean operationConfig) throws IOException {
+        var p = getOperationParams(exchange, operationConfig);
+        if (validParams(p)) {
+            graphInference(p, exchange);
+        }
+    }
+    public static void graphInference(OperationParams params, Exchange exchange) throws IOException {
+        Repository schema = Utils.getSchemaRepository(params.endpointParams().ontologyUrls(), params.jwtToken(), params.endpointParams().ontologyFormat(), exchange);
+        SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
+        Repository inferenceRepo = new SailRepository(inferencer);
+        inferenceRepo.init();
+
+        RepositoryConnection source = params.graph().getRepository().getConnection();
+        RepositoryConnection target = inferenceRepo.getConnection();
+        //Enable inference
+        target.add(source.getStatements(null, null, null, true));
+        //Copy back
+        source.add(target.getStatements(null, null, null, true));
+        source.close();
+        target.close();
+        exchange.getMessage().setBody(params.graph(), RDFGraph.class);
+    }
+    /*
     public static void graphInference(Exchange exchange) throws IOException {
 
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
@@ -66,4 +120,6 @@ public class GraphInference {
         }
         exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
     }
+
+     */
 }

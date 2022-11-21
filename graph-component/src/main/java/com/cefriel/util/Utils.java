@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Objects;
 
 public class Utils {
 
@@ -70,6 +72,16 @@ public class Utils {
         }
         return schema;
     }
+    public static Repository getSchemaRepository(List<String> ontologyUrls, String jwtToken, String rdfFormat, Exchange exchange) throws IOException {
+        ValueFactory vf = SimpleValueFactory.getInstance();
+        Repository schema = new SailRepository(new MemoryStore());
+        schema.init();
+        try (RepositoryConnection con = schema.getConnection()) {
+            for (String url: ontologyUrls)
+                con.add(StreamParser.parse(UniLoader.open(url, jwtToken), rdfFormat, exchange), vf.createIRI(url));
+        }
+        return schema;
+    }
 
     public static void addSchemaToRepository(Repository repo, GraphBean configuration, Exchange exchange) throws IOException {
         ValueFactory vf = SimpleValueFactory.getInstance();
@@ -83,6 +95,7 @@ public class Utils {
             }
         }
     }
+
     // todo check if everywhere this logic is superseded by header and param merge handling and validating (probably)
     public static void setConfigurationRDFHeader(Exchange exchange, String format){
         if(exchange.getMessage().getHeader(ChimeraConstants.RDF_FORMAT) == null){
@@ -107,27 +120,18 @@ public class Utils {
         return rdfFormat;
     }
 
-    private static RDFFormat getRDFFormat(String format) {
-        switch (format.toLowerCase()) {
-            case ChimeraConstants.RDF_FORMAT_BINARY:
-                return RDFFormat.BINARY;
-            case ChimeraConstants.RDF_FORMAT_JSONLD:
-                return RDFFormat.JSONLD;
-            case ChimeraConstants.RDF_FORMAT_N3:
-                return RDFFormat.N3;
-            case ChimeraConstants.RDF_FORMAT_NQUADS:
-                return RDFFormat.NQUADS;
-            case ChimeraConstants.RDF_FORMAT_NTRIPLES:
-                return RDFFormat.NTRIPLES;
-            case ChimeraConstants.RDF_FORMAT_RDFXML:
-                return RDFFormat.RDFXML;
-            case ChimeraConstants.RDF_FORMAT_TURTLE:
-                return RDFFormat.TURTLE;
-            case ChimeraConstants.RDF_FORMAT_RDFA:
-                return RDFFormat.RDFA;
-            default:
-                return null;
-        }
+    public static RDFFormat getRDFFormat(String format) {
+        return switch (format.toLowerCase()) {
+            case ChimeraConstants.RDF_FORMAT_BINARY -> RDFFormat.BINARY;
+            case ChimeraConstants.RDF_FORMAT_JSONLD -> RDFFormat.JSONLD;
+            case ChimeraConstants.RDF_FORMAT_N3 -> RDFFormat.N3;
+            case ChimeraConstants.RDF_FORMAT_NQUADS -> RDFFormat.NQUADS;
+            case ChimeraConstants.RDF_FORMAT_NTRIPLES -> RDFFormat.NTRIPLES;
+            case ChimeraConstants.RDF_FORMAT_RDFXML -> RDFFormat.RDFXML;
+            case ChimeraConstants.RDF_FORMAT_TURTLE -> RDFFormat.TURTLE;
+            case ChimeraConstants.RDF_FORMAT_RDFA -> RDFFormat.RDFA;
+            default -> null;
+        };
     }
 
     public static String writeModelToDestination(Exchange exchange, Model model, String defaultName) throws IOException {

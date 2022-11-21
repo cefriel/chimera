@@ -35,6 +35,29 @@ public final class StreamParser implements TypeConverters{
     private static final Logger LOG = LoggerFactory.getLogger(StreamParser.class);
 
     // todo refactor param list, should not accept the whole exchange but just the data from the exchange that it needs
+    public static Model parse(InputStream inputStream, String rdfFormat, Exchange exchange) throws IOException {
+        Model model = new TreeModel();
+        String headerBaseIRI;
+
+        if (inputStream == null)
+            return null;
+        else {
+            RDFFormat rf = Utils.getRDFFormat(rdfFormat);
+            // rdfFormat = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
+            LOG.info("RDF Format: " + rf);
+
+            RDFParser parser = Rio.createParser(rf);
+            parser.setRDFHandler(new StatementCollector(model));
+            headerBaseIRI = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
+            if(headerBaseIRI == null){
+                headerBaseIRI = ChimeraConstants.DEFAULT_BASE_IRI;
+            }
+            parser.parse(inputStream, headerBaseIRI);
+            LOG.info("Model created");
+            return model;
+        }
+    }
+
     @Converter
     public static Model parse(InputStream inputStream, Exchange exchange) throws IOException {
 
