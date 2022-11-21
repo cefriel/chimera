@@ -26,7 +26,6 @@ import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,32 +33,64 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Set;
 
 public class GraphDetach {
-
     private static final Logger LOG = LoggerFactory.getLogger(GraphDetach.class);
+    private record HeaderParams (String rdfFormat) {}
+    private record EndpointParams(String rdfFormat, List<String> ontologyUrls, boolean clearGraph, boolean repoOff, boolean routeOff) {}
+    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams endpointParams) {}
 
-    public static void graphDetach(Exchange exchange) throws IOException {
+    private static EndpointParams mergeHeaderParams(HeaderParams h, EndpointParams p) {
+        return new EndpointParams(
+                h.rdfFormat() != null ? h.rdfFormat() : p.rdfFormat(),
+                p.ontologyUrls(),
+                p.clearGraph(),
+                p.repoOff(),
+                p.routeOff());
+    }
+    private static HeaderParams getHeaderParams(Exchange e) {
+        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
+    }
 
-        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
-        GraphBean configuration = exchange.getMessage().getHeader(ChimeraConstants.CONFIGURATION, GraphBean.class);
-        if (graph != null) {
-            Repository repo = graph.getRepository();
-            IRI contextIRI = graph.getNamedGraph();
-            exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, configuration.getRdfFormat());
-            String token = exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class);
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(
+                operationConfig.getRdfFormat(),
+                operationConfig.getResources(),
+                operationConfig.isClear(),
+                operationConfig.isRepoOff(),
+                operationConfig.isRouteOff());
+    }
+    private static OperationParams getOperationParams(HeaderParams h, EndpointParams p, Exchange e) {
+        return new OperationParams(
+                e.getMessage().getBody(RDFGraph.class),
+                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
+                mergeHeaderParams(h,p));
+    }
+    public static boolean validParams(OperationParams params) {
+        if (params.graph() == null)
+            throw new IllegalArgumentException("Graph in exchange body cannot be null");
+        return true;
+    }
+    public static void graphDetach(Exchange exchange, GraphBean operationConfig) throws IOException {
+        var params = getOperationParams(getHeaderParams(exchange), getEndpointParams(operationConfig), exchange);
+        graphDetach(params, exchange);
 
-            if (configuration.isClear()) {
-
-                try (RepositoryConnection con = repo.getConnection()) {
+    }
+    public static void graphDetach(OperationParams params, Exchange exchange) throws IOException {
+        if (validParams(params)) {
+            if (params.endpointParams.clearGraph())
+            {
+                IRI contextIRI = params.graph.getNamedGraph();
+                try (RepositoryConnection con = params.graph().getRepository().getConnection()) {
                     if (contextIRI != null) {
                         con.clear(contextIRI);
                         LOG.info("Cleared named graph " + contextIRI.stringValue());
                     }
-                    if (configuration.getResources() != null)
-                        for (String path : configuration.getResources()) {
-                            Model l = StreamParser.parse(UniLoader.open(path, token), exchange);
+                    if (params.endpointParams().ontologyUrls() != null)
+                        for (String path : params.endpointParams().ontologyUrls()) {
+                            Model l = StreamParser.parse(UniLoader.open(path, params.jwtToken()), exchange);
                             Set<Namespace> namespaces = l.getNamespaces();
                             for (Namespace n : namespaces)
                                 con.removeNamespace(n.getPrefix());
@@ -67,43 +98,41 @@ public class GraphDetach {
                         }
                 }
             }
-
-            if (configuration.isRepoOff()) {
-                if (repo != null)
-                    repo.shutDown();
+            if (params.endpointParams().repoOff())
+            {
+                if (params.graph().getRepository() != null)
+                    params.graph().getRepository().shutDown();
                 LOG.info("Repo shot down");
             }
-        }
-
-        if(configuration.isRouteOff()){
-            CamelContext camelContext = exchange.getContext();
-            // Remove myself from the in flight registry so we can stop this route without trouble
-            Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
-            if (caused !=null)
-                LOG.error(stack_to_string(caused));
-            camelContext.getInflightRepository().remove(exchange);
-            // Stop the route
-            Thread stop = new Thread(() -> {
-                try {
+            if(params.endpointParams().routeOff()){
+                CamelContext camelContext = exchange.getContext();
+                // Remove myself from the in flight registry so we can stop this route without trouble
+                Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
+                if (caused !=null)
+                    LOG.error(stack_to_string(caused));
+                camelContext.getInflightRepository().remove(exchange);
+                // Stop the route
+                Thread stop = new Thread(() -> {
+                    try {
                     /*if (routeId != null)
                         camelContext.getRouteController().stopRoute(routeId);
                     else*/
-                    camelContext.stop();
-                } catch (Exception e) {
-                    LOG.error(e.getMessage());
-                }
-            });
-            LOG.info("Route stopped");
-            // Start the thread that stops this route
-            stop.start();
+                        camelContext.stop();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                    }
+                });
+                LOG.info("Route stopped");
+                // Start the thread that stops this route
+                stop.start();
+            }
         }
-    }
 
+    }
     private static String stack_to_string(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        String sStackTrace = sw.toString(); // stack trace as a string
-        return sStackTrace;
+        return sw.toString();
     }
 }

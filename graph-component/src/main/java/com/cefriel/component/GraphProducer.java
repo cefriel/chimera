@@ -94,7 +94,7 @@ public class GraphProducer extends DefaultProducer {
             }
 
             case "construct" -> GraphConstruct.graphConstruct(exchange, operationConfig);
-            case "detach" -> GraphDetach.graphDetach(exchange);
+            case "detach" -> GraphDetach.graphDetach(exchange, operationConfig);
             case "dump" -> GraphDump.graphDump(exchange);
             case "inference" -> GraphInference.graphInference(exchange);
             case "shacl" -> { //TODO Add tests
