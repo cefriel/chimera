@@ -24,6 +24,16 @@ public class GraphBean {
 
     private String basePath = "./";
     private List<String> resources = new ArrayList<>();
+
+    public List<String> getQueryUrls() {
+        return queryUrls;
+    }
+
+    public void setQueryUrls(List<String> queryUrls) {
+        this.queryUrls = queryUrls;
+    }
+
+    private List<String> queryUrls = new ArrayList<>();
     private String rdfFormat;
     private boolean allRules;
     private String ontologyFormat;
@@ -267,6 +277,9 @@ public class GraphBean {
         if(endpoint.getResources()!=null){
             this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
         }
+        if(endpoint.getQueryUrls() != null) {
+            this.setQueryUrls(Arrays.asList(endpoint.getQueryUrls().split("\\|")));
+        }
         if(endpoint.getOntologyFormat()!=null){
             this.setOntologyFormat(endpoint.getOntologyFormat());
         }
@@ -366,6 +379,9 @@ public class GraphBean {
         }
         if(endpoint.getResources()!=null){
             this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
+        }
+        if(endpoint.getQueryUrls()!=null){
+            this.setQueryUrls(Arrays.asList(endpoint.getQueryUrls().split("\\|")));
         }
         if(endpoint.getOntologyFormat()!=null){
             this.setOntologyFormat(endpoint.getOntologyFormat());

@@ -66,14 +66,14 @@ public class GraphConstructTest extends CamelTestSupport {
                 from("graph://get")
                         .to("graph://config?baseConfig=#bean:config")
                         .to("graph://add")
-                        .to("graph://construct?newGraph=true&resources=file://./src/test/resources/file/construct/construct.txt")
+                        .to("graph://construct?newGraph=true&queryUrls=file://./src/test/resources/file/construct/construct.txt")
                         .to("graph://dump?filename=newConstructDump")
                         .to("mock:constructNew");
 
                 from("graph://get?namedGraph=http://example.org/Picasso")
                         .to("graph://config?baseConfig=#bean:config")
                         .to("graph://add")
-                        .to("graph://construct?resources=file://./src/test/resources/file/construct/construct.txt")
+                        .to("graph://construct?queryUrls=file://./src/test/resources/file/construct/construct.txt")
                         .to("graph://dump?filename=oldConstructDump")
                         .to("mock:constructOld");
             }
