@@ -19,7 +19,9 @@ package com.cefriel;
 import com.cefriel.graph.HTTPRDFGraph;
 import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.SPARQLEndpointGraph;
+import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.UniLoader;
+import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -31,6 +33,9 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraphGetTest extends CamelTestSupport {
 
@@ -49,6 +54,48 @@ public class GraphGetTest extends CamelTestSupport {
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
         assert(graph.getRepository().isInitialized());
         assert(graph.getRepository().getClass().equals(SailRepository.class));
+    }
+
+    @Test
+    public void testNamedGraph() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:namedGraph");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert(graph.getNamedGraph().toString().equals(ChimeraConstants.DEFAULT_BASE_IRI + "testName"));
+    }
+
+    @Test
+    public void testBaseIRI() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:baseIRI");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert(graph.getBaseIRI().toString().equals("http://example.org/"));
+        assert(graph.getNamedGraph().toString().equals("http://example.org/" + mock.getExchanges().get(0).getExchangeId()));
+    }
+
+    @Test
+    public void testNonDefaultGraph() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:nonDefaultGraph");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert(graph.getBaseIRI().toString().equals(ChimeraConstants.DEFAULT_BASE_IRI));
+        assert(graph.getNamedGraph().toString().equals(ChimeraConstants.DEFAULT_BASE_IRI + mock.getExchanges().get(0).getExchangeId()));
+    }
+
+    @Test public void testDefaultGraph() throws InterruptedException {
+        MockEndpoint mock = getMockEndpoint("mock:defaultGraph");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert(graph.getBaseIRI() == null);
+        assert(graph.getNamedGraph() == null);
     }
 
     @Test
@@ -101,16 +148,28 @@ public class GraphGetTest extends CamelTestSupport {
                 from("graph://get")
                         .to("mock:memory");
                 // TODO Add tests for other parameters (namedGraph, baseIRI, etc.)
+
                 from("graph://get?serverUrl=MY_SERVER_URL&repositoryId=MY_REPOSITORY_ID")
                         .to("mock:http");
+
                 from("graph://get?sparqlEndpoint=MY_SPARQL_ENDPOINT")
                         .to("mock:sparql");
+
                 from("direct:start")
                         .to("graph://get?rdfFormat=turtle")
                         .to("mock:toMemory");
 
+                from("graph://get?defaultGraph=false&namedGraph=testName")
+                        .to("mock:namedGraph");
 
+                from("graph://get?defaultGraph=false&baseIRI=http://example.org/")
+                        .to("mock:baseIRI");
 
+                from("graph://get?defaultGraph=false")
+                        .to("mock:nonDefaultGraph");
+
+                from("graph://get?defaultGraph=true")
+                        .to("mock:defaultGraph");
             }
         };
     }

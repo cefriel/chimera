@@ -61,9 +61,11 @@ public class GraphObtain {
     }
 
     private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
+        String graphID = e.getMessage().getHeader(ChimeraConstants.GRAPH_ID, String.class);
+
         return new OperationParams(
                 e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                e.getMessage().getHeader(ChimeraConstants.GRAPH_ID, String.class),
+                graphID == null ? e.getExchangeId() : graphID,
                 mergeHeaderParams(getHeaderParams(e), getEndpointParams(operationConfig)));
     }
     private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams endpointParams) {
@@ -80,9 +82,6 @@ public class GraphObtain {
                 endpointParams.pathDataDir(),
                 endpointParams.allRules());
     }
-
-    // uniloader get resources outside and pass in
-
     private static Boolean isNativeRDFGraph (OperationParams params) {
         return params.endpointParams().pathDataDir() != null;
     }
@@ -124,19 +123,9 @@ public class GraphObtain {
     private record NamedGraphAndBaseIRI(String namedGraph, String baseIri) {}
     private static NamedGraphAndBaseIRI handleNamedGraphAndBaseIRI(String namedGraph, String baseIri, String graphID) {
         String returnNamedGraph, returnBaseIRI;
-        if (namedGraph != null && baseIri != null) {
-            returnNamedGraph = namedGraph;
-            returnBaseIRI = baseIri;
-        }
-        else if (namedGraph == null && baseIri != null) {
-            returnBaseIRI = baseIri;
-            returnNamedGraph = returnBaseIRI + graphID;
-        }
-        else {
-            returnBaseIRI = ChimeraConstants.DEFAULT_BASE_IRI;
-            returnNamedGraph = returnBaseIRI + graphID; // TODO graphID should be exchange id
-        }
 
+        returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
+        returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : returnBaseIRI + namedGraph;
         return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
     }
     public record RDFGraphAndExchange (RDFGraph graph, Exchange exchange) {}
@@ -167,12 +156,10 @@ public class GraphObtain {
         }
         else {
             namedGraph = null;
-            baseIRI = params.endpointParams().baseIri(); // todo or default from chimera constants
+            baseIRI = handleNamedGraphAndBaseIRI(null, params.endpointParams().baseIri(), null).baseIri();
         }
 
         RDFGraph graph;
-        
-
         // todo check this logic
         // set header params for the exchange which will be forwarded down the route
         if (params.endpointParams().rdfFormat() != null)
@@ -187,8 +174,6 @@ public class GraphObtain {
             else
                 graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules());
         }
-
-        // todo base iri could be available
 
         else if (isHTTPRDFGraph(params)) {
             if (namedGraph != null && baseIRI != null)
