@@ -109,7 +109,7 @@ public class GraphDetach {
                 // Remove myself from the in flight registry so we can stop this route without trouble
                 Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
                 if (caused !=null)
-                    LOG.error(stack_to_string(caused));
+                    LOG.error(stackToString(caused));
                 camelContext.getInflightRepository().remove(exchange);
                 // Stop the route
                 Thread stop = new Thread(() -> {
@@ -127,9 +127,8 @@ public class GraphDetach {
                 stop.start();
             }
         }
-
     }
-    private static String stack_to_string(Throwable e) {
+    private static String stackToString(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
