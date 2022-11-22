@@ -125,7 +125,7 @@ public class GraphObtain {
         String returnNamedGraph, returnBaseIRI;
 
         returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
-        returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : returnBaseIRI + namedGraph;
+        returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
         return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
     }
     public record RDFGraphAndExchange (RDFGraph graph, Exchange exchange) {}
@@ -168,7 +168,7 @@ public class GraphObtain {
             exchange.getMessage().setHeader(ChimeraConstants.GRAPH_ID, params.graphID());
 
         if (isInferenceRDFGraph(params)) {
-            Repository schema = createSchemaRepository(exchange, params.endpointParams().namedGraph(), params.endpointParams().ontologyPaths, params.jwtToken());
+            Repository schema = createSchemaRepository(exchange, params.endpointParams().namedGraph(), params.endpointParams().ontologyPaths(), params.jwtToken());
             if (namedGraph != null && baseIRI != null)
                 graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
             else
