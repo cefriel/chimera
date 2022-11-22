@@ -40,10 +40,10 @@ public class GraphAdd {
 
     // needs jwt token, rdf format, resources (ontologyUrls),
     // contentType (MimeType) set to outoging exchange
-    private record GraphAddHeaderParams(String rdfFormat) {}
-    private record GraphAddParams(String rdfFormat, List<String> ontologyPaths) {}
-    private record GraphAddOperationParams(RDFGraph graph, String jwtToken, GraphAddParams operationParams) {}
-    private static boolean validParams(GraphAddOperationParams params) {
+    private record HeaderParams(String rdfFormat) {}
+    private record EndpointParams(String rdfFormat, List<String> ontologyPaths) {}
+    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams operationParams) {}
+    private static boolean validParams(OperationParams params) {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
 
@@ -61,24 +61,22 @@ public class GraphAdd {
 
         return true;
     }
-    private static GraphAddOperationParams getGraphAddOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
-        return new GraphAddOperationParams(
-                graph,
-                exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                mergeHeaderParams(exchangeToGraphAddHeaderParams(exchange), configToGraphAddParams(operationConfig)));
+    private static HeaderParams getHeaderParams(Exchange e) {
+        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
     }
-
-    private static GraphAddHeaderParams exchangeToGraphAddHeaderParams(Exchange e) {
-        return new GraphAddHeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
+    private static EndpointParams getEndpointParams(GraphBean config) {
+        return new EndpointParams(config.getRdfFormat(), config.getResources());
     }
-    private static GraphAddParams configToGraphAddParams(GraphBean config) {
-        return new GraphAddParams(config.getRdfFormat(), config.getResources());
-    }
-
-    private static GraphAddParams mergeHeaderParams(GraphAddHeaderParams headerParams, GraphAddParams params) {
-        return new GraphAddParams(
+    private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams params) {
+        return new EndpointParams(
                 headerParams.rdfFormat() != null ? headerParams.rdfFormat() : params.rdfFormat(),
                 params.ontologyPaths());
+    }
+    private static OperationParams getOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
+        return new OperationParams(
+                graph,
+                exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
+                mergeHeaderParams(getHeaderParams(exchange), getEndpointParams(operationConfig)));
     }
     record GraphAndExchange (RDFGraph graph, Exchange exchange) {}
 
@@ -86,12 +84,13 @@ public class GraphAdd {
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
         return graphAdd(graph, exchange, operationConfig);
     }
-
     public static GraphAndExchange graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws IOException {
-        var p = getGraphAddOperationParams(graph, exchange, operationConfig);
-        return graphAdd(p, exchange);
+        OperationParams params = getOperationParams(graph, exchange, operationConfig);
+        if (validParams(params))
+            return graphAdd(params, exchange);
+        return null;
     }
-    private static GraphAndExchange graphAdd(GraphAddOperationParams params, Exchange exchange) throws IOException {
+    private static GraphAndExchange graphAdd(OperationParams params, Exchange exchange) throws IOException {
         if (validParams(params)){
             for (String ontologyUrl : params.operationParams().ontologyPaths()) {
                 Model model = parseOntology(exchange, ontologyUrl, params.operationParams().rdfFormat(), params.jwtToken());
@@ -108,8 +107,6 @@ public class GraphAdd {
         }
         throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
     }
-
-
 
     // todo this method might be refactored to utils
     public static Model parseOntology(Exchange exchange, String ontologyUrl, String rdfFormat, String jwtToken) throws IOException {
