@@ -1,20 +1,16 @@
 package com.cefriel.util;
 
-public class AuthBean {
+public final class AuthConfigBean implements TypeAuthConfig {
     private String userName;
     private String password;
     private String authMethod;
+    public AuthConfigBean() {}
 
-    // todo also allow just having a bearer token
-
-    public AuthBean() {}
-
-    public AuthBean(String userName, String password, String authMethod) {
+    public AuthConfigBean(String userName, String password, String authMethod) {
         this.userName = userName;
         this.password = password;
         this.authMethod = authMethod;
     }
-
     public String getUserName() {
         return userName;
     }
