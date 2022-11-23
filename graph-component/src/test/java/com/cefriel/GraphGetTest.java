@@ -63,9 +63,8 @@ public class GraphGetTest extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getNamedGraph().toString().equals(ChimeraConstants.DEFAULT_BASE_IRI + "testName"));
+        assert(graph.getNamedGraph().toString().equals("http://example.org/testName"));
     }
-
     @Test
     public void testBaseIRI() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:baseIRI");
@@ -159,7 +158,7 @@ public class GraphGetTest extends CamelTestSupport {
                         .to("graph://get?rdfFormat=turtle")
                         .to("mock:toMemory");
 
-                from("graph://get?defaultGraph=false&namedGraph=testName")
+                from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")
                         .to("mock:namedGraph");
 
                 from("graph://get?defaultGraph=false&baseIRI=http://example.org/")
