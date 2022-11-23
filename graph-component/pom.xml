@@ -80,6 +80,15 @@
           <source>17</source>
           <target>17</target>
         </configuration>
+        <executions>
+          <execution>
+            <id>recompile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>process-classes</phase>
+          </execution>
+        </executions>
       </plugin>
       
       <plugin>
@@ -112,23 +121,6 @@
           </execution>
         </executions>
       </plugin>
-
-
-
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>recompile</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <phase>process-classes</phase>
-          </execution>
-        </executions>
-      </plugin>
-
-
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
