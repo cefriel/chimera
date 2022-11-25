@@ -2,12 +2,13 @@ package com.cefriel;
 
 import com.cefriel.util.AuthConfigBean;
 import com.cefriel.util.AuthTokenConfigBean;
-import com.cefriel.util.ChimeraResource;
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.HTTPResourceAccessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 public class HTTPResourceAccessorTest {
 
@@ -19,17 +20,22 @@ public class HTTPResourceAccessorTest {
 
     private final String authBearerEndpoint = "https://httpbin.org/bearer";
     @Test
-    public void testGetUnprotectedHttpResource() throws InterruptedException {
+    public void testGetUnprotectedHttpResource() {
         var context = new DefaultCamelContext();
         context.start();
 
-        ChimeraResource resource = new ChimeraResource(testNoAuthEndpoint, null, null);
-        Exchange response = HTTPResourceAccessor.getHTTPResource(resource, context);
+        ChimeraResourceBean resource = new ChimeraResourceBean(testNoAuthEndpoint, null, null);
+        Optional<Exchange> response = HTTPResourceAccessor.getHTTPResource(resource, context);
+
         context.stop();
-        int responseCode = response.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
-        assert(!response.isFailed());
-        assert(responseCode == 200);
-        assert(response.getMessage().getBody(String.class) != null);
+
+        if(response.isPresent()) {
+            Exchange r = response.get();
+            assert(!r.isFailed());
+            int responseCode = r.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
+            assert(responseCode == 200);
+            assert(r.getMessage().getBody(String.class) != null);
+        }
     }
 
     @Test
@@ -37,27 +43,33 @@ public class HTTPResourceAccessorTest {
         DefaultCamelContext context = new DefaultCamelContext();
         context.start();
         AuthConfigBean authConfig = new AuthConfigBean(endpointUser, endpointPwd, "Basic");
-        ChimeraResource resource = new ChimeraResource(authBasicEndpoint, null, authConfig);
-        Exchange response = HTTPResourceAccessor.getHTTPResource(resource, context);
+        ChimeraResourceBean resource = new ChimeraResourceBean(authBasicEndpoint, null, authConfig);
+        Optional<Exchange> response = null;
+        response = HTTPResourceAccessor.getHTTPResource(resource, context);
+
         context.stop();
 
-        int responseCode = response.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
-        assert(!response.isFailed());
+        assert (response != null);
+        assert(!response.get().isFailed());
+        int responseCode = response.get().getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
         assert(responseCode == 200);
         // todo parse body from json and check that authenticated value is true (it already is, the call would fail otherwise but do it for completeness)
-        assert(response.getMessage().getBody(String.class) != null);
+        assert(response.get().getMessage().getBody(String.class) != null);
     }
     @Test
     public void testAuthBearerEndpoint () {
         DefaultCamelContext context = new DefaultCamelContext();
         context.start();
         AuthTokenConfigBean authTokenConfig = new AuthTokenConfigBean("test");
-        ChimeraResource resource = new ChimeraResource(authBearerEndpoint, null, authTokenConfig);
-        Exchange response = HTTPResourceAccessor.getHTTPResource(resource, context);
+        ChimeraResourceBean resource = new ChimeraResourceBean(authBearerEndpoint, null, authTokenConfig);
+        Optional<Exchange> response = null;
+        response = HTTPResourceAccessor.getHTTPResource(resource, context);
+
         context.stop();
 
-        int responseCode = response.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
-        assert(!response.isFailed());
+        assert (response != null);
+        assert(!response.get().isFailed());
+        int responseCode = response.get().getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
         assert(responseCode == 200);
     }
 }

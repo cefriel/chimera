@@ -3,17 +3,22 @@ package com.cefriel.util;
 sealed interface TypeAuthConfig
         permits AuthTokenConfigBean, AuthConfigBean {}
 
-public class ChimeraResource {
+public class ChimeraResourceBean {
     private String url;
     private String serializationFormat;
     private TypeAuthConfig authConfig;
 
-    public ChimeraResource() {}
+    public ChimeraResourceBean() {}
 
-    public ChimeraResource(String url, String serializationFormat, TypeAuthConfig authConfig) {
+    public ChimeraResourceBean(String url, String serializationFormat, TypeAuthConfig authConfig) {
         this.url = url;
         this.serializationFormat = serializationFormat;
         this.authConfig = authConfig;
+    }
+    public ChimeraResourceBean(String url, String serializationFormat){
+        this.url = url;
+        this.serializationFormat = serializationFormat;
+        this.authConfig = null;
     }
     public String getUrl() {
         return url;

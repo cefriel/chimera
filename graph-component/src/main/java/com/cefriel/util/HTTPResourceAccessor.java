@@ -4,14 +4,19 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.ExchangeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.Optional;
 
 import static org.apache.camel.builder.Builder.constant;
 
 public class HTTPResourceAccessor {
-    public static Exchange getHTTPResource(ChimeraResource resource, Exchange exchange) {
-        return getHTTPResource(resource, exchange.getContext());
-    }
-    public static Exchange getHTTPResource(ChimeraResource resource, CamelContext context) {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HTTPResourceAccessor.class);
+
+    public static Optional<Exchange> getHTTPResource(ChimeraResourceBean resource, CamelContext context) {
         ProducerTemplate producer = context.createProducerTemplate();
         ExchangeBuilder exchangeRequestTemp =  ExchangeBuilder.anExchange(context).withHeader(Exchange.HTTP_METHOD, "GET");
 
@@ -29,7 +34,25 @@ public class HTTPResourceAccessor {
         }
         Exchange exchangeRequest = exchangeRequestTemp.build();
 
-        return producer.send(callUrl, exchangeRequest);
+        Exchange response = producer.send(callUrl, exchangeRequest);
+
+        if (response.getException() != null) {
+            // todo should this cause an exception or handle resource as null?
+            LOG.warn(response.getException().toString());
+            response = null;
+        }
+
+        return Optional.ofNullable(response);
+    }
+    public static Optional<InputStream> getHTTPResourceInputStream(ChimeraResourceBean resource, CamelContext context) {
+        Optional<Exchange> response = getHTTPResource(resource, context);
+        InputStream inputStream = null;
+
+        if (response.isPresent()) {
+            inputStream = response.get().getMessage().getBody(InputStream.class);
+        }
+
+        return Optional.ofNullable(inputStream);
     }
 
 
