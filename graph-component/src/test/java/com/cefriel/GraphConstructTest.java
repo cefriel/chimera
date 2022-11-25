@@ -47,7 +47,7 @@ public class GraphConstructTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
     }
-
+    // todo write better tests where the result of the construct query is checked
     @Test
     public void testConstructOld() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:constructOld");

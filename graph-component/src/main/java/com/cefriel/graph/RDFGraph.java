@@ -16,6 +16,7 @@
 
 package com.cefriel.graph;
 
+import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -46,9 +47,7 @@ public abstract class RDFGraph {
 
     public void setNamedGraph(String namedGraph) {
         if (namedGraph != null && !namedGraph.equals("")) {
-            ValueFactory vf = SimpleValueFactory.getInstance();
-            this.namedGraph = vf.createIRI(namedGraph);
-            setNamedGraph(this.namedGraph);
+            setNamedGraph(Utils.stringToIRI(namedGraph));
         }
     }
 
@@ -62,30 +61,4 @@ public abstract class RDFGraph {
         }
     }
 // todo decide on weather to use the graph context naming convention of namedGraph naming convention
-
-    private Repository addContextToRepository(Repository repo, IRI namedGraph) {
-        if (repo != null) {
-            ContextAwareRepository cRep = new ContextAwareRepository(repo);
-            cRep.setReadContexts(namedGraph);
-            cRep.setInsertContext(namedGraph);
-            return cRep;
-        }
-        else {
-            return null;
-        }
-        // what happens if the repo is null
-    }
-
-    private Repository addContextToRepository(Repository repo, String namedGraph) {
-        if (namedGraph != null && !namedGraph.equals("")) {
-            ValueFactory vf = SimpleValueFactory.getInstance();
-            return addContextToRepository(repo, vf.createIRI(namedGraph));
-        }
-        else{
-            return null;
-        }
-    }
-
-
-
 }

@@ -52,11 +52,12 @@ public class GraphConstruct {
                 getEndpointParams(operationConfig, e));
     }
 
-    private boolean validParams(OperationParams params) {
+    private static boolean validParams(OperationParams params) {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
 
-        if (params.endpointParams().query() == null || params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().size() == 0)
+        if (params.endpointParams().query() == null &&
+                (params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().size() == 0))
             // todo throw exception and print warning
             throw new IllegalArgumentException("No query and no queryUrls specified");
 
@@ -98,12 +99,14 @@ public class GraphConstruct {
     public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws IOException {
         OperationParams operationParams = getOperationParams(exchange, operationConfig);
 
-        if (operationParams.endpointParams().newGraph()) {
-            RDFGraph newGraph = GraphObtain.obtainGraph(exchange, operationConfig).graph();
-            graphConstruct(newGraph, operationParams, exchange);
-        }
-        else {
-            graphConstruct(operationParams.graph(), operationParams, exchange);
+        if (validParams(operationParams)) {
+            if (operationParams.endpointParams().newGraph()) {
+                RDFGraph newGraph = GraphObtain.obtainGraph(exchange, operationConfig).graph();
+                graphConstruct(newGraph, operationParams, exchange);
+            }
+            else {
+                graphConstruct(operationParams.graph(), operationParams, exchange);
+            }
         }
     }
 

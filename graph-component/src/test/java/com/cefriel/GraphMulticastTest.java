@@ -64,7 +64,7 @@ public class GraphMulticastTest extends CamelTestSupport {
                         .setHeader(ChimeraConstants.RDF_FORMAT, constant("turtle"))
                         .to("graph://add")
                         .to("graph://add?resources=file://./src/test/resources/file/template/my-source.ttl")
-                        .to("graph://construct?resources=file://./src/test/resources/file/construct/construct.txt")
+                            .to("graph://construct?queryUrls=file://./src/test/resources/file/construct/construct.txt")
                         .multicast()
                         .to("graph://dump?filename=beforeEnrich")
                         .to("graph://add?resources=file://./src/test/resources/file/template/enrich.ttl")

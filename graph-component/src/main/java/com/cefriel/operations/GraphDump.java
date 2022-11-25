@@ -45,7 +45,7 @@ public class GraphDump {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphDump.class);
 
-    // todo removed rdfFormat from headers because it would cause problems in a multicast operation (dump and add for example)
+    // todo (maybe this can be changed) removed rdfFormat from headers because it would cause problems in a multicast operation (dump and add for example)
     private record HeaderParams(String fileName) {}
     private record EndpointParams(String dumpRDFFormat, String basePath, String fileName) {}
     private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
@@ -53,7 +53,6 @@ public class GraphDump {
     private static HeaderParams getHeaderParams(Exchange e) {
         return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.FILENAME, String.class));
     }
-
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
                 operationConfig.getDumpFormat(),
@@ -72,7 +71,6 @@ public class GraphDump {
                 e.getMessage().getBody(RDFGraph.class),
                 mergeHeaders(getHeaderParams(e), getEndpointParams(operationConfig)));
     }
-
     private static Boolean validParams(OperationParams params) {
         if (params.graph == null)
             throw new IllegalArgumentException("Graph in body of exchange can not be null");
@@ -85,13 +83,11 @@ public class GraphDump {
 
         return true;
     }
-
     public static void graphDump(Exchange exchange, GraphBean operationConfig) throws IOException {
          OperationParams params = getOperationParams(exchange, operationConfig);
          if (validParams(params))
              graphDump(params, exchange);
     }
-
     private static void graphDump(OperationParams params, Exchange exchange) throws IOException {
         try(RepositoryConnection con = params.graph().getRepository().getConnection()) {
             RepositoryResult<Statement> dump;
@@ -104,41 +100,8 @@ public class GraphDump {
 
 
             //TODO Change this, add specific option to save as file or set as body
+            // todo maybe can reuse camel file component for dump operation
             if (params.endpointParams().basePath() != null) {
-                String path = Utils.writeModelToDestination(exchange, dumpModel, "graph-dump");
-                LOG.info("Graph dumped to file " + path);
-            } else {
-                InputStream inputStream = RDFSerializer.serialize(dumpModel, exchange);
-                exchange.getMessage().setBody(inputStream);
-                LOG.info("Model dump set as body");
-            }
-        }
-    }
-    private static void graphDump(Exchange exchange) throws IOException {
-
-        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
-        if (graph == null)
-            throw new RuntimeException("RDF Graph not attached");
-        GraphBean configuration = exchange.getMessage().getHeader(ChimeraConstants.CONFIGURATION, GraphBean.class);
-        Repository repo = graph.getRepository();
-
-        if(configuration.getDumpFormat() != null)
-            exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, configuration.getDumpFormat());
-
-        try(RepositoryConnection con = repo.getConnection()) {
-            RepositoryResult<Statement> dump;
-            dump = con.getStatements(null, null, null);
-            Model dumpModel = QueryResults.asModel(dump);
-
-            RepositoryResult<Namespace> namespaces = con.getNamespaces();
-            for (Namespace n : Iterations.asList(namespaces))
-                dumpModel.setNamespace(n);
-
-
-            //TODO Change this, add specific option to save as file or set as body
-
-            //TODO Change this, add specific option to save as file or set as body
-            if (configuration.getBasePath() != null) {
                 String path = Utils.writeModelToDestination(exchange, dumpModel, "graph-dump");
                 LOG.info("Graph dumped to file " + path);
             } else {

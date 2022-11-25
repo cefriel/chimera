@@ -82,6 +82,7 @@ public class GraphInference {
         RepositoryConnection source = params.graph().getRepository().getConnection();
         RepositoryConnection target = inferenceRepo.getConnection();
         //Enable inference
+        // all statements from source graph to graph with inference enabled
         target.add(source.getStatements(null, null, null, true));
         //Copy back
         source.add(target.getStatements(null, null, null, true));

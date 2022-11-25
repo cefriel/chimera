@@ -160,13 +160,6 @@ public class GraphObtain {
         }
 
         RDFGraph graph;
-        // todo check this logic
-        // set header params for the exchange which will be forwarded down the route
-        if (params.endpointParams().rdfFormat() != null)
-            exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, params.endpointParams().rdfFormat());
-        if (params.graphID() != null)
-            exchange.getMessage().setHeader(ChimeraConstants.GRAPH_ID, params.graphID());
-
         if (isInferenceRDFGraph(params)) {
             Repository schema = createSchemaRepository(exchange, params.endpointParams().namedGraph(), params.endpointParams().ontologyPaths(), params.jwtToken());
             if (namedGraph != null && baseIRI != null)

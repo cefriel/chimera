@@ -2,7 +2,7 @@ package com.cefriel.util;
 
 sealed interface TypeAuthConfig
         permits AuthTokenConfigBean, AuthConfigBean {}
-
+// todo check if this can also correctly handle sparql queries used in the constructPhase
 public class ChimeraResourceBean {
     private String url;
     private String serializationFormat;
