@@ -29,25 +29,10 @@ import org.slf4j.LoggerFactory;
 public class GraphConsumer extends DefaultConsumer {
     private final GraphEndpoint endpoint;
     private static final Logger LOG = LoggerFactory.getLogger(GraphConsumer.class);
-
     public GraphConsumer(GraphEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
     }
-    // todo only allow get
-    sealed interface ConsumerAllowedOperations
-            permits GetOperation {}
-    private record GetOperation() implements ConsumerAllowedOperations {}
-
-    // todo check if params are sufficient for the get operation
-    public static ConsumerAllowedOperations whichOperation (String operationName) {
-        return switch(operationName) {
-            case "get" -> new GetOperation();
-            // todo should throw something like UnsupportedOperationException
-            default -> null;
-        };
-    }
-
     @Override
     protected void doStart() throws Exception {
 
@@ -62,16 +47,12 @@ public class GraphConsumer extends DefaultConsumer {
             operationConfig = new GraphBean();
         }
         operationConfig.setEndpointParameters(endpoint);
-
-        if (whichOperation(endpoint.getName()) instanceof GetOperation) {
+        if ("get".equals(endpoint.getName())) {
             Exchange returnExchange = exchange.copy();
-            // exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
-            // RDFGraph graph = GraphGet.graphCreate(exchange);
             var rdfGraphAndExchange = GraphObtain.obtainGraph(returnExchange, operationConfig);
             RDFGraph graph = rdfGraphAndExchange.graph();
             returnExchange = rdfGraphAndExchange.exchange();
             returnExchange.getMessage().setBody(graph);
-            // exchange.getMessage().setBody(graph);
 
             try {
                 // send message to next processor in the route
@@ -85,6 +66,8 @@ public class GraphConsumer extends DefaultConsumer {
                 releaseExchange(returnExchange, false);
             }
             doStop();
+        } else {
+            throw new UnsupportedOperationException("Graph Consumer only allows GET operations");
         }
     }
 
