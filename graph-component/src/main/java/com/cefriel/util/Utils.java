@@ -17,9 +17,12 @@
 package com.cefriel.util;
 
 import com.cefriel.component.GraphBean;
+import com.cefriel.graph.RDFGraph;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
@@ -44,15 +47,6 @@ public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    public static Repository getContextAwareRepository(Repository repository, IRI context) {
-        if (context != null) {
-            ContextAwareRepository cRepo = new ContextAwareRepository(repository);
-            cRepo.setInsertContext(context);
-            cRepo.setReadContexts(context);
-            return cRepo;
-        }
-        return repository;
-    }
     public static IRI stringToIRI(String sIRI) {
         return SimpleValueFactory.getInstance().createIRI(sIRI);
     }
@@ -78,9 +72,34 @@ public class Utils {
         schema.init();
         try (RepositoryConnection con = schema.getConnection()) {
             for (String url: ontologyUrls)
-                con.add(StreamParser.parse(UniLoader.open(url, jwtToken), rdfFormat, exchange), vf.createIRI(url));
+                con.add(StreamParser.parse(UniLoader.open(url, jwtToken), rdfFormat,
+                        exchange), vf.createIRI(url));
         }
         return schema;
+    }
+    private static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
+        for (ChimeraResourceBean resource: resourcesBean.getResources())
+        {
+            RepositoryConnection con = repo.getConnection();
+            Model model = StreamParser.parseResource(resource, context);
+            con.add(model);
+
+            for (Namespace ns : model.getNamespaces()) {
+                con.setNamespace(ns.getPrefix(), ns.getName());
+            }
+        }
+    }
+
+    private static void populateRepository(Repository repo, Exchange exchange, String namedGraph, List<String> ontologyPaths, String jwtToken) throws IOException {
+        ValueFactory vf = SimpleValueFactory.getInstance();
+        try (RepositoryConnection con = repo.getConnection()) {
+            for (String url: ontologyPaths) { // todo check why namespace is not handled here
+                if (namedGraph != null)
+                    con.add(StreamParser.parse(UniLoader.open(url, jwtToken), exchange), vf.createIRI(namedGraph));
+                else
+                    con.add(StreamParser.parse(UniLoader.open(url, jwtToken), exchange));
+            }
+        }
     }
 
     public static void addSchemaToRepository(Repository repo, GraphBean configuration, Exchange exchange) throws IOException {
@@ -95,7 +114,6 @@ public class Utils {
             }
         }
     }
-
     // todo check if everywhere this logic is superseded by header and param merge handling and validating (probably)
     public static void setConfigurationRDFHeader(Exchange exchange, String format){
         if(exchange.getMessage().getHeader(ChimeraConstants.RDF_FORMAT) == null){
@@ -119,7 +137,6 @@ public class Utils {
         }
         return rdfFormat;
     }
-
     public static RDFFormat getRDFFormat(String format) {
         return switch (format.toLowerCase()) {
             case ChimeraConstants.RDF_FORMAT_BINARY -> RDFFormat.BINARY;
@@ -130,7 +147,7 @@ public class Utils {
             case ChimeraConstants.RDF_FORMAT_RDFXML -> RDFFormat.RDFXML;
             case ChimeraConstants.RDF_FORMAT_TURTLE -> RDFFormat.TURTLE;
             case ChimeraConstants.RDF_FORMAT_RDFA -> RDFFormat.RDFA;
-            default -> null;
+            default -> Rio.getParserFormatForMIMEType(format).orElse(RDFFormat.TURTLE);
         };
     }
 

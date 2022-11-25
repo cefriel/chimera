@@ -43,7 +43,6 @@ public final class StreamParser implements TypeConverters{
             return null;
         else {
             RDFFormat rf = Utils.getRDFFormat(rdfFormat);
-            // rdfFormat = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
             LOG.info("RDF Format: " + rf);
 
             RDFParser parser = Rio.createParser(rf);
@@ -57,7 +56,25 @@ public final class StreamParser implements TypeConverters{
             return model;
         }
     }
+    public static Model parseTriples(InputStream inputStream, String format, String baseIri) throws IOException {
+        if(inputStream == null) {
+            return null;
+        }
+        else {
+            Model model = new TreeModel();
+            RDFFormat rdfFormat = Utils.getRDFFormat(format);
+            RDFParser parser = Rio.createParser(rdfFormat);
+            parser.setRDFHandler(new StatementCollector(model));
+            parser.parse(inputStream);
+            return model;
+        }
+    }
 
+    public static Model parseResource(ChimeraResourceBean resource, CamelContext context) throws IOException {
+        return parseTriples(ResourceAccessor.open(resource, context), resource.getSerializationFormat(), null);
+    }
+
+    // todo check this logic, base iri from header does not make sense, not every inputStream (meaning resource) necessarily has the same base iri
     @Converter
     public static Model parse(InputStream inputStream, Exchange exchange) throws IOException {
 
