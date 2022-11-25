@@ -16,6 +16,8 @@
 
 package com.cefriel.component;
 
+import com.cefriel.util.ChimeraResourcesBean;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,8 @@ public class GraphBean {
 
     private String basePath = "./";
     private List<String> resources = new ArrayList<>();
+
+    private ChimeraResourcesBean chimeraResources;
 
     public List<String> getQueryUrls() {
         return queryUrls;
@@ -255,110 +259,18 @@ public class GraphBean {
         this.filename = filename;
     }
 
-    public void setCreateConfig(GraphEndpoint endpoint){
-        if(endpoint.getNamedGraph()!=null){
-            this.setNamedGraph(endpoint.getNamedGraph());
-        }
-        if(endpoint.getBaseIri()!=null){
-            this.setBaseIri(endpoint.getBaseIri());
-        }
-        if(!endpoint.isDefaultGraph()){
-            this.setDefaultGraph(endpoint.isDefaultGraph());
-        }
-        if(endpoint.getServerUrl()!=null){
-            this.setServerUrl(endpoint.getServerUrl());
-        }
-        if(endpoint.getRepositoryID()!=null){
-            this.setRepositoryID(endpoint.getRepositoryID());
-        }
-        if(endpoint.getSparqlEndpoint()!=null){
-            this.setSparqlEndpoint(endpoint.getSparqlEndpoint());
-        }
-        if(endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
-        if(endpoint.getQueryUrls() != null) {
-            this.setQueryUrls(Arrays.asList(endpoint.getQueryUrls().split("\\|")));
-        }
-        if(endpoint.getOntologyFormat()!=null){
-            this.setOntologyFormat(endpoint.getOntologyFormat());
-        }
-        if(endpoint.getPathDataDir()!=null){
-            this.setPathDataDir(endpoint.getPathDataDir());
-        }
-        if(endpoint.isAllRules()){
-            this.setAllRules(endpoint.isAllRules());
-        }
-        if(endpoint.getRdfFormat()!=null){
-            this.setRdfFormat(endpoint.getRdfFormat());
-        }
+    public ChimeraResourcesBean getChimeraResources() {
+        return chimeraResources;
     }
 
-    public void setAddConfig(GraphEndpoint endpoint){
-        if(endpoint.getRdfFormat()!=null){
-            this.setRdfFormat(endpoint.getRdfFormat());
-        }
-        if(endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
-    }
-
-    public void setConstructConfig(GraphEndpoint endpoint){
-        if(endpoint.getQuery()!=null){
-            this.setQuery(endpoint.getQuery());
-        }
-        if(endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
-        if(endpoint.getRdfFormat()!=null){
-            this.setRdfFormat(endpoint.getRdfFormat());
-        }
-        if(endpoint.isNewGraph()){
-            this.setNewGraph(endpoint.isNewGraph());
-            this.setCreateConfig(endpoint);
-        }
-    }
-
-    public void setInferenceConfig(GraphEndpoint endpoint){
-        if(endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
-        if(endpoint.getOntologyFormat()!=null){
-            this.setOntologyFormat(endpoint.getOntologyFormat());
-        }
-    }
-
-    public void setDetachConfig(GraphEndpoint endpoint) {
-        if(endpoint.isClear()){
-            this.setClear(endpoint.isClear());
-        }
-        if(!endpoint.isRepoOff()){
-            this.setRepoOff(endpoint.isRepoOff());
-        }
-        if(endpoint.isRouteOff()){
-            this.setRouteOff(endpoint.isRouteOff());
-        }
-        if (endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
-        if (endpoint.getRdfFormat()!=null){
-            this.setRdfFormat(endpoint.getRdfFormat());
-        }
-    }
-
-    public void setDumpConfig(GraphEndpoint endpoint){
-        if(endpoint.getDumpFormat()!=null){
-            this.setDumpFormat(endpoint.getDumpFormat());
-        }
-        if(endpoint.getFilename()!=null){
-            this.setFilename(endpoint.getFilename());
-        }
-        if(endpoint.getBasePath()!=null){
-            this.setBasePath(endpoint.getBasePath());
-        }
+    public void setChimeraResources(ChimeraResourcesBean chimeraResources) {
+        this.chimeraResources = chimeraResources;
     }
 
     public void setEndpointParameters(GraphEndpoint endpoint){
+        if(endpoint.getChimeraResources()!=null){
+            this.setChimeraResources(endpoint.getChimeraResources());
+        }
         if(endpoint.getNamedGraph()!=null){
             this.setNamedGraph(endpoint.getNamedGraph());
         }

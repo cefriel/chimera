@@ -77,7 +77,7 @@ public class Utils {
         }
         return schema;
     }
-    private static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
+    public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
         for (ChimeraResourceBean resource: resourcesBean.getResources())
         {
             RepositoryConnection con = repo.getConnection();
@@ -88,6 +88,13 @@ public class Utils {
                 con.setNamespace(ns.getPrefix(), ns.getName());
             }
         }
+    }
+
+    public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
+        Repository schema = new SailRepository(new MemoryStore());
+        schema.init();
+        populateRepository(schema, resourcesBean, context);
+        return schema;
     }
 
     private static void populateRepository(Repository repo, Exchange exchange, String namedGraph, List<String> ontologyPaths, String jwtToken) throws IOException {

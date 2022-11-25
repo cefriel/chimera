@@ -16,12 +16,28 @@
 
 package com.cefriel;
 
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GraphInferenceTest extends CamelTestSupport {
+
+    private static ChimeraResourcesBean ontologies;
+
+    @BeforeAll
+    static void fillBean(){
+        ChimeraResourceBean r1 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/ontologies/ontology.owl",
+                "rdfxml");
+        ontologies = new ChimeraResourcesBean(List.of(r1));
+    }
 
     @Test
     public void testInference() throws Exception {
@@ -35,10 +51,11 @@ public class GraphInferenceTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
+                getCamelContext().getRegistry().bind("ontologies", ontologies);
                 from("graph://get")
                         .to("graph://add?rdfFormat=turtle&resources=file://./src/test/resources/file/template/my-source.ttl")
                         .to("graph://add?rdfFormat=turtle&resources=file://./src/test/resources/file/template/enrich.ttl")
-                        .to("graph://inference?ontologyFormat=rdfxml&resources=file://./src/test/resources/file/ontologies/ontology.owl")
+                        .to("graph://inference?chimeraResources=#bean:ontologies")
                         .to("mock:inference");
             }
         };

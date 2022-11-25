@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -77,6 +78,10 @@ public class GraphEndpoint extends DefaultEndpoint {
     private String filename;
     @UriParam(defaultValue = "null")
     private GraphBean baseConfig;
+
+    // used in inference operation
+    @UriParam(defaultValue = "null")
+    private ChimeraResourcesBean chimeraResources;
     public GraphEndpoint() {
     }
 
@@ -334,5 +339,12 @@ public class GraphEndpoint extends DefaultEndpoint {
 
     public void setBaseConfig(GraphBean baseConfig) {
         this.baseConfig = baseConfig;
+    }
+
+    public ChimeraResourcesBean getChimeraResources() {
+        return chimeraResources;
+    }
+    public void setChimeraResources(ChimeraResourcesBean chimeraResources) {
+        this.chimeraResources = chimeraResources;
     }
 }
