@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.util.List;
 
 public class GraphObtain {
-    // todo ontologyFormat is a good candidate for a sum type, possible values may be Turtle | RDF | (possible types in chimera constants) ...
     // todo headers are propagated down the route, also the operationConfig (no)?
     private record HeaderParams(String namedGraph, String baseIRI, String rdfFormat) {}
     private record EndpointParams(String namedGraph, String baseIri, String rdfFormat, Boolean defaultGraph,

@@ -55,7 +55,7 @@ public class GraphProducer extends DefaultProducer {
         }
         operationConfig.setEndpointParameters(endpoint);
 
-        // todo check where ChimeraConstants configuration is used
+        // todo see if this can be avoided and only have operationLocalConfig
         // this is done to propagate the configuration from one producer operation to the other
         exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
 

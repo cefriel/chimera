@@ -34,8 +34,6 @@ public class UniLoader {
     public static InputStream open(String resource) throws MalformedURLException, IOException {
         return open(resource, null);
     }
-    // todo possibly use fileComponent, httpComponent from Camel
-
     // http, if header auth present pass on
     public static InputStream open(String resource, String token) throws MalformedURLException, IOException {
         String res;

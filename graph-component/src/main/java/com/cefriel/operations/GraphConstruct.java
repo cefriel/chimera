@@ -58,7 +58,6 @@ public class GraphConstruct {
 
         if (params.endpointParams().query() == null &&
                 (params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().size() == 0))
-            // todo throw exception and print warning
             throw new IllegalArgumentException("No query and no queryUrls specified");
 
         return true;

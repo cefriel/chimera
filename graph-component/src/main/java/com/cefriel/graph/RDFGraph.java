@@ -43,8 +43,6 @@ public abstract class RDFGraph {
         this.baseIRI = baseIRI;
     }
 
-    // todo handle this logic at construction time
-
     public void setNamedGraph(String namedGraph) {
         if (namedGraph != null && !namedGraph.equals("")) {
             setNamedGraph(Utils.stringToIRI(namedGraph));

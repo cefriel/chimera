@@ -27,8 +27,6 @@ import java.io.File;
 public class NativeRDFGraph extends RDFGraph {
 
     private Sail data;
-
-    // todo should probably accept a path instead of a plain String
     public NativeRDFGraph(String pathDataDir) {
         File dataDir = new File(pathDataDir);
         this.data = new NativeStore(dataDir);

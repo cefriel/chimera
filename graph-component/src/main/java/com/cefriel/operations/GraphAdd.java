@@ -48,7 +48,6 @@ public class GraphAdd {
             throw new RuntimeException("graph in Exchange body cannot be null");
 
         if (params.operationParams().rdfFormat() == null)
-            // todo throw exception and print warning
             throw new IllegalArgumentException("rdfFormat parameter can not be null");
 
         if (!ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(params.operationParams().rdfFormat()))
@@ -56,7 +55,6 @@ public class GraphAdd {
                     String.join(",", ChimeraConstants.SUPPORTED_RDF_FORMATS));
 
         if (params.operationParams().ontologyPaths() == null || params.operationParams().ontologyPaths().size() == 0)
-            // todo throw exception and print warning
             throw new IllegalArgumentException("No ontology url specified");
 
         return true;
