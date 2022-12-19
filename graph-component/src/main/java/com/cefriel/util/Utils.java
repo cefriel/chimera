@@ -78,18 +78,22 @@ public class Utils {
         return schema;
     }
     public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
-        for (ChimeraResourceBean resource: resourcesBean.getResources())
-        {
-            RepositoryConnection con = repo.getConnection();
+        for (ChimeraResourceBean resource: resourcesBean.getResources()) {
             Model model = StreamParser.parseResource(resource, context);
-            con.add(model);
-
-            for (Namespace ns : model.getNamespaces()) {
-                con.setNamespace(ns.getPrefix(), ns.getName());
-            }
+            populateRepository(repo, model);
         }
     }
-
+    public static void populateRepository(Repository repo, InputStream inputStream, String format) throws IOException {
+        Model model = StreamParser.parseTriples(inputStream, format, null);
+        populateRepository(repo, model);
+    }
+    public static void populateRepository(Repository repo, Model model) {
+        RepositoryConnection connection = repo.getConnection();
+        connection.add(model);
+        for (Namespace ns : model.getNamespaces()) {
+            connection.setNamespace(ns.getPrefix(), ns.getName());
+        }
+    }
     public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
         Repository schema = new SailRepository(new MemoryStore());
         schema.init();

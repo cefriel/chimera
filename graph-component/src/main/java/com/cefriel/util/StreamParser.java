@@ -66,6 +66,7 @@ public final class StreamParser implements TypeConverters{
             RDFParser parser = Rio.createParser(rdfFormat);
             parser.setRDFHandler(new StatementCollector(model));
             parser.parse(inputStream);
+            inputStream.close();
             return model;
         }
     }
