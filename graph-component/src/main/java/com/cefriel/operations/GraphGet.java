@@ -1,117 +1,162 @@
-/*
- * Copyright (c) 2019-2022 Cefriel.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
 package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.*;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.Utils;
+import com.cefriel.util.*;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 
 public class GraphGet {
+    // todo headers are propagated down the route, also the operationConfig (no)?
+    private record HeaderParams(String namedGraph, String baseIRI, String ontologyFormat) {}
+    private record EndpointParams(String namedGraph, String baseIri, Boolean defaultGraph,
+                                  String ontologyFormat,
+                                  ChimeraResourcesBean ontologies,
+                                  // HTTPRDF specific parameters
+                                  String serverURL,
+                                  String repositoryId,
+                                  // SPARQL ENDPOINT specific parameter
+                                  String sparqlEndpoint,
+                                  // Native and Inference data dir
+                                  String pathDataDir,
+                                  // InferenceRDFGraph parameter
+                                  Boolean allRules) {}
 
-    private static final Logger LOG = LoggerFactory.getLogger(GraphGet.class);
+    private record OperationParams(String jwtToken, String graphID, EndpointParams endpointParams) {}
 
-    public static RDFGraph graphCreate(Exchange exchange) throws IOException {
+    //these params come from the header
+    private static HeaderParams getHeaderParams(Exchange e) {
+        return new HeaderParams(
+                e.getMessage().getHeader(ChimeraConstants.CONTEXT_GRAPH, String.class),
+                e.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class),
+                e.getMessage().getHeader(ChimeraConstants.ONTOLOGY_RDF_FORMAT, String.class));
+    }
+    // these params come from the endpoint
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(
+                operationConfig.getNamedGraph(),
+                operationConfig.getBaseIri(),
+                operationConfig.isDefaultGraph(),
+                operationConfig.getOntologyFormat(),
+                operationConfig.getChimeraResources(),
+                operationConfig.getServerUrl(),
+                operationConfig.getRepositoryID(),
+                operationConfig.getSparqlEndpoint(),
+                operationConfig.getPathDataDir(),
+                operationConfig.isAllRules());
+    }
+    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
+        String graphID = e.getMessage().getHeader(ChimeraConstants.GRAPH_ID, String.class);
 
-        GraphBean configuration = exchange.getMessage().getHeader(ChimeraConstants.CONFIGURATION, GraphBean.class);
+        return new OperationParams(
+                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
+                graphID == null ? e.getExchangeId() : graphID,
+                mergeHeaderParams(getHeaderParams(e), getEndpointParams(operationConfig)));
+    }
+    private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams endpointParams) {
+        return new EndpointParams(
+                headerParams.namedGraph() != null ? headerParams.namedGraph() : endpointParams.namedGraph(),
+                headerParams.baseIRI() != null ? headerParams.baseIRI() : endpointParams.baseIri(),
+                endpointParams.defaultGraph(),
+                headerParams.ontologyFormat() != null ? headerParams.ontologyFormat() : endpointParams.ontologyFormat(),
+                endpointParams.ontologies(),
+                endpointParams.serverURL(),
+                endpointParams.repositoryId(),
+                endpointParams.sparqlEndpoint(),
+                endpointParams.pathDataDir(),
+                endpointParams.allRules());
+    }
+    private static Boolean isNativeRDFGraph (OperationParams params) {
+        return params.endpointParams().pathDataDir() != null;
+    }
+    private static Boolean isInferenceRDFGraph (OperationParams params) {
+        return (params.endpointParams().ontologies() != null) &&
+                (params.endpointParams().ontologies().getResources().size() > 0);
+    }
+    private static Boolean isHTTPRDFGraph (OperationParams params) {
+        return params.endpointParams().serverURL() != null &&
+                params.endpointParams().repositoryId() != null;
+    }
+    private static Boolean isSPARQLEndpointGraph (OperationParams params) {
+        return params.endpointParams().sparqlEndpoint() != null;
+    }
+    private record NamedGraphAndBaseIRI(String namedGraph, String baseIri) {}
+    private static NamedGraphAndBaseIRI handleNamedGraphAndBaseIRI(String namedGraph, String baseIri, String graphID) {
+        String returnNamedGraph, returnBaseIRI;
 
-        //configuration.getOntologyUrls().addAll(setConverterConfiguration(configuration, exchange));
-        RDFGraph graph = null;
-        boolean attached = false;
-        ValueFactory vf = SimpleValueFactory.getInstance();
+        returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
+        returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
+        return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
+    }
+    // called by the producer
+    public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws IOException {
+        OperationParams params = getOperationParams(exchange, operationConfig);
+        return obtainGraph(params, exchange, inputStream);
+    }
+    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws IOException {
+        RDFGraph graph = obtainGraph(params, exchange);
+        Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().ontologyFormat());
+        return graph;
+    }
 
-        if(!configuration.isDefaultGraph()){
-            if(exchange.getMessage().getHeader(ChimeraConstants.CONTEXT_GRAPH, String.class) != null)
-                configuration.setNamedGraph(exchange.getMessage().getHeader(ChimeraConstants.CONTEXT_GRAPH, String.class));
-            if(configuration.getNamedGraph() == null) {
-                if(exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class) != null) {
-                    configuration.setNamedGraph(exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class) + exchange.getExchangeId());
-                    configuration.setBaseIri(exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class));
-                }
-                else if (configuration.getBaseIri() != null) {
-                    configuration.setNamedGraph(configuration.getBaseIri() + exchange.getExchangeId());
-                }
-                else
-                    configuration.setNamedGraph(ChimeraConstants.DEFAULT_BASE_IRI + exchange.getExchangeId());
-            }
-            exchange.getMessage().setHeader(ChimeraConstants.GRAPH_ID, exchange.getExchangeId());
+    // called by the consumer
+    public static void obtainGraph(Exchange exchange, GraphBean operationConfig) throws IOException {
+        OperationParams params = getOperationParams(exchange, operationConfig);
+        RDFGraph graph = obtainGraph(params, exchange);
+        exchange.getMessage().setBody(graph, RDFGraph.class);
+    }
+    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws IOException {
+
+        String namedGraph, baseIRI;
+        if (!params.endpointParams().defaultGraph()) {
+            NamedGraphAndBaseIRI x = handleNamedGraphAndBaseIRI(params.endpointParams().namedGraph(), params.endpointParams().baseIri(), params.graphID());
+            namedGraph = x.namedGraph();
+            baseIRI = x.baseIri();
+        }
+        else {
+            namedGraph = null;
+            baseIRI = handleNamedGraphAndBaseIRI(null, params.endpointParams().baseIri(), null).baseIri();
         }
 
-        if (configuration.getServerUrl() != null && configuration.getRepositoryID() != null) {
-            LOG.info("Connecting to remote repository " + configuration.getServerUrl()+ " " + configuration.getRepositoryID());
-            graph = new HTTPRDFGraph(configuration.getServerUrl(), configuration.getRepositoryID());
-            attached = true;
+        RDFGraph graph;
+        if (isInferenceRDFGraph(params)) {
+            Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), exchange.getContext());
+            if (namedGraph != null && baseIRI != null)
+                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
+            else
+                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules());
         }
 
-        if (configuration.getSparqlEndpoint() != null) {
-            LOG.info("Connecting to SPARQL configuration " + configuration.getSparqlEndpoint());
-            graph = new SPARQLEndpointGraph(configuration.getSparqlEndpoint());
-            if (attached)
-                LOG.warn("Multiple graphs provided! SPARQL configuration attached, others have been discarded!");
-            attached = true;
+        else if (isHTTPRDFGraph(params)) {
+            if (namedGraph != null && baseIRI != null)
+                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), namedGraph, baseIRI);
+            else
+                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId());
         }
 
-        Repository schema = null;
-        if (configuration.getResources().size() != 0) {
-            if(configuration.getOntologyFormat() != null)
-                exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, configuration.getOntologyFormat());
-            if (attached) {
-                Utils.addSchemaToRepository(graph.getRepository(),configuration, exchange);
-                LOG.info("Inference demanded to the remote graph. Schema added: " + configuration.getResources());
-            } else
-                schema = Utils.getSchemaRepository(configuration, exchange);
-            exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
+        else if (isSPARQLEndpointGraph(params)) {
+            if (namedGraph != null && baseIRI != null)
+                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), namedGraph, baseIRI);
+            else
+                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint());
         }
 
-        if (configuration.getPathDataDir() != null) {
-            LOG.info("Creating Native RDF4J store with path " + configuration.getPathDataDir());
-            if (schema != null) {
-                graph = new InferenceRDFGraph(schema, configuration.getPathDataDir(), configuration.isAllRules());
-                LOG.info("Inference enabled using schema: " + configuration.getResources());
-            }  else
-                graph = new NativeRDFGraph(configuration.getPathDataDir());
-            if (attached)
-                LOG.warn("Multiple graphs provided! Native Graph attached, others have been discarded!");
+        else if (isNativeRDFGraph(params)) {
+            if (namedGraph != null && baseIRI != null)
+                graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), namedGraph, baseIRI);
+            else
+                graph = new NativeRDFGraph(params.endpointParams().pathDataDir());
         }
-        if (graph == null) {
-            LOG.info("Creating In-Memory RDF4J store");
-            if (schema != null) {
-                graph = new InferenceRDFGraph(schema, null, configuration.isAllRules());
-                LOG.info("Inference enabled using schema: " + configuration.getResources());
-            } else
+
+        else {
+            if (namedGraph != null && baseIRI != null)
+                graph = new MemoryRDFGraph(namedGraph, baseIRI);
+            else
                 graph = new MemoryRDFGraph();
         }
-
-        if (configuration.getNamedGraph() != null) {
-            graph.setNamedGraph(configuration.getNamedGraph());
-            LOG.info("The graph has name: " + graph.getNamedGraph());
-        }
-        if (configuration.getBaseIri() != null)
-            graph.setBaseIRI(vf.createIRI(configuration.getBaseIri()));
 
         return graph;
     }

@@ -23,12 +23,10 @@ import org.apache.camel.Exchange;
 import org.apache.camel.NoSuchEndpointException;
 import org.apache.camel.support.DefaultProducer;
 import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.List;
 
 public class GraphProducer extends DefaultProducer {
 
@@ -68,7 +66,7 @@ public class GraphProducer extends DefaultProducer {
                 inputStream = exchange.getMessage().getBody(InputStream.class);
                 // Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
-                RDFGraph graph = GraphObtain.obtainGraph(exchange, operationConfig, inputStream);
+                RDFGraph graph = GraphGet.obtainGraph(exchange, operationConfig, inputStream);
                 exchange.getMessage().setBody(graph);
                 }
             case "add" -> GraphAdd.graphAdd(exchange, operationConfig);

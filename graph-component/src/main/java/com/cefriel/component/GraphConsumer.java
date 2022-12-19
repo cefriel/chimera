@@ -16,9 +16,7 @@
 
 package com.cefriel.component;
 
-import com.cefriel.graph.*;
 import com.cefriel.operations.GraphGet;
-import com.cefriel.operations.GraphObtain;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -48,7 +46,7 @@ public class GraphConsumer extends DefaultConsumer {
         }
         operationConfig.setEndpointParameters(endpoint);
         if ("get".equals(endpoint.getName())) {
-            GraphObtain.obtainGraph(exchange, operationConfig);
+            GraphGet.obtainGraph(exchange, operationConfig);
             try {
                 // send message to next processor in the route
                 getProcessor().process(exchange);
