@@ -18,8 +18,8 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.UniLoader;
+import com.cefriel.util.*;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.QueryResults;
@@ -35,29 +35,26 @@ import java.util.*;
 public class GraphConstruct {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConstruct.class);
-    // todo if the same query is given both with the query parameter and in the query list extracted from files deduplicate
-    private record HeaderParams() {}
-    private record EndpointParams(String query, List<String> queryUrls, Boolean newGraph) {}
-    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams endpointParams) {}
-    private static EndpointParams getEndpointParams(GraphBean operationConfig, Exchange e) {
+    private record EndpointParams(String literalQuery, ChimeraResourcesBean queryUrls, String namedGraph) {}
+    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
                 operationConfig.getQuery(),
-                operationConfig.getQueryUrls(),
-                operationConfig.isNewGraph());
+                operationConfig.getChimeraResources(),
+                operationConfig.getNamedGraph());
     }
     private static OperationParams getOperationParams (Exchange e, GraphBean operationConfig) {
         return new OperationParams(
                 e.getMessage().getBody(RDFGraph.class),
-                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                getEndpointParams(operationConfig, e));
+                getEndpointParams(operationConfig));
     }
 
     private static boolean validParams(OperationParams params) {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
 
-        if (params.endpointParams().query() == null &&
-                (params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().size() == 0))
+        if (params.endpointParams().literalQuery() == null &&
+                (params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().getResources().size() == 0))
             throw new IllegalArgumentException("No query and no queryUrls specified");
 
         return true;
@@ -68,14 +65,14 @@ public class GraphConstruct {
             return queries.stream().distinct().toList();
         } else if (query != null){
             return List.of(query);
-        } else return List.of();
+        } else return queries;
     }
-    public static List<String> readSparqlQueries(List<String> queryUrls, String jwtToken) throws IOException {
+    public static List<String> readSparqlQueries(ChimeraResourcesBean queryUrls, CamelContext context) throws IOException {
 
         List<String> sparqlQueries = new ArrayList<>();
 
-        for (String query : queryUrls){
-            InputStream inputStream = UniLoader.open(query, jwtToken);
+        for(ChimeraResourceBean queryUrl : queryUrls.getResources()) {
+            InputStream inputStream = ResourceAccessor.open(queryUrl, context);
             //Creating a Scanner object
             Scanner scanner = new Scanner(inputStream);
             //Reading line by line from scanner to StringBuffer
@@ -84,40 +81,38 @@ public class GraphConstruct {
                 stringBuilder.append(scanner.nextLine());
             }
             sparqlQueries.add(stringBuilder.toString());
+            inputStream.close();
         }
-        LOG.info("All queries extracted");
+        LOG.info("All queryUrls extracted");
         return sparqlQueries;
     }
-    private static void executeQueryOnGraph(RDFGraph graph, String query) {
+    private static void executeQueryOnGraph(RDFGraph graph, String query, String namedGraph) {
         Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
-        try (RepositoryConnection con = graph.getRepository().getConnection()) {
-            LOG.info("Added " + m.size() + " triples");
+        RepositoryConnection con = graph.getRepository().getConnection();
+        LOG.info("Added " + m.size() + " triples");
+        if(namedGraph != null)
+            con.add(m, Utils.stringToIRI(namedGraph));
+        else
             con.add(m);
-        }
+        con.close();
     }
+
     public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws IOException {
         OperationParams operationParams = getOperationParams(exchange, operationConfig);
 
         if (validParams(operationParams)) {
-            if (operationParams.endpointParams().newGraph()) {
-                RDFGraph newGraph = GraphObtain.obtainGraph(exchange, operationConfig).graph();
-                graphConstruct(newGraph, operationParams, exchange);
-            }
-            else {
-                graphConstruct(operationParams.graph(), operationParams, exchange);
-            }
+            RDFGraph graph = operationParams.graph();
+            graphConstruct(graph, operationParams, exchange.getContext());
+            exchange.getMessage().setBody(graph, RDFGraph.class);
         }
     }
-
-    private static void graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws IOException {
+    private static void graphConstruct(RDFGraph graph, OperationParams params, CamelContext context) throws IOException {
         List<String> sparqlQueries = mergeQueries(
-                params.endpointParams().query(),
-                readSparqlQueries(params.endpointParams().queryUrls(), params.jwtToken()));
+                params.endpointParams().literalQuery(),
+                readSparqlQueries(params.endpointParams().queryUrls(), context));
 
         for (String query : sparqlQueries) {
-            executeQueryOnGraph(graph, query);
+            executeQueryOnGraph(graph, query, params.endpointParams().namedGraph());
         }
-        
-        exchange.getMessage().setBody(graph, RDFGraph.class);
     }
 }
