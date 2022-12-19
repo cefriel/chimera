@@ -48,22 +48,17 @@ public class GraphConsumer extends DefaultConsumer {
         }
         operationConfig.setEndpointParameters(endpoint);
         if ("get".equals(endpoint.getName())) {
-            Exchange returnExchange = exchange.copy();
-            var rdfGraphAndExchange = GraphObtain.obtainGraph(returnExchange, operationConfig);
-            RDFGraph graph = rdfGraphAndExchange.graph();
-            returnExchange = rdfGraphAndExchange.exchange();
-            returnExchange.getMessage().setBody(graph);
-
+            GraphObtain.obtainGraph(exchange, operationConfig);
             try {
                 // send message to next processor in the route
-                getProcessor().process(returnExchange);
+                getProcessor().process(exchange);
             } catch (Exception e) {
                 exchange.setException(e);
             } finally {
                 if (exchange.getException() != null) {
-                    getExceptionHandler().handleException("Error processing exchange", returnExchange, returnExchange.getException());
+                    getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
                 }
-                releaseExchange(returnExchange, false);
+                releaseExchange(exchange, false);
             }
             doStop();
         } else {
