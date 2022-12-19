@@ -18,9 +18,8 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.StreamParser;
-import com.cefriel.util.UniLoader;
+import com.cefriel.util.*;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Namespace;
@@ -38,80 +37,40 @@ public class GraphAdd {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphAdd.class);
 
-    // needs jwt token, rdf format, resources (ontologyUrls),
-    // contentType (MimeType) set to outoging exchange
-    private record HeaderParams(String rdfFormat) {}
-    private record EndpointParams(String rdfFormat, List<String> ontologyPaths) {}
-    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams operationParams) {}
-    private static boolean validParams(OperationParams params) {
+    private record EndpointParams(ChimeraResourcesBean ontologies) {}
+    private record OperationParams(RDFGraph graph, CamelContext context, EndpointParams operationParams) {}
+    private static boolean validParams(OperationParams params) throws IllegalArgumentException {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
 
-        if (params.operationParams().rdfFormat() == null)
-            throw new IllegalArgumentException("rdfFormat parameter can not be null");
-
-        if (!ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(params.operationParams().rdfFormat()))
-            throw new IllegalArgumentException("Invalid specified rdfFormat, supported formats are: " +
-                    String.join(",", ChimeraConstants.SUPPORTED_RDF_FORMATS));
-
-        if (params.operationParams().ontologyPaths() == null || params.operationParams().ontologyPaths().size() == 0)
-            throw new IllegalArgumentException("No ontology url specified");
+        // todo validate Chimera resources
 
         return true;
     }
-    private static HeaderParams getHeaderParams(Exchange e) {
-        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
-    }
-    private static EndpointParams getEndpointParams(GraphBean config) {
-        return new EndpointParams(config.getRdfFormat(), config.getResources());
-    }
-    private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams params) {
-        return new EndpointParams(
-                headerParams.rdfFormat() != null ? headerParams.rdfFormat() : params.rdfFormat(),
-                params.ontologyPaths());
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(operationConfig.getChimeraResources());
     }
     private static OperationParams getOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
         return new OperationParams(
                 graph,
-                exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                mergeHeaderParams(getHeaderParams(exchange), getEndpointParams(operationConfig)));
+                exchange.getContext(),
+                getEndpointParams(operationConfig));
     }
-    record GraphAndExchange (RDFGraph graph, Exchange exchange) {}
-
-    public static GraphAndExchange graphAdd(Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static void graphAdd(Exchange exchange, GraphBean operationConfig) throws IOException {
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
-        return graphAdd(graph, exchange, operationConfig);
+        exchange.getMessage().setBody(graphAdd(graph, exchange, operationConfig), RDFGraph.class);
     }
-    public static GraphAndExchange graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static RDFGraph graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws IOException {
         OperationParams params = getOperationParams(graph, exchange, operationConfig);
         if (validParams(params))
-            return graphAdd(params, exchange);
+            return graphAdd(params);
         return null;
     }
-    private static GraphAndExchange graphAdd(OperationParams params, Exchange exchange) throws IOException {
+    private static RDFGraph graphAdd(OperationParams params) throws IOException {
         if (validParams(params)){
-            for (String ontologyUrl : params.operationParams().ontologyPaths()) {
-                Model model = parseOntology(exchange, ontologyUrl, params.operationParams().rdfFormat(), params.jwtToken());
-                Repository repo = params.graph().getRepository();
-                try (RepositoryConnection con = repo.getConnection()) {
-                    con.add(model);
-                    for (Namespace ns : model.getNamespaces()) {
-                        con.setNamespace(ns.getPrefix(), ns.getName());
-                    }
-                }
-                LOG.info(model.size() + " triples added to the graph");
-            }
-            return new GraphAndExchange(params.graph(), exchange);
+            Utils.populateRepository(params.graph.getRepository(), params.operationParams().ontologies(), params.context());
+            return params.graph();
         }
         throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
-    }
-
-    // todo this method might be refactored to utils
-    public static Model parseOntology(Exchange exchange, String ontologyUrl, String rdfFormat, String jwtToken) throws IOException {
-        InputStream inputStream = UniLoader.open(ontologyUrl, jwtToken);
-        LOG.info("InputStream loaded from path " + ontologyUrl);
-        Rio.getParserFormatForFileName(ontologyUrl)
-                .ifPresent(format -> exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, format.getMIMETypes()));
-        return StreamParser.parse(inputStream, exchange);
     }
 }
