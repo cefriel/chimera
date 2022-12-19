@@ -18,9 +18,7 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.StreamParser;
-import com.cefriel.util.UniLoader;
+import com.cefriel.util.*;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.IRI;
@@ -38,35 +36,19 @@ import java.util.Set;
 
 public class GraphDetach {
     private static final Logger LOG = LoggerFactory.getLogger(GraphDetach.class);
-    private record HeaderParams (String rdfFormat) {}
-    private record EndpointParams(String rdfFormat, List<String> ontologyUrls, boolean clearGraph, boolean repoOff, boolean routeOff) {}
-    private record OperationParams(RDFGraph graph, String jwtToken, EndpointParams endpointParams) {}
-
-    private static EndpointParams mergeHeaderParams(HeaderParams h, EndpointParams p) {
-        return new EndpointParams(
-                h.rdfFormat() != null ? h.rdfFormat() : p.rdfFormat(),
-                p.ontologyUrls(),
-                p.clearGraph(),
-                p.repoOff(),
-                p.routeOff());
-    }
-    private static HeaderParams getHeaderParams(Exchange e) {
-        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
-    }
-
+    private record EndpointParams(ChimeraResourcesBean ontologyUrls, boolean clearGraph, boolean repoOff, boolean routeOff) {}
+    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
-                operationConfig.getRdfFormat(),
-                operationConfig.getResources(),
+                operationConfig.getChimeraResources(),
                 operationConfig.isClear(),
                 operationConfig.isRepoOff(),
                 operationConfig.isRouteOff());
     }
-    private static OperationParams getOperationParams(HeaderParams h, EndpointParams p, Exchange e) {
+    private static OperationParams getOperationParams(GraphBean operationConfig, Exchange e) {
         return new OperationParams(
                 e.getMessage().getBody(RDFGraph.class),
-                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                mergeHeaderParams(h,p));
+                getEndpointParams(operationConfig));
     }
     public static boolean validParams(OperationParams params) {
         if (params.graph() == null)
@@ -74,9 +56,8 @@ public class GraphDetach {
         return true;
     }
     public static void graphDetach(Exchange exchange, GraphBean operationConfig) throws IOException {
-        var params = getOperationParams(getHeaderParams(exchange), getEndpointParams(operationConfig), exchange);
+        var params = getOperationParams(operationConfig, exchange);
         graphDetach(params, exchange);
-
     }
     public static void graphDetach(OperationParams params, Exchange exchange) throws IOException {
         if (validParams(params)) {
@@ -89,12 +70,12 @@ public class GraphDetach {
                         LOG.info("Cleared named graph " + contextIRI.stringValue());
                     }
                     if (params.endpointParams().ontologyUrls() != null)
-                        for (String path : params.endpointParams().ontologyUrls()) {
-                            Model l = StreamParser.parse(UniLoader.open(path, params.jwtToken()), exchange);
+                        for (ChimeraResourceBean ontologyUrl : params.endpointParams().ontologyUrls().getResources()) {
+                            Model l = StreamParser.parseResource(ontologyUrl, exchange.getContext());
                             Set<Namespace> namespaces = l.getNamespaces();
                             for (Namespace n : namespaces)
                                 con.removeNamespace(n.getPrefix());
-                            LOG.info("Removed namespaces listed in file " + path);
+                            LOG.info("Removed namespaces listed in file " + ontologyUrl.getUrl());
                         }
                 }
             }
