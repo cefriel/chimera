@@ -2,6 +2,7 @@ package com.cefriel.util;
 
 import org.apache.camel.CamelContext;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ResourceAccessor {
@@ -10,9 +11,10 @@ public class ResourceAccessor {
     private final static String httpsPrefix = "https://";
     private final static String classPathPrefix = "classpath://";
 
-    public static InputStream open(ChimeraResourceBean resource, CamelContext context) {
+    public static InputStream open(ChimeraResourceBean resource, CamelContext context) throws FileNotFoundException {
         if (resource.getUrl().startsWith(filePrefix)) {
-            return FileResourceAccessor.getFileResourceInputStream(resource, context);
+            // return FileResourceAccessor.getFileResourceInputStream(resource, context);
+            return FileResourceAccessor.getFileResource(resource);
         }
         else if (resource.getUrl().startsWith(httpPrefix) || resource.getUrl().startsWith(httpsPrefix)) {
             var response = HTTPResourceAccessor.getHTTPResourceInputStream(resource, context);

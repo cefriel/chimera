@@ -5,12 +5,13 @@ import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.Exchange;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileResourceAccessor {
-
     private final static String filePrefix = "file://";
     public static Exchange getFileResource(ChimeraResourceBean resource, CamelContext context) {
         ConsumerTemplate consumer = context.createConsumerTemplate();
@@ -23,7 +24,18 @@ public class FileResourceAccessor {
 
         String callUrl = filePrefix + baseDirectory + "/?filename=" + fileName;
 
-        return consumer.receive(callUrl);
+        consumer.start();
+        Exchange response = consumer.receive(callUrl);
+        consumer.stop();
+
+        return response;
+    }
+
+    public static InputStream getFileResource(ChimeraResourceBean resource) throws FileNotFoundException {
+        String fileURI = resource.getUrl();
+        fileURI = fileURI.replace(filePrefix, "");
+        Path filePath = Paths.get(fileURI);
+        return new FileInputStream(filePath.toString());
     }
 
     public static InputStream getFileResourceInputStream(ChimeraResourceBean resource, CamelContext context) {
