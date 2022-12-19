@@ -17,6 +17,9 @@
 package com.cefriel;
 
 import com.cefriel.component.GraphBean;
+import com.cefriel.graph.MemoryRDFGraph;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -28,15 +31,18 @@ import java.util.List;
 
 public class GraphAddTest extends CamelTestSupport {
 
-    static GraphBean bean = new GraphBean();
-
+    private static ChimeraResourcesBean ontologies;
+    private static ChimeraResourcesBean ontologies2;
     @BeforeAll
     static void fillBean(){
-        bean.setNamedGraph("http://example.org/Picasso");
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/base/test.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
+        ChimeraResourceBean r1 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/template_agency.ttl",
+                "turtle");
+        ontologies = new ChimeraResourcesBean(List.of(r1));
+        ChimeraResourceBean r2 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/random.ttl",
+                "turtle");
+        ontologies2 = new ChimeraResourcesBean(List.of(r2));
     }
 
     @Test
@@ -44,7 +50,22 @@ public class GraphAddTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:add");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert (graph.getRepository().isInitialized());
+        assert (graph.getRepository().getConnection().size() > 0);
     }
+
+    @Test
+    public void testAdd2() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:add2");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert (graph.getRepository().isInitialized());
+        assert (graph.getRepository().getConnection().size() > 0);
+    }
+
+    //todo handle problem where same resouce cannot be accessed by multiple routes
 
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
@@ -52,13 +73,16 @@ public class GraphAddTest extends CamelTestSupport {
 
             public void configure() throws Exception {
 
-                getCamelContext().getRegistry().bind("config", bean);
+                getCamelContext().getRegistry().bind("ontologies", ontologies);
+                getCamelContext().getRegistry().bind("ontologies2", ontologies2);
 
-                from("graph://get?baseConfig=#bean:config")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
-                        .to("graph://add?resources=file://./src/test/resources/file/template/template_agency.ttl")
+                from("graph://get")
+                        .to("graph://add?chimeraResources=#bean:ontologies")
                         .to("mock:add");
+
+                from("graph://get?namedGraph=http://example.org/Picasso")
+                        .to("graph://add?chimeraResources=#bean:ontologies")
+                        .to("mock:add2");
             }
         };
     }

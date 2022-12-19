@@ -17,9 +17,15 @@
 package com.cefriel;
 
 import com.cefriel.component.GraphBean;
+import com.cefriel.graph.RDFGraph;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.util.Values;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -27,54 +33,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphConstructTest extends CamelTestSupport {
-
-    static GraphBean bean = new GraphBean();
-
+    private static ChimeraResourcesBean triples;
+    private static ChimeraResourcesBean constructQueries;
+    private static final String namedGraph = "http://example.org/newContext";
     @BeforeAll
     static void fillBean(){
-        List<String> urls = new ArrayList<>();
-        bean.setNamedGraph("http://example.org/Picasso");
-        urls.add("file://./src/test/resources/file/base/test.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        bean.setBasePath("src/test/resources/file/result");
-        bean.setDumpFormat("turtle");
-    }
+        ChimeraResourceBean r1 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/base/test.ttl",
+                "turtle");
+        triples = new ChimeraResourcesBean(List.of(r1));
 
+        ChimeraResourceBean q1 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/construct/construct.txt",
+                "txt"
+        );
+        constructQueries = new ChimeraResourcesBean(List.of(q1));
+    }
     @Test
     public void testConstructNew() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:constructNew");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
+        RDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class);
+        RepositoryResult<Statement> statements = graph.getRepository().getConnection().getStatements(null,null,
+                null, Values.iri(namedGraph));
+        assert (statements.stream().count() == 9);
     }
-    // todo write better tests where the result of the construct query is checked
     @Test
     public void testConstructOld() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:constructOld");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-    }
+        RDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class);
 
+        RepositoryResult<Statement> statements = graph.getRepository().getConnection().getStatements(
+                null,
+                Values.iri("https://schema.org/name"),
+                null);
+
+        assert (statements.stream().count() == 9);
+    }
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
 
             public void configure() {
 
-                getCamelContext().getRegistry().bind("config", bean);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("constructQueries", constructQueries);
 
-                from("graph://get")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
-                        .to("graph://construct?newGraph=true&queryUrls=file://./src/test/resources/file/construct/construct.txt")
-                        .to("graph://dump?filename=newConstructDump")
+                from("graph://get?namedGraph=http://example.org/Pre")
+                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResources=#bean:constructQueries")
                         .to("mock:constructNew");
 
-                from("graph://get?namedGraph=http://example.org/Picasso")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
-                        .to("graph://construct?queryUrls=file://./src/test/resources/file/construct/construct.txt")
-                        .to("graph://dump?filename=oldConstructDump")
+                from("graph://get")
+                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("graph://construct?chimeraResources=#bean:constructQueries")
                         .to("mock:constructOld");
             }
         };

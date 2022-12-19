@@ -18,6 +18,8 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -30,17 +32,26 @@ import java.util.List;
 public class GraphMulticastTest extends CamelTestSupport {
 
     static GraphBean bean = new GraphBean();
+    static ChimeraResourcesBean queries;
+    static ChimeraResourcesBean triples1;
+    static ChimeraResourcesBean triples2;
 
     @BeforeAll
     static void fillBean(){
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/base/test.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        bean.setBasePath("src/test/resources/file/result");
-        bean.setDumpFormat("turtle");
-        bean.setClear(true);
-        bean.setRouteOff(true);
+        queries = new ChimeraResourcesBean(List.of(
+                new ChimeraResourceBean(
+                        "file://./src/test/resources/file/construct/construct.txt",
+                        "turtle")));
+
+        triples1 = new ChimeraResourcesBean(List.of((
+                new ChimeraResourceBean(
+                        "file://./src/test/resources/file/template/my-source.ttl",
+                        "turtle"))));
+
+        triples2 = new ChimeraResourcesBean(List.of((
+                new ChimeraResourceBean(
+                        "file://./src/test/resources/file/template/enrich.ttl",
+                        "turtle"))));
     }
 
     @Test
@@ -49,27 +60,24 @@ public class GraphMulticastTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:multicast");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-
     }
-
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("config", bean);
+                getCamelContext().getRegistry().bind("queries", queries);
+                getCamelContext().getRegistry().bind("triples1", triples1);
+                getCamelContext().getRegistry().bind("triples2", triples2);
 
-                from("graph://get?baseConfig=#bean:config")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .setHeader(ChimeraConstants.RDF_FORMAT, constant("turtle"))
-                        .to("graph://add")
-                        .to("graph://add?resources=file://./src/test/resources/file/template/my-source.ttl")
-                            .to("graph://construct?queryUrls=file://./src/test/resources/file/construct/construct.txt")
+                from("graph://get")
+                        .to("graph://add?chimeraResources=#bean:triples1")
+                        .to("graph://construct?chimeraResources=#bean:queries")
                         .multicast()
-                        .to("graph://dump?filename=beforeEnrich")
-                        .to("graph://add?resources=file://./src/test/resources/file/template/enrich.ttl")
-                        .to("graph://dump?filename=afterEnrich")
-                        .to("graph://detach")
+                        .to("graph://dump?filename=beforeEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
+                        .to("graph://add?chimeraResources=#bean:triples2")
+                        .to("graph://dump?filename=afterEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
+                        .to("graph://detach?clear=true&routeOff=true")
                         .end()
                         .to("mock:multicast");
             }

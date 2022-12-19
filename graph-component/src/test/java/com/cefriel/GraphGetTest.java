@@ -155,7 +155,7 @@ public class GraphGetTest extends CamelTestSupport {
                         .to("mock:sparql");
 
                 from("direct:start")
-                        .to("graph://get?rdfFormat=turtle")
+                        .to("graph://get?ontologyFormat=turtle")
                         .to("mock:toMemory");
 
                 from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")

@@ -28,15 +28,22 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GraphInferenceTest extends CamelTestSupport {
-
     private static ChimeraResourcesBean ontologies;
-
+    private static ChimeraResourcesBean triples;
     @BeforeAll
     static void fillBean(){
         ChimeraResourceBean r1 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/ontologies/ontology.owl",
                 "rdfxml");
         ontologies = new ChimeraResourcesBean(List.of(r1));
+
+        ChimeraResourceBean r2 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/my-source.ttl",
+                "turtle");
+        ChimeraResourceBean r3 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/enrich.ttl",
+                "turtle");
+        triples = new ChimeraResourcesBean(List.of(r2,r3));
     }
 
     @Test
@@ -52,9 +59,10 @@ public class GraphInferenceTest extends CamelTestSupport {
             public void configure() {
 
                 getCamelContext().getRegistry().bind("ontologies", ontologies);
+                getCamelContext().getRegistry().bind("triples", triples);
                 from("graph://get")
-                        .to("graph://add?rdfFormat=turtle&resources=file://./src/test/resources/file/template/my-source.ttl")
-                        .to("graph://add?rdfFormat=turtle&resources=file://./src/test/resources/file/template/enrich.ttl")
+                        .to("graph://add?chimeraResources=#bean:ontologies")
+                        .to("graph://add?chimeraResources=#bean:ontologies")
                         .to("graph://inference?chimeraResources=#bean:ontologies")
                         .to("mock:inference");
             }
