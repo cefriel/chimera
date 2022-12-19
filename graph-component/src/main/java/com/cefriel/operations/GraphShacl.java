@@ -18,9 +18,7 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.UniLoader;
-import com.cefriel.util.Utils;
+import com.cefriel.util.*;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.common.exception.ValidationException;
 import org.eclipse.rdf4j.model.Model;
@@ -40,11 +38,60 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class GraphShacl {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphShacl.class);
+    private record EndpointParams(ChimeraResourcesBean shaclUrls) {}
+    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
 
+    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
+        return new EndpointParams(operationConfig.getChimeraResources());
+    }
+    private static OperationParams getOperationParams(Exchange exchange, GraphBean operationConfiguration) {
+        return new OperationParams(
+                exchange.getMessage().getBody(RDFGraph.class),
+                getEndpointParams(operationConfiguration));
+    }
+    public static void graphShacl(Exchange exchange, GraphBean operationConfiguration) throws IOException {
+        OperationParams operationParams = getOperationParams(exchange, operationConfiguration);
+
+        List<ChimeraResourceBean> shaclUrls = operationParams.endpointParams().shaclUrls().getResources();
+        if (!shaclUrls.isEmpty()) {
+            SailRepository sailRepository = new SailRepository(new ShaclSail(new MemoryStore()));
+            sailRepository.init();
+            try (SailRepositoryConnection connection = sailRepository.getConnection()) {
+                for (ChimeraResourceBean shacleUrl : shaclUrls) {
+                    InputStream is = ResourceAccessor.open(shacleUrl, exchange.getContext());
+                    connection.begin();
+                    RDFFormat format = Rio.getParserFormatForMIMEType(shacleUrl.getSerializationFormat()).orElse(RDFFormat.TURTLE);
+                    connection.add(is, "", format, RDF4J.SHACL_SHAPE_GRAPH);
+                    connection.commit();
+                }
+
+                connection.begin();
+                RepositoryConnection data = operationParams.graph().getRepository().getConnection();
+                //Enable inference
+                connection.add(data.getStatements(null, null, null, true));
+                data.close();
+                try {
+                    connection.commit();
+                } catch (RepositoryException exception) {
+                    Throwable cause = exception.getCause();
+                    if (cause instanceof ValidationException) {
+                        Model validationReportModel = ((ValidationException) cause).validationReportAsModel();
+                        String path = Utils.writeModelToDestination(exchange, validationReportModel, "validation-report");
+                        LOG.error("Validation report dumped to file " + path);
+                    }
+                } finally {
+                    connection.close();
+                    sailRepository.shutDown();
+                }
+                LOG.info("Validation executed correctly");
+            }
+        }
+    }
     public static void graphShacl(Exchange exchange) throws IOException {
 
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
