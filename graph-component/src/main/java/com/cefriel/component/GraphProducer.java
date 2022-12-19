@@ -35,16 +35,18 @@ public class GraphProducer extends DefaultProducer {
     private static final Logger LOG = LoggerFactory.getLogger(GraphProducer.class);
     private final GraphEndpoint endpoint;
 
+    // todo wherever a resource like a file or a url use ChimeraResource
+    // todo every operation will get the Camel Context from the Exchange that it receives
 
     public GraphProducer(GraphEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
     }
-
     public void process(Exchange exchange) throws Exception {
         InputStream inputStream;
         Model model;
         GraphBean operationConfig;
+
 
         if( exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION)!=null ){
             operationConfig = new GraphBean(exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION, GraphBean.class));
@@ -61,44 +63,21 @@ public class GraphProducer extends DefaultProducer {
 
         switch (endpoint.getName()){
             case "config" -> exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
-
             case "get" -> {
+                // todo here i need to keep header format information
                 inputStream = exchange.getMessage().getBody(InputStream.class);
-                Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
-                model = StreamParser.parse(inputStream, exchange);
+                // Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
                 exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
-                // RDFGraph graph = GraphGet.graphCreate(exchange);
-                var rdfGraphAndExchange = GraphObtain.obtainGraph(exchange, operationConfig, inputStream);
-                RDFGraph graph = rdfGraphAndExchange.graph();
-                Exchange ex = rdfGraphAndExchange.exchange();
-                // ex.getMessage().setBody(graph);
-                // GraphAdd.graphAdd(graph, model);
-                // GraphAdd.graphAdd(graph, ex, operationConfig);
+                RDFGraph graph = GraphObtain.obtainGraph(exchange, operationConfig, inputStream);
                 exchange.getMessage().setBody(graph);
                 }
-            case "add" -> {
-                /*
-                Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
-                for (String path: operationConfig.getResources()) {
-                    inputStream = UniLoader.open(path, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class));
-                    LOG.info("InputStream loaded from path " + path);
-                    Rio.getParserFormatForFileName(path)
-                            .ifPresent(format -> exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, format.getMIMETypes()));
-                    model = StreamParser.parse(inputStream, exchange);
-                    GraphAdd.graphAdd(exchange.getMessage().getBody(RDFGraph.class), model);
-                }
-                 */
-
-                // todo option to copy original exchange and then modify it and the forward it, see if this makes sense
-                var rdfGraphAndExchange = GraphAdd.graphAdd(exchange, operationConfig);
-            }
-
+            case "add" -> GraphAdd.graphAdd(exchange, operationConfig);
             case "construct" -> GraphConstruct.graphConstruct(exchange, operationConfig);
             case "detach" -> GraphDetach.graphDetach(exchange, operationConfig);
             case "dump" -> GraphDump.graphDump(exchange, operationConfig);
             case "inference" -> GraphInference.graphInference(exchange, operationConfig);
             case "shacl" -> { //TODO Add tests
-                GraphShacl.graphShacl(exchange);
+                GraphShacl.graphShacl(exchange, operationConfig);
             }
             default -> throw new NoSuchEndpointException("This endpoint does not exist");
         }
