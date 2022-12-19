@@ -341,6 +341,9 @@ public class GraphEndpoint extends DefaultEndpoint {
         this.baseConfig = baseConfig;
     }
 
+    /**
+     * Parameter used wherever resources are needed
+     */
     public ChimeraResourcesBean getChimeraResources() {
         return chimeraResources;
     }

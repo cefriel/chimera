@@ -58,5 +58,4 @@ public abstract class RDFGraph {
             this.repo = cRep;
         }
     }
-// todo decide on weather to use the graph context naming convention of namedGraph naming convention
 }
