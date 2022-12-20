@@ -1,0 +1,90 @@
+* Camel Graph Component
+** Declaring resources
+** Operations
+The entrypoint uri to the Graph Component is:
+#+begin_src
+  graph://operationName[?options]
+#+end_src
+
+The options available for each operation can be specified via header,
+by uri or both. This is specified by the documentation with the /[H]/,
+/[U]/, /[H | U]/ notation respectively. When an option can be
+specified by both header and uri the header provided value takes
+precedence.
+
+*** Graph Get
+The Get operation allows the creation of an RDFGraph graph Object.
+The available graph types are:
+- HTTPRDF Graph ::
+- Native RDF Graph ::
+- Inference RDF Graph ::
+- Memory RDF Graph ::
+- Sparql enpoint Graph ::
+  
+When used as a consumer the specified options contribute to the
+creation of a graph. When used as a producer the created graph is
+populated with the data passed along in the Camel Exchange body
+specified by the previous route step.
+
+The uri for the graph GET operation is:
+#+begin_src
+  graph://get[?options]
+#+end_src
+
+and can be configured with the following options:
+
+- namedGraph /[H | U]/ :: The name of the graph to which triples
+  will be attached to.
+- baseIRI /[H | U]/ :: IRI of the created graph
+- rdfFormat /[H | U]/ :: (producer only) Format of the data from the
+  received exchange body.
+- defaultGraph /[U]/ :: Boolean, false to name the graph. Default
+  value is true.
+- serverUrl /[U]/ ::
+- repositoryId /[U]/ ::
+- sparqlEndpoint /[U]/ ::
+- pathDataDir /[U]/ ::
+- resources /[U]/ ::
+- allRules /[U]/ ::   
+
+*** Graph Add
+*** Graph Construct
+*** Graph Inference
+*** Graph Detach
+*** Graph Dump
+*** Graph Shacl
+** Example route configuration
+#+begin_src yaml
+  - beans:
+    # authorization configs
+    - name: authConfigResource1
+      type: com.cefriel.util.authTokenConfigBean
+      properties:
+	authToken: "Whatever"
+
+    # resources configs
+
+    - name: someTriplesHttp
+      type: com.cefriel.util.ChimeraResourceBean
+      properties:
+	url: "https://some_adress"
+	serializationFormat: "turtle"
+	authConfig: authConfigResource1
+
+    - name: someOtherTriplesFile
+      type: com.cefriel.util.ChimeraResourceBean
+      properties:
+	url: "file://absolute_path_to_file"
+	serializationFormat: "turtle"
+
+    - name: graphGetOperationResources
+      type: com.cefriel.util.ChimeraListResourceBean
+      properties:
+	resourceList:
+	  - someTriplesHttp
+	  - someOtherTriplesFile
+
+  - from:
+      uri: "graph://get?resources=#bean:graphGetOperationResources&other_options"
+      - to: "graph://dump?dumpFormat=turtle&baseDir=dir_path&filename=test.ttl"
+#+end_src
