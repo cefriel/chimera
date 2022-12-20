@@ -10,10 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class GraphGet {
-    // todo headers are propagated down the route, also the operationConfig (no)?
-    private record HeaderParams(String namedGraph, String baseIRI, String ontologyFormat) {}
+    private record HeaderParams(String namedGraph, String baseIRI, String rdfFormat) {}
     private record EndpointParams(String namedGraph, String baseIri, Boolean defaultGraph,
-                                  String ontologyFormat,
+                                  String rdfFormat,
                                   ChimeraResourcesBean ontologies,
                                   // HTTPRDF specific parameters
                                   String serverURL,
@@ -32,7 +31,7 @@ public class GraphGet {
         return new HeaderParams(
                 e.getMessage().getHeader(ChimeraConstants.CONTEXT_GRAPH, String.class),
                 e.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class),
-                e.getMessage().getHeader(ChimeraConstants.ONTOLOGY_RDF_FORMAT, String.class));
+                e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
     }
     // these params come from the endpoint
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
@@ -40,7 +39,7 @@ public class GraphGet {
                 operationConfig.getNamedGraph(),
                 operationConfig.getBaseIri(),
                 operationConfig.isDefaultGraph(),
-                operationConfig.getOntologyFormat(),
+                operationConfig.getRdfFormat(),
                 operationConfig.getChimeraResources(),
                 operationConfig.getServerUrl(),
                 operationConfig.getRepositoryID(),
@@ -61,7 +60,7 @@ public class GraphGet {
                 headerParams.namedGraph() != null ? headerParams.namedGraph() : endpointParams.namedGraph(),
                 headerParams.baseIRI() != null ? headerParams.baseIRI() : endpointParams.baseIri(),
                 endpointParams.defaultGraph(),
-                headerParams.ontologyFormat() != null ? headerParams.ontologyFormat() : endpointParams.ontologyFormat(),
+                headerParams.rdfFormat() != null ? headerParams.rdfFormat() : endpointParams.rdfFormat(),
                 endpointParams.ontologies(),
                 endpointParams.serverURL(),
                 endpointParams.repositoryId(),
@@ -98,7 +97,7 @@ public class GraphGet {
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws IOException {
         RDFGraph graph = obtainGraph(params, exchange);
-        Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().ontologyFormat());
+        Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().rdfFormat());
         return graph;
     }
 

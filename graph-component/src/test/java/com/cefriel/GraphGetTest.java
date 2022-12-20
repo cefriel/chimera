@@ -21,7 +21,6 @@ import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.SPARQLEndpointGraph;
 import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.UniLoader;
-import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -33,9 +32,6 @@ import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class GraphGetTest extends CamelTestSupport {
 
@@ -155,7 +151,7 @@ public class GraphGetTest extends CamelTestSupport {
                         .to("mock:sparql");
 
                 from("direct:start")
-                        .to("graph://get?ontologyFormat=turtle")
+                        .to("graph://get?rdfFormat=turtle")
                         .to("mock:toMemory");
 
                 from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")
