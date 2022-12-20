@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+// todo can be removed
 public class TemplateLowererInitializerProcessor implements Processor {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateLowererInitializerProcessor.class);

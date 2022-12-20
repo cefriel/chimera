@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
+// todo can be removed
 public class TemplateLowererAggregationStrategy implements AggregationStrategy {
 
     private Logger logger = LoggerFactory.getLogger(TemplateLowererAggregationStrategy.class);

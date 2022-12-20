@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+// todo check if still best method
 public class TemplateLowererInitializer {
 
     private final List<byte[]> templates;

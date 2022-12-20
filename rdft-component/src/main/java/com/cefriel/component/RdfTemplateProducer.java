@@ -54,7 +54,7 @@ public class RdfTemplateProducer extends DefaultProducer {
             configuration = new RdfTemplateBean();
         }
         configuration.setConfig(endpoint);
-
+        // either inputstream or chimera rdf graph
         switch (endpoint.getName()){
             case "rdf" :
                 if (exchange.getMessage().getBody(RDFGraph.class) != null)

@@ -25,7 +25,7 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
+// todo change to non-secret xmls
 public class RdfTemplateXmlTest extends CamelTestSupport {
 
     @Produce("direct:start")
