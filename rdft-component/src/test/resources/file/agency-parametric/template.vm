@@ -17,5 +17,5 @@ agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency
       	 dct:language ?agency_lang ;
      	 gtfs:fareUrl ?agency_fare_url .
 }" ) 
-#set ( $agencies = $reader.executeQueryStringValue($functions.replace($agency, "replace", "$x.s")) )
+#set ( $agencies = $reader.getDataframe($functions.replace($agency, "replace", "$x.s")) )
 #if($functions.checkList($agencies))#foreach($s in $agencies)$s.id,$s.agency_name,$s.agency_url,#if($s.agency_timezone)$s.agency_timezone#end,#if($s.agency_lang)$s.agency_lang#end,#if($s.agency_phone)$s.agency_phone#end,#if($s.agency_fare_url)$s.agency_fare_url#end,$functions.newline()#end#end

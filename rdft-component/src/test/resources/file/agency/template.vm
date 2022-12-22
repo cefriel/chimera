@@ -7,7 +7,8 @@ agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency
   	PREFIX dct: <http://purl.org/dc/terms/>
   	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 ") )
-#set ( $agencies = $reader.executeQueryStringValue("SELECT *
+
+#set ( $query = "SELECT *
 		WHERE {
 			?s a gtfs:Agency .          
 			?s foaf:name ?agency_name .
@@ -16,5 +17,7 @@ agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency
       OPTIONAL{ ?s dct:language ?agency_lang . }
 			OPTIONAL{ ?s foaf:phone ?agency_phone . }
       OPTIONAL{ ?s gtfs:fareUrl ?agency_fare_url . }
-}") )
+}")
+
+#set ( $agencies = $reader.getDataframe($query))
 #if($functions.checkList($agencies))#foreach($s in $agencies)$functions.sp($s.s,'agencies/'),$s.agency_name,$s.agency_url,#if($s.agency_timezone)$s.agency_timezone#end,#if($s.agency_lang)$s.agency_lang#end,#if($s.agency_phone)$s.agency_phone#end,#if($s.agency_fare_url)$s.agency_fare_url#end,$functions.newline()#end#end
