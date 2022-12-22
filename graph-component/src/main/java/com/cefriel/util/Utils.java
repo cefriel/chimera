@@ -125,14 +125,6 @@ public class Utils {
             }
         }
     }
-    // todo check if everywhere this logic is superseded by header and param merge handling and validating (probably)
-    public static void setConfigurationRDFHeader(Exchange exchange, String format){
-        if(exchange.getMessage().getHeader(ChimeraConstants.RDF_FORMAT) == null){
-            exchange.getMessage().setHeader(ChimeraConstants.RDF_FORMAT, format);
-        } else
-            logger.info("There is a RDFFormat in header");
-    }
-
     public static RDFFormat getExchangeRdfFormat(Exchange exchange, String headerName) {
         RDFFormat rdfFormat;
         if (exchange.getMessage().getHeader(headerName, String.class) != null) {
