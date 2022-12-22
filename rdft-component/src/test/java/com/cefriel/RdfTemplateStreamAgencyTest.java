@@ -18,6 +18,12 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RdfTemplateBean;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
+import com.cefriel.util.RdfTemplateConstants;
+import com.cefriel.util.ResourceAccessor;
+import org.apache.camel.*;
+import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -28,27 +34,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RdfTemplateStreamAgencyTest extends CamelTestSupport {
-
-    static GraphBean bean = new GraphBean();
-    static RdfTemplateBean rdfBean = new RdfTemplateBean();
+    @Produce("direct:start")
+    ProducerTemplate start;
+    private static ChimeraResourcesBean triples;
+    private static ChimeraResourceBean template;
 
     @BeforeAll
     static void fillBeans(){
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/agency/input.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        rdfBean.setTemplatePath("file://./src/test/resources/file/agency/template.vm");
-        rdfBean.setStream(true);
+        ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/agency/input.ttl", "turtle");
+        triples = new ChimeraResourcesBean(List.of(r));
+        template = new ChimeraResourceBean("file://./src/test/resources/file/agency/template.vm", null);
     }
 
     @Test
     public void testRdfTemplateAgencyStream() throws Exception {
-
         MockEndpoint mock = getMockEndpoint("mock:rdfStreamAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-
     }
 
     @Override
@@ -56,15 +58,14 @@ public class RdfTemplateStreamAgencyTest extends CamelTestSupport {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception{
-
-                getCamelContext().getRegistry().bind("config", bean);
-                getCamelContext().getRegistry().bind("rdfConfig", rdfBean);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("template", template);
 
                 from("graph://get")
-                        .to("graph://add?baseConfig=#bean:config")
-                        .to("rdft://rdf?rdfBaseConfig=#bean:rdfConfig")
+                        .to("graph://add?chimeraResources=#bean:triples")
+                        .setProperty(RdfTemplateConstants.TEMPLATE_STREAM, constant(ResourceAccessor.open(template, context())))
+                        .to("rdft://rdf?stream=true")
                         .to("mock:rdfStreamAgency");
-
             }
         };
     }

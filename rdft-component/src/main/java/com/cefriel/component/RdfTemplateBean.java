@@ -16,37 +16,35 @@
 
 package com.cefriel.component;
 
-import com.cefriel.template.utils.TemplateUtils;
+import com.cefriel.util.ChimeraResourceBean;
 
 public class RdfTemplateBean {
 
     private String basePath = "./";
-    private String templatePath;
+    private ChimeraResourceBean template;
     private String filename;
-    private String keyValuePairsPath;
-    private String keyValueCsvPath;
+    private ChimeraResourceBean keyValuePairs;
+    private ChimeraResourceBean keyValuePairsCSV;
     private String format;
-    private TemplateUtils utils;
-    private String queryFilePath;
+    private ChimeraResourceBean query;
     private boolean trimTemplate;
     private boolean verboseQueries;
-    private boolean stream;
+    private boolean isStream;
 
     // Default Constructor
     public RdfTemplateBean() {}
 
     public RdfTemplateBean(RdfTemplateBean options) {
-        basePath = options.getBasePath();
-        templatePath = options.getTemplatePath();
-        filename = options.getFilename();
-        keyValuePairsPath = options.getKeyValuePairsPath();
-        keyValueCsvPath = options.getKeyValueCsvPath();
-        format = options.getFormat();
-        utils = options.getUtils();
-        queryFilePath = options.getQueryFilePath();
-        trimTemplate = options.isTrimTemplate();
-        verboseQueries = options.isVerboseQueries();
-        stream = options.isStream();
+        this.basePath = options.getBasePath();
+        this.template = options.getTemplate();
+        this.filename = options.getFilename();
+        this.keyValuePairs = options.getKeyValuePairs();
+        this.keyValuePairsCSV = options.getKeyValuePairsCSV();
+        this.format = options.getFormat();
+        this.query = options.getQuery();
+        this.trimTemplate = options.isTrimTemplate();
+        this.verboseQueries = options.isVerboseQueries();
+        this.isStream = options.isStream();
     }
 
     public String getBasePath() {
@@ -57,12 +55,12 @@ public class RdfTemplateBean {
         this.basePath = basePath;
     }
 
-    public String getTemplatePath() {
-        return templatePath;
+    public ChimeraResourceBean getTemplate() {
+        return template;
     }
 
-    public void setTemplatePath(String templatePath) {
-        this.templatePath = templatePath;
+    public void setTemplate(ChimeraResourceBean template) {
+        this.template = template;
     }
 
     public String getFilename() {
@@ -73,20 +71,20 @@ public class RdfTemplateBean {
         this.filename = filename;
     }
 
-    public String getKeyValuePairsPath() {
-        return keyValuePairsPath;
+    public ChimeraResourceBean getKeyValuePairs() {
+        return keyValuePairs;
     }
 
-    public void setKeyValuePairsPath(String keyValuePairsPath) {
-        this.keyValuePairsPath = keyValuePairsPath;
+    public void setKeyValuePairs(ChimeraResourceBean keyValuePairs) {
+        this.keyValuePairs = keyValuePairs;
     }
 
-    public String getKeyValueCsvPath() {
-        return keyValueCsvPath;
+    public ChimeraResourceBean getKeyValuePairsCSV() {
+        return keyValuePairsCSV;
     }
 
-    public void setKeyValueCsvPath(String keyValueCsvPath) {
-        this.keyValueCsvPath = keyValueCsvPath;
+    public void setKeyValuePairsCSV(ChimeraResourceBean keyValuePairsCSV) {
+        this.keyValuePairsCSV = keyValuePairsCSV;
     }
 
     public String getFormat() {
@@ -97,20 +95,12 @@ public class RdfTemplateBean {
         this.format = format;
     }
 
-    public TemplateUtils getUtils() {
-        return utils;
+    public ChimeraResourceBean getQuery() {
+        return query;
     }
 
-    public void setUtils(TemplateUtils utils) {
-        this.utils = utils;
-    }
-
-    public String getQueryFilePath() {
-        return queryFilePath;
-    }
-
-    public void setQueryFilePath(String queryFilePath) {
-        this.queryFilePath = queryFilePath;
+    public void setQuery(ChimeraResourceBean query) {
+        this.query = query;
     }
 
     public boolean isTrimTemplate() {
@@ -130,11 +120,11 @@ public class RdfTemplateBean {
     }
 
     public boolean isStream() {
-        return stream;
+        return isStream;
     }
 
     public void setStream(boolean stream) {
-        this.stream = stream;
+        this.isStream = stream;
     }
 
     public void setConfig(RdfTemplateEndpoint endpoint){
@@ -142,26 +132,23 @@ public class RdfTemplateBean {
         if (endpoint.getBasePath()!=null){
             this.setBasePath(endpoint.getBasePath());
         }
-        if (endpoint.getTemplatePath()!=null) {
-            this.setTemplatePath(endpoint.getTemplatePath());
+        if(endpoint.getTemplate() != null) {
+            this.setTemplate(endpoint.getTemplate());
         }
         if (endpoint.getFilename()!=null){
             this.setFilename(endpoint.getFilename());
         }
-        if (endpoint.getKeyValuePairsPath()!=null) {
-            this.setKeyValuePairsPath(endpoint.getKeyValuePairsPath());
+        if(endpoint.getKeyValuePairs()!=null){
+            this.setKeyValuePairs(endpoint.getKeyValuePairs());
         }
-        if (endpoint.getKeyValueCsvPath()!=null) {
-            this.setKeyValueCsvPath(endpoint.getKeyValueCsvPath());
+        if (endpoint.getKeyValuePairsCSV()!=null){
+            this.setKeyValuePairsCSV(endpoint.getKeyValuePairsCSV());
         }
         if (endpoint.getFormat()!=null) {
             this.setFormat(endpoint.getFormat());
         }
-        if (endpoint.getUtils()!=null) {
-            this.setUtils(endpoint.getUtils());
-        }
-        if (endpoint.getQueryFilePath()!=null) {
-            this.setQueryFilePath(endpoint.getQueryFilePath());
+        if (endpoint.getQuery() != null) {
+            this.setQuery(endpoint.getQuery());
         }
         if (endpoint.isTrimTemplate()) {
             this.setTrimTemplate(endpoint.isTrimTemplate());

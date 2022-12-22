@@ -17,6 +17,7 @@
 package com.cefriel.component;
 
 import com.cefriel.template.utils.TemplateUtils;
+import com.cefriel.util.ChimeraResourceBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -40,19 +41,17 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
-    private String templatePath;
+    private ChimeraResourceBean template;
     @UriParam(defaultValue = "null")
     private String filename;
     @UriParam(defaultValue = "null")
-    private String keyValuePairsPath;
+    private ChimeraResourceBean keyValuePairs;
     @UriParam(defaultValue = "null")
-    private String keyValueCsvPath;
+    private ChimeraResourceBean keyValuePairsCSV;
     @UriParam(defaultValue = "null")
     private String format;
     @UriParam(defaultValue = "null")
-    private TemplateUtils utils;
-    @UriParam(defaultValue = "null")
-    private String queryFilePath;
+    private ChimeraResourceBean query;
     @UriParam(defaultValue = "false")
     private boolean trimTemplate;
     @UriParam(defaultValue = "false")
@@ -102,15 +101,12 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
         this.basePath = basePath;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public String getTemplatePath() {
-        return templatePath;
+    public ChimeraResourceBean getTemplate() {
+        return template;
     }
 
-    public void setTemplatePath(String templatePath) {
-        this.templatePath = templatePath;
+    public void setTemplate(ChimeraResourceBean template) {
+        this.template = template;
     }
 
     /**
@@ -124,26 +120,20 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
         this.filename = filename;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public String getKeyValuePairsPath() {
-        return keyValuePairsPath;
+    public ChimeraResourceBean getKeyValuePairs() {
+        return keyValuePairs;
     }
 
-    public void setKeyValuePairsPath(String keyValuePairsPath) {
-        this.keyValuePairsPath = keyValuePairsPath;
+    public void setKeyValuePairs(ChimeraResourceBean keyValuePairs) {
+        this.keyValuePairs = keyValuePairs;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public String getKeyValueCsvPath() {
-        return keyValueCsvPath;
+    public ChimeraResourceBean getKeyValuePairsCSV() {
+        return keyValuePairsCSV;
     }
 
-    public void setKeyValueCsvPath(String keyValueCsvPath) {
-        this.keyValueCsvPath = keyValueCsvPath;
+    public void setKeyValuePairsCSV(ChimeraResourceBean keyValuePairsCSV) {
+        this.keyValuePairsCSV = keyValuePairsCSV;
     }
 
     /**
@@ -157,26 +147,12 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
         this.format = format;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public TemplateUtils getUtils() {
-        return utils;
+    public ChimeraResourceBean getQuery() {
+        return query;
     }
 
-    public void setUtils(TemplateUtils utils) {
-        this.utils = utils;
-    }
-
-    /**
-     * Some description of this option, and what it does
-     */
-    public String getQueryFilePath() {
-        return queryFilePath;
-    }
-
-    public void setQueryFilePath(String queryFilePath) {
-        this.queryFilePath = queryFilePath;
+    public void setQuery(ChimeraResourceBean query) {
+        this.query = query;
     }
 
     /**

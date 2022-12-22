@@ -19,6 +19,9 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RdfTemplateBean;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
+import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -32,22 +35,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RdfTemplateAgencyTest extends CamelTestSupport {
-
     @Produce("direct:start")
     ProducerTemplate start;
-
-    static GraphBean bean = new GraphBean();
-    static RdfTemplateBean rdfBean = new RdfTemplateBean();
-
+    private static ChimeraResourcesBean triples;
+    private static ChimeraResourcesBean triples2;
+    private static ChimeraResourceBean template;
+    private static ChimeraResourceBean templateMultiple;
     @BeforeAll
     static void fillBeans(){
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/agency/input.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        rdfBean.setTemplatePath("file://./src/test/resources/file/agency/template.vm");
-        rdfBean.setBasePath("src/test/resources/file/result");
-        rdfBean.setFilename("agency.csv");
+        ChimeraResourceBean r = new ChimeraResourceBean(
+                "file://./src/test/resources/file/agency/input.ttl",
+                "turtle");
+        triples = new ChimeraResourcesBean(List.of(r));
+        ChimeraResourceBean r2 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/agency-multiple-input/input2.ttl",
+                "turtle");
+        triples2 = new ChimeraResourcesBean(List.of(r, r2));
+
+        template = new ChimeraResourceBean(
+                "file://./src/test/resources/file/agency/template.vm",
+                "");
+        templateMultiple = new ChimeraResourceBean(
+                "file://./src/test/resources/file/agency-multiple-input/template.vm",
+                "");
     }
 
     @Test
@@ -64,11 +74,11 @@ public class RdfTemplateAgencyTest extends CamelTestSupport {
 
         MockEndpoint mock = getMockEndpoint("mock:rdfMultipleAgency");
         mock.expectedMessageCount(1);
-
-        start.sendBody(UniLoader.open("file://./src/test/resources/file/agency-multiple-input/input.ttl"));
-
+        ChimeraResourceBean file = new ChimeraResourceBean(
+                "file://./src/test/resources/file/agency-multiple-input/input.ttl",
+                "turtle");
+        start.sendBody(ResourceAccessor.open(file, camelTestSupportExtension.context()));
         mock.assertIsSatisfied();
-
     }
 
     @Override
@@ -77,21 +87,21 @@ public class RdfTemplateAgencyTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
 
-                getCamelContext().getRegistry().bind("config", bean);
-                getCamelContext().getRegistry().bind("rdfConfig", rdfBean);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("template", template);
+                getCamelContext().getRegistry().bind("triples2", triples2);
+                getCamelContext().getRegistry().bind("templateMultiple", templateMultiple);
 
-                from("graph://get?baseConfig=#bean:config")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
-                        .to("rdft://rdf?rdfBaseConfig=#bean:rdfConfig")
+                from("graph://get")
+                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("rdft://rdf?template=#bean:template&basePath=./src/test/resources/file/result&fileName=agency.csv")
                         .to("mock:rdfAgency");
 
                 from("direct:start")
                         .to("graph://get?rdfFormat=turtle")
-                        .to("graph://add?resources=file://./src/test/resources/file/agency-multiple-input/input2.ttl&rdfFormat=turtle")
-                        .to("rdft://rdf?templatePath=file://./src/test/resources/file/agency/template.vm&basePath=src/test/resources/file/result&filename=multipleAgency.csv")
+                        .to("graph://add?chimeraResources=#bean:triples2")
+                        .to("rdft://rdf?template=#bean:templateMultiple&basePath=./src/test/resources/file/result&filename=multipleAgency.csv")
                         .to("mock:rdfMultipleAgency");
-
             }
         };
     }
