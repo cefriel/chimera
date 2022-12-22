@@ -42,9 +42,6 @@ public class GraphAdd {
     private static boolean validParams(OperationParams params) throws IllegalArgumentException {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
-
-        // todo validate Chimera resources
-
         return true;
     }
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {

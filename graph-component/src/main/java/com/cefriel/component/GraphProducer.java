@@ -47,6 +47,7 @@ public class GraphProducer extends DefaultProducer {
 
 
         if( exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION)!=null ){
+            // todo this is never called (check if true)
             operationConfig = new GraphBean(exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION, GraphBean.class));
             LOG.info("Configuration from exchange");
         } else {
@@ -62,10 +63,7 @@ public class GraphProducer extends DefaultProducer {
         switch (endpoint.getName()){
             case "config" -> exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
             case "get" -> {
-                // todo here i need to keep header format information
                 inputStream = exchange.getMessage().getBody(InputStream.class);
-                // Utils.setConfigurationRDFHeader(exchange, operationConfig.getRdfFormat());
-                exchange.getMessage().removeHeader(ChimeraConstants.RDF_FORMAT);
                 RDFGraph graph = GraphGet.obtainGraph(exchange, operationConfig, inputStream);
                 exchange.getMessage().setBody(graph);
                 }
@@ -74,9 +72,7 @@ public class GraphProducer extends DefaultProducer {
             case "detach" -> GraphDetach.graphDetach(exchange, operationConfig);
             case "dump" -> GraphDump.graphDump(exchange, operationConfig);
             case "inference" -> GraphInference.graphInference(exchange, operationConfig);
-            case "shacl" -> { //TODO Add tests
-                GraphShacl.graphShacl(exchange, operationConfig);
-            }
+            case "shacl" -> GraphShacl.graphShacl(exchange, operationConfig);
             default -> throw new NoSuchEndpointException("This endpoint does not exist");
         }
     }
