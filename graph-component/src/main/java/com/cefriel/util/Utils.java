@@ -150,8 +150,13 @@ public class Utils {
             case ChimeraConstants.RDF_FORMAT_RDFXML -> RDFFormat.RDFXML;
             case ChimeraConstants.RDF_FORMAT_TURTLE -> RDFFormat.TURTLE;
             case ChimeraConstants.RDF_FORMAT_RDFA -> RDFFormat.RDFA;
-            default -> Rio.getParserFormatForMIMEType(format).orElse(RDFFormat.TURTLE);
+            // Rio.getParserFormatForMIMEType(format).orElse(RDFFormat.TURTLE)
+            default -> throw new IllegalArgumentException("RDF Format: " + format + " is not supported");
         };
+    }
+    // todo validate rdfFormat everywhere
+    public static boolean isSupportedRDFFormat(String rdfFormat) {
+        return ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(rdfFormat);
     }
 
     public static String writeModelToDestination(Exchange exchange, Model model, String defaultName) throws IOException {
