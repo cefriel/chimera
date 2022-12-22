@@ -20,6 +20,8 @@ import com.cefriel.graph.HTTPRDFGraph;
 import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.SPARQLEndpointGraph;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -126,7 +128,9 @@ public class GraphGetTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:toMemory");
         mock.expectedMessageCount(1);
 
-        start.sendBody(UniLoader.open("file://./src/test/resources/file/base/test.ttl"));
+        ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/base/test.ttl", "turtle");
+        start.sendBodyAndHeader(ResourceAccessor.open(r, camelTestSupportExtension.context()),
+                ChimeraConstants.RDF_FORMAT, r.getSerializationFormat());
 
         mock.assertIsSatisfied();
 
@@ -142,7 +146,6 @@ public class GraphGetTest extends CamelTestSupport {
             public void configure() {
                 from("graph://get")
                         .to("mock:memory");
-                // TODO Add tests for other parameters (namedGraph, baseIRI, etc.)
 
                 from("graph://get?serverUrl=MY_SERVER_URL&repositoryId=MY_REPOSITORY_ID")
                         .to("mock:http");
@@ -151,7 +154,7 @@ public class GraphGetTest extends CamelTestSupport {
                         .to("mock:sparql");
 
                 from("direct:start")
-                        .to("graph://get?rdfFormat=turtle")
+                        .to("graph://get")
                         .to("mock:toMemory");
 
                 from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")
