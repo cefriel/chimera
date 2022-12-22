@@ -17,7 +17,9 @@
 package com.cefriel.util;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChimeraConstants {
 
@@ -58,10 +60,10 @@ public class ChimeraConstants {
     public static final String RDF_FORMAT_TURTLE = "turtle";
     public static final String RDF_FORMAT_RDFA = "rdfa";
 
-    public static final List<String> SUPPORTED_RDF_FORMATS = Arrays.asList(
+    public static final Set<String> SUPPORTED_RDF_FORMATS = new HashSet<>(Arrays.asList(
             RDF_FORMAT_BINARY, RDF_FORMAT_JSONLD, RDF_FORMAT_N3,
             RDF_FORMAT_NQUADS, RDF_FORMAT_NTRIPLES, RDF_FORMAT_RDFXML,
-            RDF_FORMAT_TURTLE, RDF_FORMAT_RDFA);
+            RDF_FORMAT_TURTLE, RDF_FORMAT_RDFA));
 
     public static final String CONVERTER_CONFIGURATION = "converter_configuration";
     public static final String CONFIGURATION = "configuration";
