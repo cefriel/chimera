@@ -16,12 +16,16 @@
 
 package com.cefriel;
 
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.RdfTemplateConstants;
+import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class RdfTemplateXmlStreamTest extends CamelTestSupport {
@@ -29,16 +33,22 @@ public class RdfTemplateXmlStreamTest extends CamelTestSupport {
     @Produce("direct:start")
     ProducerTemplate start;
 
+    private static ChimeraResourceBean template;
+    @BeforeAll
+    static void fillBeans(){
+        template = new ChimeraResourceBean("file://./src/test/resources/file/xml/template.vm", "");
+    }
+
     @Test
     public void testRdfTemplateXml() throws Exception {
 
         MockEndpoint mock = getMockEndpoint("mock:rdfXml");
         mock.expectedMessageCount(1);
 
-        start.sendBody(UniLoader.open("file://./src/test/resources/file/secret/base-gen.xml"));
+        ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/xml/example.xml", "xml");
+        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
 
         mock.assertIsSatisfied();
-
     }
 
     @Override
@@ -46,9 +56,11 @@ public class RdfTemplateXmlStreamTest extends CamelTestSupport {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
+                getCamelContext().getRegistry().bind("template", template);
 
                 from("direct:start")
-                        .to("rdft://xml?templatePath=file://./src/test/resources/file/secret/demo-lifting.vm&stream=true")
+                        .setProperty(RdfTemplateConstants.TEMPLATE_STREAM, constant(ResourceAccessor.open(template, context())))
+                        .to("rdft://xml?stream=true")
                         .to("mock:rdfXml");
             }
         };

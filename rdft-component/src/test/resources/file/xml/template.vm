@@ -1,0 +1,20 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix transit: <http://vocab.org/transit/terms/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix ex: <http://trans.example.com/>.
+
+#set( $query = '
+    for $stop in /transport/bus/route//stop
+    return map {
+        "stopId": $stop/@id,
+        "stopName": $stop/text(),
+        "busId": $stop/ancestor::bus/@id
+    }')
+#set( $data = $reader.getDataframe($query))
+
+#foreach($stop in $data)
+ex:$stop.busId rdf:type transit:stop ;
+  transit:stop "$stop.stopId"^^xsd:int ;
+  rdfs:label "$stop.stopName" .
+#end
