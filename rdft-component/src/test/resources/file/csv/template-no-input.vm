@@ -1,0 +1,15 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix transit: <http://vocab.org/transit/terms/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix wgs84_pos: <http://www.w3.org/2003/01/geo/wgs84_pos#>.
+@prefix ex: <http://airport.example.com/>.
+
+#set ($exampleReader = $functions.getCSVReaderFromFile("./example.csv"))
+#set ($data = $exampleReader.getDataframe())
+
+#foreach($row in $data)
+ex:$row.id rdf:type transit:Stop ;
+  transit:route "$row.stop"^^xsd:int ;
+  wgs84_pos:lat "$row.latitude" ;
+  wgs84_pos:long "$row.longitude" .
+#end

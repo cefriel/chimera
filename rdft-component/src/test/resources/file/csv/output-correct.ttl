@@ -1,0 +1,11 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix transit: <http://vocab.org/transit/terms/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix wgs84_pos: <http://www.w3.org/2003/01/geo/wgs84_pos#>.
+@prefix ex: <http://airport.example.com/>.
+
+
+ex:6523 rdf:type transit:Stop ;
+  transit:route "25"^^xsd:int ;
+  wgs84_pos:lat "50.901389" ;
+  wgs84_pos:long "4.484444" .
