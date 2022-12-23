@@ -26,9 +26,9 @@ public class KeyValueCSVAggregation implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-
-        if (newExchange.getMessage().getBody(InputStream.class)!=null)
-            oldExchange.getMessage().setHeader(RdfTemplateConstants.KEY_VALUE_CSV, InputStream.class);
+        InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
+        if (newInputStream != null)
+            oldExchange.setProperty(RdfTemplateConstants.KEY_VALUE_CSV, newInputStream);
         return oldExchange;
     }
 }

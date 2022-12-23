@@ -26,9 +26,9 @@ public class QueryFilePathAggregation implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-        // todo not in a header but in an exchange property
-        if (newExchange.getMessage().getBody(InputStream.class)!=null)
-            oldExchange.getMessage().setHeader(RdfTemplateConstants.QUERY_FILE, InputStream.class);
+        InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
+        if (newInputStream != null)
+            oldExchange.setProperty(RdfTemplateConstants.QUERY_FILE, newInputStream);
         return oldExchange;
     }
 }

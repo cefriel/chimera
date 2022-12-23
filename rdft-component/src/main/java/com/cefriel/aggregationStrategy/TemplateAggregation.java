@@ -23,12 +23,12 @@ import org.apache.camel.Exchange;
 import java.io.InputStream;
 
 public class TemplateAggregation implements AggregationStrategy {
-
+    // todo wrong logic, propagate old but with new inputstream
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-
-        if (newExchange.getMessage().getBody(InputStream.class)!=null)
-            oldExchange.getMessage().setHeader(RdfTemplateConstants.TEMPLATE_STREAM, InputStream.class);
+        InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
+        if (newInputStream != null)
+            oldExchange.setProperty(RdfTemplateConstants.TEMPLATE_STREAM, newInputStream);
         return oldExchange;
     }
 }

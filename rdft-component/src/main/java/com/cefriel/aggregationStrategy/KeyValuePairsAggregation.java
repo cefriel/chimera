@@ -19,6 +19,7 @@ package com.cefriel.aggregationStrategy;
 import com.cefriel.util.RdfTemplateConstants;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 
 import java.io.InputStream;
 
@@ -26,7 +27,6 @@ public class KeyValuePairsAggregation implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-
         if (newExchange.getMessage().getBody(InputStream.class)!=null)
             oldExchange.getMessage().setHeader(RdfTemplateConstants.KEY_VALUE_PAIRS, InputStream.class);
         return oldExchange;
