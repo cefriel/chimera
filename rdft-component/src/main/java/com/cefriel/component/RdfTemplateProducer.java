@@ -19,6 +19,7 @@ package com.cefriel.component;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.rdf.RdfTemplateProcessor;
 import com.cefriel.template.io.Reader;
+import com.cefriel.template.io.csv.CSVReader;
 import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
 import com.cefriel.template.io.xml.XMLReader;
@@ -63,12 +64,18 @@ public class RdfTemplateProducer extends DefaultProducer {
                 }
             case "xml" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureXMLReader(exchange));
             case "json" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureJSONReader(exchange));
+            case "csv" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureCSVReader(exchange));
+            case "" -> System.out.println("no reader selected");
             default -> RdfTemplateProcessor.execute(exchange, operationConfig, null);
         }
     }
 
     private Reader configureJSONReader(Exchange exchange) throws Exception {
         return new JSONReader(exchange.getMessage().getBody(String.class));
+    }
+
+    private Reader configureCSVReader(Exchange exchange) throws Exception {
+        return new CSVReader(exchange.getMessage().getBody(String.class));
     }
 
     private Reader configureXMLReader(Exchange exchange) throws Exception {
