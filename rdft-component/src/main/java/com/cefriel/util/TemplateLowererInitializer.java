@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-// todo check if still best method
+// todo check if still best method to copy inpustream to use multiple times
 public class TemplateLowererInitializer {
 
     private final List<byte[]> templates;

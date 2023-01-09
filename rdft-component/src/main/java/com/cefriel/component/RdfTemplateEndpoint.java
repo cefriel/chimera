@@ -59,6 +59,8 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "false")
     private boolean stream;
     @UriParam(defaultValue = "null")
+    private String timingFileName;
+    @UriParam(defaultValue = "null")
     private RdfTemplateBean rdfBaseConfig;
 
     public RdfTemplateEndpoint() {
@@ -186,6 +188,14 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
 
     public void setStream(boolean stream) {
         this.stream = stream;
+    }
+
+    public String getTimingFileName() {
+        return timingFileName;
+    }
+
+    public void setTimingFileName(String timingFileName) {
+        this.timingFileName = timingFileName;
     }
 
     /**

@@ -19,16 +19,12 @@ package com.cefriel.rdf;
 import com.cefriel.component.RdfTemplateBean;
 import com.cefriel.template.TemplateExecutor;
 import com.cefriel.template.TemplateMap;
-import com.cefriel.template.io.Formatter;
 import com.cefriel.template.io.Reader;
-import com.cefriel.template.io.rdf.RDFFormatter;
-import com.cefriel.template.io.xml.XMLFormatter;
 import com.cefriel.template.utils.TemplateUtils;
 import com.cefriel.util.*;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +37,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RdfTemplateProcessor {
-
     private static final Logger logger = LoggerFactory.getLogger(RdfTemplateProcessor.class);
-    private record OperationParams (InputStream templateStream,
+    private record OperationParams (InputStream inputStream,
                                     ChimeraResourceBean template,
                                     ChimeraResourceBean query,
                                     String format,
@@ -54,7 +49,8 @@ public class RdfTemplateProcessor {
                                     ChimeraResourceBean kv,
                                     ChimeraResourceBean kvCSV,
                                     String baseIRI,
-                                    boolean isStream) {} // todo add other options which are not currently handled (time, ts adress maybe others)
+                                    boolean isStream,
+                                    String timingFileName) {} // todo add other options which are not currently handled (time, ts adress maybe others)
     private static OperationParams getOperationParams(Exchange exchange, RdfTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -69,12 +65,13 @@ public class RdfTemplateProcessor {
                 operationConfig.getKeyValuePairs(),
                 operationConfig.getKeyValuePairsCSV(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
-                operationConfig.isStream());
+                operationConfig.isStream(),
+                operationConfig.getTimingFileName());
     }
 
     private static boolean validateParams(OperationParams params) {
         if (params.isStream()) {
-            if(params.templateStream() == null)
+            if(params.inputStream() == null)
                 throw new IllegalArgumentException("The template stream cannot be null when processing as stream");
             if(params.query() != null)
                 throw new IllegalArgumentException("Parametric queries not supported when processing as stream");
@@ -90,7 +87,7 @@ public class RdfTemplateProcessor {
         if (validateParams(params)) {
             TemplateExecutor templateExec = configureTemplateOptions(params, exchange.getContext(), reader, exchange);
             if(params.isStream()) {
-                templateExec.lower(params.templateStream());
+                templateExec.lower(params.inputStream());
             }
             else {
                 if (params.query() == null) {
@@ -122,7 +119,8 @@ public class RdfTemplateProcessor {
         TemplateUtils templateUtils = new TemplateUtils();
         templateUtils.setPrefix(params.baseIRI());
         TemplateExecutor templateExec = new TemplateExecutor(reader, templateUtils);
-        reader.setVerbose(params.verboseQuery());
+        if(reader != null)
+            reader.setVerbose(params.verboseQuery());
 
         TemplateMap templateMap = new TemplateMap();
         if (params.kvCSV() != null)
@@ -146,4 +144,3 @@ public class RdfTemplateProcessor {
         return Objects.requireNonNullElseGet(outputFileName, () -> "mapt-" + UUID.randomUUID() + ".txt");
     }
 }
-

@@ -65,7 +65,6 @@ public class RdfTemplateProducer extends DefaultProducer {
             case "xml" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureXMLReader(exchange));
             case "json" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureJSONReader(exchange));
             case "csv" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureCSVReader(exchange));
-            case "" -> System.out.println("no reader selected");
             default -> RdfTemplateProcessor.execute(exchange, operationConfig, null);
         }
     }

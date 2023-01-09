@@ -22,6 +22,7 @@ import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -69,9 +70,9 @@ public class RdfTemplateCsvTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rdfCsvNoInput");
         mock.expectedMessageCount(1);
 
-        ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/csv/example.csv", "csv");
-        foo.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
-
+        // ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/csv/example.csv", "csv");
+        // foo.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
+        foo.send(ExchangeBuilder.anExchange(context()).build());
         mock.assertIsSatisfied();
         long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/csv/output-correct.ttl"),
                 Paths.get(("./src/test/resources/file/result/output-csv-no-input.ttl")));
@@ -92,7 +93,7 @@ public class RdfTemplateCsvTest extends CamelTestSupport {
                         .to("mock:rdfCsv");
 
                 from("direct:foo")
-                        .to("rdft://csv?template=#bean:templateNoInput&basePath=./src/test/resources/file/result&fileName=output-csv-no-input.ttl")
+                        .to("rdft://?template=#bean:templateNoInput&basePath=./src/test/resources/file/result&fileName=output-csv-no-input.ttl")
                         .to("mock:rdfCsvNoInput");
             }
         };
