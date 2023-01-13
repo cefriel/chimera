@@ -37,7 +37,16 @@ public class HTTPRDFGraph extends RDFGraph {
         this.setNamedGraph(namedGraph);
         this.baseIRI = baseIRI;
     }
+
+    public HTTPRDFGraph(String rrAddress, String repositoryId, IRI baseIRI) {
+        this(rrAddress, repositoryId);
+        this.baseIRI = baseIRI;
+    }
     public HTTPRDFGraph(String rrAddress, String repositoryId, String namedGraph, String baseIRI) {
         this(rrAddress, repositoryId, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
+
+    public HTTPRDFGraph(String rrAddress, String repositoryId, String baseIRI) {
+        this(rrAddress, repositoryId, Utils.stringToIRI(baseIRI));
     }
 }

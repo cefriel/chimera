@@ -37,8 +37,16 @@ public class MemoryRDFGraph extends RDFGraph {
         this.setNamedGraph(namedGraph);
         this.baseIRI = baseIRI;
     }
+    public MemoryRDFGraph(IRI baseIRI) {
+        this();
+        this.baseIRI = baseIRI;
+    }
+
     public MemoryRDFGraph(String namedGraph, String baseIRI) {
         this(Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
+    public MemoryRDFGraph( String baseIRI) {
+        this(Utils.stringToIRI(baseIRI));
     }
     public Sail getData() {
         return data;

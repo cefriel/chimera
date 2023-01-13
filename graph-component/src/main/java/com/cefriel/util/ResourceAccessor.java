@@ -12,11 +12,11 @@ public class ResourceAccessor {
     private final static String classPathPrefix = "classpath://";
 
     public static InputStream open(ChimeraResourceBean resource, CamelContext context) throws FileNotFoundException {
-        if (resource.getUrl().startsWith(filePrefix)) {
+        if (isFileResource(resource)) {
             // return FileResourceAccessor.getFileResourceInputStream(resource, context);
             return FileResourceAccessor.getFileResource(resource);
         }
-        else if (resource.getUrl().startsWith(httpPrefix) || resource.getUrl().startsWith(httpsPrefix)) {
+        else if (isHTTPResource(resource)) {
             var response = HTTPResourceAccessor.getHTTPResourceInputStream(resource, context);
             if (response.isPresent())
                 return response.get();
@@ -30,5 +30,13 @@ public class ResourceAccessor {
             throw new UnsupportedOperationException("Can not open resource" + resource.getUrl());
         }
         return null;
+    }
+
+    public static boolean isFileResource(ChimeraResourceBean resource) {
+        return resource.getUrl().startsWith(filePrefix);
+    }
+
+    public static boolean isHTTPResource(ChimeraResourceBean resource) {
+        return resource.getUrl().startsWith(httpPrefix) || resource.getUrl().startsWith(httpsPrefix);
     }
 }

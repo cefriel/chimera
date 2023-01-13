@@ -35,8 +35,18 @@ public class SPARQLEndpointGraph extends RDFGraph {
         this.setNamedGraph(namedGraph);
         this.baseIRI = baseIRI;
     }
+
+    public SPARQLEndpointGraph(String endpoint, IRI baseIRI) {
+        this(endpoint);
+        this.baseIRI = baseIRI;
+    }
+
     public SPARQLEndpointGraph(String endpoint, String namedGraph, String baseIRI) {
         this(endpoint, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
+
+    public SPARQLEndpointGraph(String endpoint, String baseIRI) {
+        this(endpoint, Utils.stringToIRI(baseIRI));
     }
 
 }

@@ -123,38 +123,38 @@ public class GraphGet {
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {
             Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), exchange.getContext());
-            if (namedGraph != null && baseIRI != null)
+            if (namedGraph != null)
                 graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
             else
-                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules());
+                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), baseIRI);
         }
 
         else if (isHTTPRDFGraph(params)) {
-            if (namedGraph != null && baseIRI != null)
+            if (namedGraph != null)
                 graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), namedGraph, baseIRI);
             else
-                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId());
+                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), baseIRI);
         }
 
         else if (isSPARQLEndpointGraph(params)) {
-            if (namedGraph != null && baseIRI != null)
+            if (namedGraph != null)
                 graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), namedGraph, baseIRI);
             else
-                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint());
+                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), baseIRI);
         }
 
         else if (isNativeRDFGraph(params)) {
-            if (namedGraph != null && baseIRI != null)
+            if (namedGraph != null)
                 graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), namedGraph, baseIRI);
             else
-                graph = new NativeRDFGraph(params.endpointParams().pathDataDir());
+                graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), baseIRI);
         }
 
         else {
-            if (namedGraph != null && baseIRI != null)
+            if (namedGraph != null)
                 graph = new MemoryRDFGraph(namedGraph, baseIRI);
             else
-                graph = new MemoryRDFGraph();
+                graph = new MemoryRDFGraph(baseIRI);
         }
 
         return graph;

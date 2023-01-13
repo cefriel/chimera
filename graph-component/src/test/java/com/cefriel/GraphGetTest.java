@@ -91,7 +91,6 @@ public class GraphGetTest extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getBaseIRI() == null);
         assert(graph.getNamedGraph() == null);
     }
 
@@ -106,7 +105,6 @@ public class GraphGetTest extends CamelTestSupport {
         assert(graph.getRepository().isInitialized());
         assert(graph.getRepository().getClass().equals(HTTPRepository.class));
         assert(graph.getNamedGraph() == null);
-        assert(graph.getBaseIRI() == null);
     }
 
     @Test
@@ -120,7 +118,6 @@ public class GraphGetTest extends CamelTestSupport {
         assert(graph.getRepository().isInitialized());
         assert(graph.getRepository().getClass().equals(SPARQLRepository.class));
         assert(graph.getNamedGraph() == null);
-        assert(graph.getBaseIRI() == null);
     }
 
     @Test

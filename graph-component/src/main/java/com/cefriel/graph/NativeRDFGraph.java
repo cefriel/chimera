@@ -40,8 +40,17 @@ public class NativeRDFGraph extends RDFGraph {
         this.baseIRI = baseIRI;
     }
 
+    public NativeRDFGraph(String pathDataDir, IRI baseIRI) {
+        this(pathDataDir);
+        this.baseIRI = baseIRI;
+    }
+
     public NativeRDFGraph(String pathDataDir, String namedGraph, String baseIRI) {
         this(pathDataDir, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
+
+    public NativeRDFGraph(String pathDataDir, String baseIRI) {
+        this(pathDataDir, Utils.stringToIRI(baseIRI));
     }
 
     public Sail getData() {

@@ -45,7 +45,15 @@ public class InferenceRDFGraph extends RDFGraph {
         this.baseIRI = baseIRI;
     }
 
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI baseIRI) {
+        this(schema, pathDataDir, allRules);
+        this.baseIRI = baseIRI;
+    }
+
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String namedGraph, String baseIRI) {
         this(schema, pathDataDir, allRules, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    }
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String baseIRI) {
+        this(schema, pathDataDir, allRules, Utils.stringToIRI(baseIRI));
     }
 }
