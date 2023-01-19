@@ -18,6 +18,9 @@
         <module>rml-component</module> -->
 
         <!-- Add comment if submodules not available -->
+
+        <module>rml-component</module>
+
         <module>libs/rdf-template</module>
 
         <module>rdft-component</module>
