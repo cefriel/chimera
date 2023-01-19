@@ -17,44 +17,45 @@
 package com.cefriel.rdf;
 
 import com.cefriel.component.RdfTemplateBean;
+import com.cefriel.graph.RDFGraph;
 import com.cefriel.template.TemplateExecutor;
 import com.cefriel.template.TemplateMap;
+import com.cefriel.template.io.Formatter;
 import com.cefriel.template.io.Reader;
+import com.cefriel.template.io.csv.CSVReader;
+import com.cefriel.template.io.json.JSONReader;
+import com.cefriel.template.io.rdf.RDFReader;
+import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateUtils;
+import com.cefriel.template.utils.Util;
 import com.cefriel.util.*;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.spin.function.spif.For;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RdfTemplateProcessor {
     private static final Logger logger = LoggerFactory.getLogger(RdfTemplateProcessor.class);
-    private record OperationParams (InputStream inputStream,
-                                    ChimeraResourceBean template,
+    private record OperationParams (ChimeraResourceBean template,
                                     ChimeraResourceBean query,
-                                    String format,
+                                    String formatterFormat,
                                     String basePath,
-                                    String outFileName,
-                                    boolean trim,
-                                    boolean verboseQuery,
-                                    ChimeraResourceBean kv,
-                                    ChimeraResourceBean kvCSV,
+                                    String outputFileName,
+                                    boolean trimTemplate,
+                                    boolean verboseReader,
+                                    ChimeraResourceBean templateMapKV,
+                                    ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
-                                    boolean isStream,
-                                    String timingFileName) {} // todo add other options which are not currently handled (time, ts adress maybe others)
+                                    boolean isStream) {} // todo add other options which are not currently handled (time, ts adress maybe others)
     private static OperationParams getOperationParams(Exchange exchange, RdfTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
-                exchange.getProperty(RdfTemplateConstants.TEMPLATE_STREAM, InputStream.class),
                 operationConfig.getTemplate(),
                 operationConfig.getQuery(),
                 operationConfig.getFormat(),
@@ -65,81 +66,114 @@ public class RdfTemplateProcessor {
                 operationConfig.getKeyValuePairs(),
                 operationConfig.getKeyValuePairsCSV(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
-                operationConfig.isStream(),
-                operationConfig.getTimingFileName());
+                operationConfig.isStream());
     }
 
     private static boolean validateParams(OperationParams params) {
-        if (params.isStream()) {
-            if(params.inputStream() == null)
-                throw new IllegalArgumentException("The template stream cannot be null when processing as stream");
-            if(params.query() != null)
-                throw new IllegalArgumentException("Parametric queries not supported when processing as stream");
-        }
+        // only allow file resources
         return true;
     }
-    public static void execute(Exchange exchange, RdfTemplateBean configuration, Reader reader) throws Exception {
-        OperationParams params = getOperationParams(exchange, configuration);
-        execute(params, exchange, reader);
+    public static void execute(Exchange exchange, RdfTemplateBean operationConfig, String inputFormat) throws Exception {
+        OperationParams params = getOperationParams(exchange, operationConfig);
+        execute(params, exchange, inputFormat);
     }
+    private static void execute(OperationParams params, Exchange exchange, String inputFormat) throws Exception {
 
-    private static void execute(OperationParams params, Exchange exchange, Reader reader) throws Exception {
         if (validateParams(params)) {
-            TemplateExecutor templateExec = configureTemplateOptions(params, exchange.getContext(), reader, exchange);
-            if(params.isStream()) {
-                templateExec.lower(params.inputStream());
+            TemplateExecutor templateExecutor = new TemplateExecutor();
+            Reader reader = getReaderFromExchange(exchange, inputFormat, params.verboseReader());
+
+            TemplateMap templateMap = null;
+            if(params.templateMapKV() != null) {
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange.getContext()),
+                        false);
+            }
+            if(params.templateMapKVCsv() != null) {
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange.getContext()),
+                        true);
+            }
+
+            Formatter formatter = null;
+            if(params.formatterFormat() != null){
+                formatter = Util.createFormatter(params.formatterFormat());
+            }
+
+            if(params.outputFileName() != null) {
+                new File(params.basePath()).mkdirs();
+                String outputFilePath = params.basePath() + params.outputFileName();
+                String templatePath = FileResourceAccessor.getFilePath(params.template());
+                if(params.query() != null) {
+                    String queryPath = FileResourceAccessor.getFilePath(params.query());
+                    List<String> resultFilesPaths =
+                            templateExecutor.executeMappingParametric(reader, templatePath, false,
+                                    params.trimTemplate(), queryPath, outputFilePath, templateMap, formatter);
+                    exchange.getMessage().setBody(resultFilesPaths, List.class);
+                } else {
+                    String resultFilePath =
+                            templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), outputFilePath, templateMap, formatter);
+                    exchange.getMessage().setBody(resultFilePath, String.class);
+                }
             }
             else {
-                if (params.query() == null) {
-                    String outPath = params.basePath() + params.outFileName();
-                    templateExec.lower(FileResourceAccessor.getFilePath(params.template()), outPath, null);
-                }
+                String templatePath = FileResourceAccessor.getFilePath(params.template());
                 if (params.query() != null) {
-                    String outPath = params.basePath() + params.outFileName();
-                    templateExec.lower(FileResourceAccessor.getFilePath(params.template()), outPath, FileResourceAccessor.getFilePath(params.query()));
-                    String filename = params.outFileName().replaceFirst("[.][^.]+$", "");
-                    List<String> result;
-                    try (Stream<Path> walk = Files.walk(Paths.get(params.basePath()))) {
-                        result = walk.map(x -> x.getFileName().toString())
-                                .filter(f -> f.contains(filename))
-                                .collect(Collectors.toList());
-                    }
-                    List<String> outputs = new ArrayList<>();
-                    for (String f : result)
-                        outputs.add(params.basePath() + f);
-                    exchange.getMessage().setBody(outputs, List.class);
-                }
-                else {
-                    exchange.getMessage().setBody(params.outFileName());
+                    String queryPath = FileResourceAccessor.getFilePath(params.query());
+                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, templatePath, false, params.trimTemplate(), queryPath, templateMap, formatter);
+                    exchange.getMessage().setBody(result, Map.class);
+
+                } else {
+                    String result = templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), templateMap, formatter);
+                    exchange.getMessage().setBody(result, String.class);
                 }
             }
         }
     }
+    /*
     private static TemplateExecutor configureTemplateOptions(OperationParams params, CamelContext context, Reader reader, Exchange exchange) throws Exception {
         TemplateUtils templateUtils = new TemplateUtils();
         templateUtils.setPrefix(params.baseIRI());
-        TemplateExecutor templateExec = new TemplateExecutor(reader, templateUtils);
-        if(reader != null)
-            reader.setVerbose(params.verboseQuery());
 
-        TemplateMap templateMap = new TemplateMap();
-        if (params.kvCSV() != null)
-            templateMap.parseMap(ResourceAccessor.open(params.kvCSV(), context), true);
-        else if (params.kv() != null)
-            templateMap.parseMap(ResourceAccessor.open(params.kv(), context), false);
-        if(!templateMap.isEmpty())
-            logger.info("Map parsed containing " + templateMap.size() + " keys");
-        templateExec.setMap(templateMap);
-
-        if (params.format() != null)
-            templateExec.setFormatter(MapTComponentUtils.getFormatter(params.format()));
-        templateExec.setTrimTemplate(params.trim());
         new File(params.basePath()).mkdirs();
-        String filepath = params.basePath() + params.outFileName();
+        String filepath = params.basePath() + params.outputFileName();
         exchange.getMessage().setHeader("filepath", filepath);
 
         return templateExec;
     }
+
+     */
+    private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, boolean verbose) throws Exception {
+        if (inputFormat == null) {
+            // case when no reader is specified as input but are declared directly in the template file
+            return null;
+        }
+        else if (inputFormat.equals("rdf")) {
+
+            return configureRDFReader(exchange, verbose);
+        }
+        else {
+            String input = exchange.getMessage().getBody(String.class);
+            return Util.createNonRdfReaderFromInput(input, inputFormat, verbose);
+        }
+    }
+
+    private static RDFReader configureRDFReader(Exchange exchange, boolean verbose) throws Exception {
+        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
+
+        if(graph != null) {
+            String graphName = graph.getNamedGraph() != null ? graph.getNamedGraph().toString() : null;
+            String baseIri = graph.getBaseIRI().toString();
+
+            return Util.createRDFReader(graphName, baseIri, graph.getRepository(), verbose);
+        }
+
+        else {
+            RDFReader reader = new RDFReader();
+            RDFFormat format = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
+            reader.addString(exchange.getMessage().getBody(String.class), format);
+            return reader;
+        }
+    }
+
     private static String handleOutputFileName(String outputFileName) {
         return Objects.requireNonNullElseGet(outputFileName, () -> "mapt-" + UUID.randomUUID() + ".txt");
     }

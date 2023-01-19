@@ -66,7 +66,6 @@ public class RdfTemplateAgencyTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rdfAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-
     }
 
     @Test

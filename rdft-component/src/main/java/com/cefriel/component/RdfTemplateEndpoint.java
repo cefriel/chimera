@@ -40,17 +40,22 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     private String name;
     @UriParam(defaultValue = "null")
     private String basePath;
-    @UriParam(defaultValue = "null")
+
+    @UriParam(defaultValue = "null", description = "Template resource used in the mapping process")
+    // compilation error if no description is provided
     private ChimeraResourceBean template;
     @UriParam(defaultValue = "null")
     private String filename;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "File resource containing kv pairs used to build the templateMap used in the mapping process")
+    // compilation error if no description is provided
     private ChimeraResourceBean keyValuePairs;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "CSV file resource used to build the templateMap used in the mapping process")
+    // compilation error if no description is provided
     private ChimeraResourceBean keyValuePairsCSV;
     @UriParam(defaultValue = "null")
     private String format;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "Query resource used in the mapping process")
+    // compilation error if no description is provided
     private ChimeraResourceBean query;
     @UriParam(defaultValue = "false")
     private boolean trimTemplate;
@@ -59,9 +64,9 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "false")
     private boolean stream;
     @UriParam(defaultValue = "null")
-    private String timingFileName;
-    @UriParam(defaultValue = "null")
     private RdfTemplateBean rdfBaseConfig;
+
+    // todo add resource option if template file in resource folder
 
     public RdfTemplateEndpoint() {
     }
@@ -188,14 +193,6 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
 
     public void setStream(boolean stream) {
         this.stream = stream;
-    }
-
-    public String getTimingFileName() {
-        return timingFileName;
-    }
-
-    public void setTimingFileName(String timingFileName) {
-        this.timingFileName = timingFileName;
     }
 
     /**

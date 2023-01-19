@@ -26,11 +26,13 @@ import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RdfTemplateParametricAgencyTest extends CamelTestSupport {
-
     private static ChimeraResourcesBean triples;
     private static ChimeraResourceBean template;
     private static ChimeraResourceBean query;
@@ -42,12 +44,19 @@ public class RdfTemplateParametricAgencyTest extends CamelTestSupport {
         triples = new ChimeraResourcesBean(List.of(r));
         query = new ChimeraResourceBean("file://./src/test/resources/file/agency-parametric/query.txt", null);
     }
-
     @Test
     public void testRdfTemplateParametricAgency() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:rdfParamAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
+        List<String> resultsFilesPaths = mock.getExchanges().get(0).getMessage().getBody(List.class);
+        String correctOutput1 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv")).replaceAll("\\r\\n", "\n");
+        String obtainedOutput1 = Files.readString(Paths.get((resultsFilesPaths.get(0)))).replaceAll("\\r\\n", "\n");
+        assert (correctOutput1.equals(obtainedOutput1));
+
+        String correctOutput2 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv")).replaceAll("\\r\\n", "\n");
+        String obtainedOutput2 = Files.readString(Paths.get((resultsFilesPaths.get(1)))).replaceAll("\\r\\n", "\n");
+        assert (correctOutput2.equals(obtainedOutput2));
     }
 
     @Override
@@ -66,5 +75,4 @@ public class RdfTemplateParametricAgencyTest extends CamelTestSupport {
             }
         };
     }
-
 }

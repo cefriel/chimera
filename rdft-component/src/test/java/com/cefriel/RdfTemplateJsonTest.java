@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.cefrie8l;
+package com.cefriel;
 
 import com.cefriel.component.RdfTemplateBean;
 import com.cefriel.util.ChimeraResourceBean;

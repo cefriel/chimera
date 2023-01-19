@@ -30,8 +30,6 @@ public class RdfTemplateBean {
     private boolean verboseQueries;
     private boolean isStream;
 
-    private String timingFileName;
-
     // Default Constructor
     public RdfTemplateBean() {}
 
@@ -128,14 +126,6 @@ public class RdfTemplateBean {
         this.isStream = stream;
     }
 
-    public String getTimingFileName() {
-        return timingFileName;
-    }
-
-    public void setTimingFileName(String timingFileName) {
-        this.timingFileName = timingFileName;
-    }
-
     public void setConfig(RdfTemplateEndpoint endpoint){
 
         if (endpoint.getBasePath()!=null){
@@ -167,9 +157,6 @@ public class RdfTemplateBean {
         }
         if (endpoint.isStream()) {
             this.setStream(endpoint.isStream());
-        }
-        if (endpoint.getTimingFileName() != null) {
-            this.setTimingFileName(endpoint.getTimingFileName());
         }
     }
 }

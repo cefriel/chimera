@@ -33,7 +33,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class RdfTemplateXmlTest extends CamelTestSupport {
-
     @Produce("direct:start")
     ProducerTemplate start;
 
@@ -43,7 +42,6 @@ public class RdfTemplateXmlTest extends CamelTestSupport {
     static void fillBean(){
         template = new ChimeraResourceBean("file://./src/test/resources/file/xml/template.vm", "");
     }
-
     @Test
     public void testRdfTemplateXml() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:rdfXml");

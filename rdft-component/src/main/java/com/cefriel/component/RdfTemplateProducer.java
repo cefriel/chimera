@@ -40,10 +40,8 @@ public class RdfTemplateProducer extends DefaultProducer {
         super(endpoint);
         this.endpoint = endpoint;
     }
-
     public void process(Exchange exchange) throws Exception {
         final RdfTemplateBean operationConfig;
-        Reader reader;
 
         if (endpoint.getRdfBaseConfig() != null) {
             operationConfig = new RdfTemplateBean(endpoint.getRdfBaseConfig());
@@ -56,42 +54,12 @@ public class RdfTemplateProducer extends DefaultProducer {
         operationConfig.setConfig(endpoint);
         // either inputstream or chimera rdf graph
         switch (endpoint.getName()){
-            case "rdf" -> {
-                if (exchange.getMessage().getBody(RDFGraph.class) != null)
-                    exchange.setProperty(ChimeraConstants.GRAPH, exchange.getMessage().getBody(RDFGraph.class));
-                reader = configureRDFReader(exchange);
-                RdfTemplateProcessor.execute(exchange, operationConfig, reader);
-                }
-            case "xml" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureXMLReader(exchange));
-            case "json" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureJSONReader(exchange));
-            case "csv" -> RdfTemplateProcessor.execute(exchange, operationConfig, configureCSVReader(exchange));
-            default -> RdfTemplateProcessor.execute(exchange, operationConfig, null);
-        }
-    }
-
-    private Reader configureJSONReader(Exchange exchange) throws Exception {
-        return new JSONReader(exchange.getMessage().getBody(String.class));
-    }
-
-    private Reader configureCSVReader(Exchange exchange) throws Exception {
-        return new CSVReader(exchange.getMessage().getBody(String.class));
-    }
-
-    private Reader configureXMLReader(Exchange exchange) throws Exception {
-        return new XMLReader(exchange.getMessage().getBody(String.class));
-    }
-
-    private Reader configureRDFReader(Exchange exchange) throws Exception {
-
-        RDFGraph graph = exchange.getProperty(ChimeraConstants.GRAPH, RDFGraph.class);
-
-        if(graph != null)
-            return new RDFReader(graph.getRepository(), graph.getNamedGraph());
-        else {
-            RDFReader reader = new RDFReader();
-            RDFFormat format = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
-            reader.addString(exchange.getMessage().getBody(String.class), format);
-            return reader;
+            case "rdf" -> RdfTemplateProcessor.execute(exchange, operationConfig, "rdf");
+            case "xml" -> RdfTemplateProcessor.execute(exchange, operationConfig, "xml");
+            case "json" -> RdfTemplateProcessor.execute(exchange, operationConfig, "json");
+            case "csv" -> RdfTemplateProcessor.execute(exchange, operationConfig, "csv");
+            case "" -> RdfTemplateProcessor.execute(exchange, operationConfig, null);
+            default -> throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
         }
     }
 }
