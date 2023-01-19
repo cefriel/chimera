@@ -80,8 +80,9 @@ public class RmlProducer extends DefaultProducer {
                 if (basePath == null)
                     basePath = System.getProperty("user.id");
                 RmlProcessor.execute(exchange, new AccessFactory(basePath), graph);
-            } else if (configuration.getInputFiles().size() == 1) {
-                exchange.getMessage().setBody(UniLoader.open(configuration.getInputFiles().get(0)));
+            } else if (configuration.getInputFiles().getResources().size() == 1) {
+                exchange.getMessage().setBody(ResourceAccessor.open(configuration.getInputFiles().getResources().get(0), exchange.getContext()));
+                // exchange.getMessage().setBody(UniLoader.open(configuration.getInputFiles().getResources().get(0)));
             } else {
                 MapConverter.fileConvert(exchange, configuration.getInputFiles());
             }

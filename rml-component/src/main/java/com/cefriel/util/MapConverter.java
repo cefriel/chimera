@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MapConverter {
@@ -45,18 +44,25 @@ public class MapConverter {
         }
     }
 
-    public static void fileConvert(Exchange exchange, List<String> files) throws IOException {
+    public static void fileConvert(Exchange exchange, ChimeraResourcesBean resources) throws IOException {
 
         RmlBean configuration = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_CONFIG, RmlBean.class);
         String prefix = configuration.getPrefixLogicalSource();
         if(prefix == null)
             prefix = "is://";
         Map<String, InputStream> map = new HashMap<>();
+        for (var resource : resources.getResources()) {
+            InputStream is = ResourceAccessor.open(resource, exchange.getContext());
+            Path path = Path.of(FileResourceAccessor.getFilePath(resource));
+            map.put(prefix + path.getFileName(), is);
+        }
+        /*
         for (String file : files) {
             InputStream is = UniLoader.open(file);
             Path path = Path.of(file);
             map.put(prefix + path.getFileName(), is);
         }
+        */
         exchange.getMessage().setBody(map);
     }
 }

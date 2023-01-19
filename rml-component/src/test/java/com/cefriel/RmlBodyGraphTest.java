@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -33,8 +34,8 @@ public class RmlBodyGraphTest extends CamelTestSupport {
 
     @BeforeAll
     static void fillBean(){
-        List<String> maps = new ArrayList<>();
-        List<String> input = new ArrayList<>();
+        ChimeraResourcesBean maps = new ArrayList<>();
+        ChimeraResourcesBean input = new ArrayList<>();
         maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
         input.add("file://./src/test/resources/file/sample-gtfs/stops.txt");
         rmlBean.setStreamName("stops.txt");

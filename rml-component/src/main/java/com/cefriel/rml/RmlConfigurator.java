@@ -30,6 +30,7 @@ import be.ugent.rml.term.Term;
 import com.cefriel.component.RmlBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.ChimeraRmlConstants;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Exchange;
@@ -72,7 +73,7 @@ public class RmlConfigurator {
             if(exchange.getMessage().getHeader(ChimeraRmlConstants.RML_FUNCTION) != null)
                 functionLoader = getFunctionLoader(exchange.getMessage().getHeader(ChimeraRmlConstants.RML_FUNCTION, InputStream.class));
             else {
-                List<String> functionFiles = configuration.getFunctionFiles();
+                ChimeraResourcesBean functionFiles = configuration.getFunctionFiles();
                 functionLoader = getFunctionLoader(functionFiles);
             }
 
@@ -99,7 +100,7 @@ public class RmlConfigurator {
         return hash;
     }
 
-    static FunctionLoader getFunctionLoader(List<String> functionFiles) throws Exception {
+    static FunctionLoader getFunctionLoader(ChimeraResourcesBean functionFiles) throws Exception {
 
         String[] fOptionValue = null;
         if (!functionFiles.isEmpty()) {

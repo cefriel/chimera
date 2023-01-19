@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -39,13 +40,13 @@ public class RmlEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
-    private String inputFiles;
+    private ChimeraResourcesBean inputFiles;
     @UriParam(defaultValue = "false")
     private boolean useMessage;
     @UriParam(defaultValue = "null")
-    private String mappings;
+    private ChimeraResourcesBean mappings;
     @UriParam(defaultValue = "null")
-    private String functionFiles;
+    private ChimeraResourcesBean functionFiles;
     @UriParam(defaultValue = "0")
     private int batchSize = 0;
     @UriParam(defaultValue = "false")
@@ -125,11 +126,11 @@ public class RmlEndpoint extends DefaultEndpoint {
     /**
      * Some description of this option, and what it does
      */
-    public String getInputFiles() {
+    public ChimeraResourcesBean getInputFiles() {
         return inputFiles;
     }
 
-    public void setInputFiles(String inputFiles) {
+    public void setInputFiles(ChimeraResourcesBean inputFiles) {
         this.inputFiles = inputFiles;
     }
 
@@ -147,22 +148,22 @@ public class RmlEndpoint extends DefaultEndpoint {
     /**
      * Some description of this option, and what it does
      */
-    public String getMappings() {
+    public ChimeraResourcesBean getMappings() {
         return mappings;
     }
 
-    public void setMappings(String mappings) {
+    public void setMappings(ChimeraResourcesBean mappings) {
         this.mappings = mappings;
     }
 
     /**
      * Some description of this option, and what it does
      */
-    public String getFunctionFiles() {
+    public ChimeraResourcesBean getFunctionFiles() {
         return functionFiles;
     }
 
-    public void setFunctionFiles(String functionFiles) {
+    public void setFunctionFiles(ChimeraResourcesBean functionFiles) {
         this.functionFiles = functionFiles;
     }
 

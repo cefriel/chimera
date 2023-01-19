@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RmlComponentTest extends CamelTestSupport {
 
@@ -40,7 +40,7 @@ public class RmlComponentTest extends CamelTestSupport {
 
     @BeforeAll
     static void fillBean(){
-        List<String> maps = new ArrayList<>();
+        ChimeraResourcesBean maps = new ArrayList<>();
         maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
         rmlBean.setStreamName("stops.txt");
         rmlBean.setMappings(maps);
