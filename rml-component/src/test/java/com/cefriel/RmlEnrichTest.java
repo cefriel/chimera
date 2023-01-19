@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.RmlLiftingAggregationStrategy;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.builder.RouteBuilder;
@@ -36,7 +37,7 @@ public class RmlEnrichTest extends CamelTestSupport {
 
     @BeforeAll
     static void fillBean(){
-        List<String> maps = new ArrayList<>();
+        ChimeraResourcesBean maps = new ArrayList<>();
         maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
         rmlBean.setStreamName("stops.txt");
         rmlBean.setMappings(maps);

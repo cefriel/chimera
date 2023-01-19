@@ -16,52 +16,49 @@
 
 package com.cefriel.component;
 
+import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.ChimeraRmlConstants;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class RmlBean {
 
     private String basePath;
-    private List<String> inputFiles;
+    private ChimeraResourcesBean inputFiles; // todo chimera resources
     private boolean useMessage;
-    private List<String> mappings;
-    private List<String> functionFiles;
-    private int batchSize;
-    private boolean incrementalUpdate;
-    private boolean noCache;
-    private boolean ordered;
+    private ChimeraResourcesBean mappings; // paths to mapping files .rml // todo chimera resources
+    private ChimeraResourcesBean functionFiles; // todo chimera resources
+    private int batchSize; //triples writing strategy parameters
+    private boolean incrementalUpdate; //scrivo tutto alla fine o a mano a mano
+    private boolean noCache; // rename to noCache record
+    private boolean ordered; // ordered execution of triple maps by logical source
     private String baseIri;
     private String baseIriPrefix;
-    private boolean emptyStrings;
+    private boolean emptyStrings; // what to do when i have empty strings in the source
     private boolean concurrentWrites;
     private boolean concurrentRecords;
-    private boolean defaultRecordFactory;
+    private boolean defaultRecordFactory; // decide weather or not to handle inputs as just inputstream
     private int numThreadsRecords = ChimeraRmlConstants.DEFAULT_NUM_THREADS;
     private int numThreadsWrites = ChimeraRmlConstants.DEFAULT_NUM_THREADS;
-    private String concurrency;
-    private boolean singleRecordsFactory;
-    private String streamName;
-    private String baseUrl;
-    private String prefixLogicalSource;
+    private String concurrency; // 3 possible values, type of concurrency
+    private boolean singleRecordsFactory; // in caso di concorrenza usa sempre la stessa recordFactory
+    private String streamName; // boh, controllare
+    private String baseUrl; // boh, controllare
+    private String prefixLogicalSource; // for mappings applied to streams only, prefix that is specified in the mapping file (default is://)
 
     public RmlBean() {
-        mappings = new ArrayList<>();
-        functionFiles = new ArrayList<>();
-        inputFiles = new ArrayList<>();
+        mappings = new ChimeraResourcesBean();
+        functionFiles = new ChimeraResourcesBean();
+        inputFiles = new ChimeraResourcesBean();
     }
 
     public RmlBean(RmlBean options) {
         this();
         if(options != null) {
             if (options.getInputFiles() != null)
-                inputFiles = new ArrayList<>(options.getInputFiles());
+                inputFiles = options.getInputFiles();
             if (options.getMappings() != null)
-                mappings = new ArrayList<>(options.getMappings());
+                mappings = options.getMappings();
             if (options.getFunctionFiles() != null)
-                functionFiles = new ArrayList<>(options.getFunctionFiles());
+                functionFiles = options.getFunctionFiles();
             basePath = options.getBasePath();
             useMessage = options.isUseMessage();
             batchSize = options.getBatchSize();
@@ -92,11 +89,11 @@ public class RmlBean {
         this.basePath = basePath;
     }
 
-    public List<String> getInputFiles() {
+    public ChimeraResourcesBean getInputFiles() {
         return inputFiles;
     }
 
-    public void setInputFiles(List<String> inputFiles) {
+    public void setInputFiles(ChimeraResourcesBean inputFiles) {
         this.inputFiles = inputFiles;
     }
 
@@ -108,19 +105,19 @@ public class RmlBean {
         this.useMessage = useMessage;
     }
 
-    public List<String> getMappings() {
+    public ChimeraResourcesBean getMappings() {
         return mappings;
     }
 
-    public void setMappings(List<String> mappings) {
+    public void setMappings(ChimeraResourcesBean mappings) {
         this.mappings = mappings;
     }
 
-    public List<String> getFunctionFiles() {
+    public ChimeraResourcesBean getFunctionFiles() {
         return functionFiles;
     }
 
-    public void setFunctionFiles(List<String> functionFiles) {
+    public void setFunctionFiles(ChimeraResourcesBean functionFiles) {
         this.functionFiles = functionFiles;
     }
 
@@ -266,16 +263,16 @@ public class RmlBean {
             this.setBasePath(endpoint.getBasePath());
         }
         if (endpoint.getInputFiles()!=null) {
-            this.setInputFiles(Arrays.asList(endpoint.getInputFiles().split("\\|")));
+            this.setInputFiles(endpoint.getInputFiles());
         }
         if (endpoint.isUseMessage()){
             this.setUseMessage(endpoint.isUseMessage());
         }
         if (endpoint.getMappings()!=null) {
-            this.setMappings(Arrays.asList(endpoint.getMappings().split("\\|")));
+            this.setMappings(endpoint.getMappings());
         }
         if (endpoint.getFunctionFiles()!=null) {
-            this.setFunctionFiles(Arrays.asList(endpoint.getFunctionFiles().split("\\|")));
+            this.setFunctionFiles(endpoint.getFunctionFiles());
         }
         if (endpoint.getBatchSize()!=0) {
             this.setBatchSize(endpoint.getBatchSize());

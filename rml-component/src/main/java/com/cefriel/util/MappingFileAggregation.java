@@ -20,7 +20,7 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 
 import java.io.InputStream;
-
+// todo set in properties not header
 public class MappingFileAggregation implements AggregationStrategy {
 
     @Override
