@@ -60,6 +60,7 @@ public class GraphInferenceTest extends CamelTestSupport {
 
                 getCamelContext().getRegistry().bind("ontologies", ontologies);
                 getCamelContext().getRegistry().bind("triples", triples);
+                // todo check this cant be right
                 from("graph://get")
                         .to("graph://add?chimeraResources=#bean:ontologies")
                         .to("graph://add?chimeraResources=#bean:ontologies")

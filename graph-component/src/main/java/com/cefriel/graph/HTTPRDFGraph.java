@@ -18,6 +18,7 @@ package com.cefriel.graph;
 
 import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 public class HTTPRDFGraph extends RDFGraph {
@@ -32,10 +33,16 @@ public class HTTPRDFGraph extends RDFGraph {
         repo.init();
     }
     public HTTPRDFGraph(String rrAddress, String repositoryId, IRI namedGraph, IRI baseIRI) {
-        this(rrAddress, repositoryId);
-        this.namedGraph = namedGraph;
-        this.setNamedGraph(namedGraph);
+        this.rrAddress = rrAddress;
+        this.repositoryId = repositoryId;
         this.baseIRI = baseIRI;
+        this.namedGraph = namedGraph;
+
+        ContextAwareRepository cRepo = new ContextAwareRepository(new HTTPRepository(rrAddress, repositoryId));
+        cRepo.setReadContexts(namedGraph);
+        cRepo.setInsertContext(namedGraph);
+        cRepo.init();
+        this.repo = cRepo;
     }
 
     public HTTPRDFGraph(String rrAddress, String repositoryId, IRI baseIRI) {

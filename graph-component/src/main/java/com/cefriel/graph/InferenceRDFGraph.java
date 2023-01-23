@@ -19,6 +19,7 @@ package com.cefriel.graph;
 import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.inferencer.fc.SchemaCachingRDFSInferencer;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
@@ -39,10 +40,20 @@ public class InferenceRDFGraph extends RDFGraph {
         this.repo.init();
     }
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI namedGraph, IRI baseIRI) {
-        this(schema, pathDataDir, allRules);
-        this.namedGraph = namedGraph;
-        this.setNamedGraph(namedGraph);
+        SchemaCachingRDFSInferencer inferencer;
+        if (pathDataDir == null)
+            inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
+        else
+            inferencer = new SchemaCachingRDFSInferencer(new NativeStore(new File(pathDataDir)),
+                    schema, allRules);
+
         this.baseIRI = baseIRI;
+        this.namedGraph = namedGraph;
+        ContextAwareRepository cRepo = new ContextAwareRepository(new SailRepository(inferencer));
+        cRepo.setReadContexts(namedGraph);
+        cRepo.setInsertContext(namedGraph);
+        cRepo.init();
+        this.repo = cRepo;
     }
 
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI baseIRI) {

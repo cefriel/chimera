@@ -18,6 +18,7 @@ package com.cefriel.graph;
 
 import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 
 
@@ -30,10 +31,13 @@ public class SPARQLEndpointGraph extends RDFGraph {
     }
 
     public SPARQLEndpointGraph(String endpoint, IRI namedGraph, IRI baseIRI) {
-        this(endpoint);
-        this.namedGraph = namedGraph;
-        this.setNamedGraph(namedGraph);
         this.baseIRI = baseIRI;
+        this.namedGraph = namedGraph;
+        ContextAwareRepository cRepo = new ContextAwareRepository(new SPARQLRepository(endpoint));
+        cRepo.setReadContexts(namedGraph);
+        cRepo.setInsertContext(namedGraph);
+        cRepo.init();
+        this.repo = cRepo;
     }
 
     public SPARQLEndpointGraph(String endpoint, IRI baseIRI) {

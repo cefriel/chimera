@@ -18,6 +18,7 @@ package com.cefriel.graph;
 
 import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
@@ -34,10 +35,14 @@ public class NativeRDFGraph extends RDFGraph {
         this.repo.init();
     }
     public NativeRDFGraph(String pathDataDir, IRI namedGraph, IRI baseIRI) {
-        this(pathDataDir);
-        this.namedGraph = namedGraph;
-        this.setNamedGraph(namedGraph);
         this.baseIRI = baseIRI;
+        this.namedGraph = namedGraph;
+        SailRepository r = new SailRepository(new NativeStore(new File(pathDataDir)));
+        ContextAwareRepository cRepo = new ContextAwareRepository(r);
+        cRepo.setReadContexts(namedGraph);
+        cRepo.setInsertContext(namedGraph);
+        cRepo.init();
+        this.repo = cRepo;
     }
 
     public NativeRDFGraph(String pathDataDir, IRI baseIRI) {

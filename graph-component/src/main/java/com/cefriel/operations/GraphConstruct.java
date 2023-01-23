@@ -86,14 +86,14 @@ public class GraphConstruct {
         LOG.info("All queryUrls extracted");
         return sparqlQueries;
     }
-    private static void executeQueryOnGraph(RDFGraph graph, String query, String namedGraph) {
+    private static void executeQueryOnGraph(RDFGraph graph, String query, String newNamedGraph) {
         Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
         RepositoryConnection con = graph.getRepository().getConnection();
         LOG.info("Added " + m.size() + " triples");
-        if(namedGraph != null)
-            con.add(m, Utils.stringToIRI(namedGraph));
+        if(newNamedGraph != null)
+            con.add(m, Utils.stringToIRI(newNamedGraph));
         else
-            con.add(m);
+            Utils.populateRepository(graph.getRepository(), m);
         con.close();
     }
 

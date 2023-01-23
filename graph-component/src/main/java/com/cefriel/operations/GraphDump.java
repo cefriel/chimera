@@ -98,7 +98,6 @@ public class GraphDump {
             for (Namespace n : Iterations.asList(namespaces))
                 dumpModel.setNamespace(n);
 
-
             //TODO Change this, add specific option to save as file or set as body
             // todo maybe can reuse camel file component for dump operation
             if (params.endpointParams().basePath() != null) {

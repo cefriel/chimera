@@ -20,13 +20,11 @@ import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareConnection;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -89,7 +87,24 @@ public class Utils {
     }
     public static void populateRepository(Repository repo, Model model) {
         RepositoryConnection connection = repo.getConnection();
-        connection.add(model);
+        // triggers stack overflow error due to a problem for only ContextAwareRepositories
+        // add statements from model one by one to repository instead
+        // connection.add(model);
+
+        IRI graphName;
+        if (connection instanceof ContextAwareConnection) {
+            graphName = ((ContextAwareConnection) connection).getInsertContext();
+        }
+        else
+            graphName = null;
+        for (Statement st : model.getStatements(null,null,null))
+        {
+            if(graphName != null)
+                connection.add(st, graphName);
+            else
+                connection.add(st);
+        }
+
         for (Namespace ns : model.getNamespaces()) {
             connection.setNamespace(ns.getPrefix(), ns.getName());
         }

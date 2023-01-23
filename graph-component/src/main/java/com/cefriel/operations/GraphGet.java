@@ -82,18 +82,39 @@ public class GraphGet {
     private static Boolean isSPARQLEndpointGraph (OperationParams params) {
         return params.endpointParams().sparqlEndpoint() != null;
     }
-    private record NamedGraphAndBaseIRI(String namedGraph, String baseIri) {}
-    private static NamedGraphAndBaseIRI handleNamedGraphAndBaseIRI(String namedGraph, String baseIri, String graphID) {
-        String returnNamedGraph, returnBaseIRI;
 
-        returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
-        returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
-        return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
+    private static boolean validateParams(OperationParams params) {
+        if (!params.endpointParams().defaultGraph())
+            if (params.endpointParams().baseIri() == null)
+                throw new IllegalArgumentException("No baseIri a non default RDFGraph. Check the defaultGraph option.");
+
+        return true;
+    }
+
+    private record NamedGraphAndBaseIRI(String namedGraph, String baseIri) {}
+    private static NamedGraphAndBaseIRI handleNamedGraphAndBaseIRI(boolean wantDefaultGraph, String namedGraph, String baseIri, String graphID) {
+        String returnNamedGraph, returnBaseIRI;
+        if (wantDefaultGraph) {
+            returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
+            returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
+            return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
+        }
+        else {
+            returnBaseIRI = baseIri;
+            returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
+            return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
+        }
     }
     // called by the producer
     public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws IOException {
         OperationParams params = getOperationParams(exchange, operationConfig);
-        return obtainGraph(params, exchange, inputStream);
+        if (validateParams(params)) {
+            return obtainGraph(params, exchange, inputStream);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
+        }
+
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws IOException {
         RDFGraph graph = obtainGraph(params, exchange);
@@ -104,21 +125,21 @@ public class GraphGet {
     // called by the consumer
     public static void obtainGraph(Exchange exchange, GraphBean operationConfig) throws IOException {
         OperationParams params = getOperationParams(exchange, operationConfig);
-        RDFGraph graph = obtainGraph(params, exchange);
-        exchange.getMessage().setBody(graph, RDFGraph.class);
+        if (validateParams(params)) {
+            RDFGraph graph = obtainGraph(params, exchange);
+            exchange.getMessage().setBody(graph, RDFGraph.class);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
+        }
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws IOException {
 
         String namedGraph, baseIRI;
-        if (!params.endpointParams().defaultGraph()) {
-            NamedGraphAndBaseIRI x = handleNamedGraphAndBaseIRI(params.endpointParams().namedGraph(), params.endpointParams().baseIri(), params.graphID());
-            namedGraph = x.namedGraph();
-            baseIRI = x.baseIri();
-        }
-        else {
-            namedGraph = null;
-            baseIRI = handleNamedGraphAndBaseIRI(null, params.endpointParams().baseIri(), null).baseIri();
-        }
+        NamedGraphAndBaseIRI x = handleNamedGraphAndBaseIRI(params.endpointParams().defaultGraph(),
+                params.endpointParams().namedGraph(), params.endpointParams().baseIri(), params.graphID());
+        namedGraph = x.namedGraph();
+        baseIRI = x.baseIri();
 
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {

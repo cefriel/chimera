@@ -23,6 +23,8 @@ import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.Utils;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -69,15 +71,28 @@ public class GraphInference {
         Repository inferenceRepo = new SailRepository(inferencer);
         inferenceRepo.init();
 
-        RepositoryConnection source = params.graph().getRepository().getConnection();
-        RepositoryConnection target = inferenceRepo.getConnection();
+        Repository sourceRepo = params.graph().getRepository();
+        Repository targetRepo = inferenceRepo;
         //Enable inference
         // all statements from source graph to graph with inference enabled
-        target.add(source.getStatements(null, null, null, true));
+
+        Model sourceModel = new TreeModel();
+        for (var st: sourceRepo.getConnection().getStatements(null, null, null, true))
+        {
+            sourceModel.add(st);
+        }
+
+        Utils.populateRepository(targetRepo, sourceModel);
+
         //Copy back
-        source.add(target.getStatements(null, null, null, true));
-        source.close();
-        target.close();
+        Model targetModel = new TreeModel();
+        for (var st: targetRepo.getConnection().getStatements(null, null, null, true))
+        {
+            targetModel.add(st);
+        }
+
+        Utils.populateRepository(sourceRepo, targetModel);
+
         exchange.getMessage().setBody(params.graph(), RDFGraph.class);
     }
 }

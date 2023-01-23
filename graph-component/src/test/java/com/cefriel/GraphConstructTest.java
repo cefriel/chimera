@@ -35,7 +35,8 @@ import java.util.List;
 public class GraphConstructTest extends CamelTestSupport {
     private static ChimeraResourcesBean triples;
     private static ChimeraResourcesBean constructQueries;
-    private static final String namedGraph = "http://example.org/newContext";
+    private static final String baseIri = "http://example.org/";
+    private static final String namedGraph = baseIri + "newContext";
     @BeforeAll
     static void fillBean(){
         ChimeraResourceBean r1 = new ChimeraResourceBean(
@@ -82,7 +83,7 @@ public class GraphConstructTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("triples", triples);
                 getCamelContext().getRegistry().bind("constructQueries", constructQueries);
 
-                from("graph://get?namedGraph=http://example.org/Pre")
+                from("graph://get?defaultGraph=false&baseIri=" + baseIri + "&namedGraph=" + baseIri + "Pre")
                         .to("graph://add?chimeraResources=#bean:triples")
                         .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResources=#bean:constructQueries")
                         .to("mock:constructNew");

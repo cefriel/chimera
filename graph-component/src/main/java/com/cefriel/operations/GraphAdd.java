@@ -65,7 +65,7 @@ public class GraphAdd {
     }
     private static RDFGraph graphAdd(OperationParams params) throws IOException {
         if (validParams(params)){
-            Utils.populateRepository(params.graph.getRepository(), params.operationParams().ontologies(), params.context());
+            Utils.populateRepository(params.graph().getRepository(), params.operationParams().ontologies(), params.context());
             return params.graph();
         }
         throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
