@@ -23,7 +23,6 @@ import org.apache.camel.Exchange;
 import java.io.InputStream;
 
 public class KeyValueCSVAggregation implements AggregationStrategy {
-
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
         InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
