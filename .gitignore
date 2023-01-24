@@ -6,3 +6,4 @@ rdft-component/src/test/resources/file/secret
 graph-component/src/test/resources/file/result
 rml-component/src/test/resources/file/result
 /notes/
+/rml-component/src/generated/

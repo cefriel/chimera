@@ -51,7 +51,6 @@ public class HTTPResourceAccessor {
         if (response.isPresent()) {
             inputStream = response.get().getMessage().getBody(InputStream.class);
         }
-
         return Optional.ofNullable(inputStream);
     }
 

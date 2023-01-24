@@ -23,7 +23,6 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 public class GraphAggregation implements AggregationStrategy {
-
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
@@ -31,6 +30,7 @@ public class GraphAggregation implements AggregationStrategy {
         RDFGraph newGraph = newExchange.getMessage().getBody(RDFGraph.class);
         Repository oldRepo = oldGraph.getRepository();
         Repository newRepo = newGraph.getRepository();
+
         try (RepositoryConnection conn = oldRepo.getConnection()) {
             try (RepositoryConnection source = newRepo.getConnection()) {
                 conn.add(source.getStatements(null, null, null, true));

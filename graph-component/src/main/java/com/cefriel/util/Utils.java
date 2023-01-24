@@ -53,28 +53,6 @@ public class Utils {
         return url.endsWith("/") ? url : url + "/";
     }
 
-    public static Repository getSchemaRepository(GraphBean configuration, Exchange exchange) throws IOException {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        Repository schema = new SailRepository(new MemoryStore());
-        schema.init();
-        try (RepositoryConnection con = schema.getConnection()) {
-            for (String url: configuration.getResources())
-                con.add(StreamParser.parse(UniLoader.open(url,
-                        exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange), vf.createIRI(url));
-        }
-        return schema;
-    }
-    public static Repository getSchemaRepository(List<String> ontologyUrls, String jwtToken, String rdfFormat, Exchange exchange) throws IOException {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        Repository schema = new SailRepository(new MemoryStore());
-        schema.init();
-        try (RepositoryConnection con = schema.getConnection()) {
-            for (String url: ontologyUrls)
-                con.add(StreamParser.parse(UniLoader.open(url, jwtToken), rdfFormat,
-                        exchange), vf.createIRI(url));
-        }
-        return schema;
-    }
     public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
         for (ChimeraResourceBean resource: resourcesBean.getResources()) {
             Model model = StreamParser.parseResource(resource, context);
@@ -114,31 +92,6 @@ public class Utils {
         schema.init();
         populateRepository(schema, resourcesBean, context);
         return schema;
-    }
-
-    private static void populateRepository(Repository repo, Exchange exchange, String namedGraph, List<String> ontologyPaths, String jwtToken) throws IOException {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        try (RepositoryConnection con = repo.getConnection()) {
-            for (String url: ontologyPaths) { // todo check why namespace is not handled here
-                if (namedGraph != null)
-                    con.add(StreamParser.parse(UniLoader.open(url, jwtToken), exchange), vf.createIRI(namedGraph));
-                else
-                    con.add(StreamParser.parse(UniLoader.open(url, jwtToken), exchange));
-            }
-        }
-    }
-
-    public static void addSchemaToRepository(Repository repo, GraphBean configuration, Exchange exchange) throws IOException {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        try (RepositoryConnection con = repo.getConnection()) {
-            for (String url: configuration.getResources()) {
-                if (configuration.getNamedGraph() != null)
-                    con.add(StreamParser.parse(UniLoader.open(url,
-                            exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange) , vf.createIRI(configuration.getNamedGraph()));
-                else
-                    con.add(StreamParser.parse(UniLoader.open(url, exchange.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class)), exchange));
-            }
-        }
     }
     public static RDFFormat getExchangeRdfFormat(Exchange exchange, String headerName) {
         RDFFormat rdfFormat;

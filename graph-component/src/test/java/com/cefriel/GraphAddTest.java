@@ -64,9 +64,6 @@ public class GraphAddTest extends CamelTestSupport {
         assert (graph.getRepository().isInitialized());
         assert (graph.getRepository().getConnection().size() > 0);
     }
-
-    //todo handle problem where same resouce cannot be accessed by multiple routes
-
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {

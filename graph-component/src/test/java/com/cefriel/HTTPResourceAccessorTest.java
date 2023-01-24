@@ -44,16 +44,15 @@ public class HTTPResourceAccessorTest {
         context.start();
         AuthConfigBean authConfig = new AuthConfigBean(endpointUser, endpointPwd, "Basic");
         ChimeraResourceBean resource = new ChimeraResourceBean(authBasicEndpoint, null, authConfig);
-        Optional<Exchange> response = null;
+        Optional<Exchange> response;
         response = HTTPResourceAccessor.getHTTPResource(resource, context);
 
         context.stop();
 
-        assert (response != null);
+        assert (response.isPresent());
         assert(!response.get().isFailed());
         int responseCode = response.get().getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
         assert(responseCode == 200);
-        // todo parse body from json and check that authenticated value is true (it already is, the call would fail otherwise but do it for completeness)
         assert(response.get().getMessage().getBody(String.class) != null);
     }
     @Test
@@ -62,12 +61,12 @@ public class HTTPResourceAccessorTest {
         context.start();
         AuthTokenConfigBean authTokenConfig = new AuthTokenConfigBean("test");
         ChimeraResourceBean resource = new ChimeraResourceBean(authBearerEndpoint, null, authTokenConfig);
-        Optional<Exchange> response = null;
+        Optional<Exchange> response;
         response = HTTPResourceAccessor.getHTTPResource(resource, context);
 
         context.stop();
 
-        assert (response != null);
+        assert (response.isPresent());
         assert(!response.get().isFailed());
         int responseCode = response.get().getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
         assert(responseCode == 200);

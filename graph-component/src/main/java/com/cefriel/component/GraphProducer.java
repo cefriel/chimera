@@ -33,9 +33,6 @@ public class GraphProducer extends DefaultProducer {
     private static final Logger LOG = LoggerFactory.getLogger(GraphProducer.class);
     private final GraphEndpoint endpoint;
 
-    // todo wherever a resource like a file or a url use ChimeraResource
-    // todo every operation will get the Camel Context from the Exchange that it receives
-
     public GraphProducer(GraphEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
@@ -47,7 +44,7 @@ public class GraphProducer extends DefaultProducer {
 
 
         if( exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION)!=null ){
-            // todo this is never called (check if true)
+            // todo this is never called (check if true) (it is true, verified by all available tests)
             operationConfig = new GraphBean(exchange.getMessage().getHeader(ChimeraConstants.BASE_CONFIGURATION, GraphBean.class));
             LOG.info("Configuration from exchange");
         } else {

@@ -54,16 +54,9 @@ public class GraphInference {
                 getEndpointParams(operationConfig));
     }
 
-    private static boolean validParams(OperationParams params) {
-        // todo validate ChimeraResources List
-
-        return true;
-    }
     public static void graphInference(Exchange exchange, GraphBean operationConfig) throws IOException {
         OperationParams operationParams = getOperationParams(exchange, operationConfig);
-        if (validParams(operationParams)) {
-            graphInference(operationParams, exchange);
-        }
+        graphInference(operationParams, exchange);
     }
     public static void graphInference(OperationParams params, Exchange exchange) throws IOException {
         Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), params.context());
