@@ -16,19 +16,30 @@
 
 package com.cefriel;
 
-import com.cefriel.util.RmlLiftingAggregationStrategy;
-import com.cefriel.util.UniLoader;
+import com.cefriel.util.*;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class RmlPollEnrichTest extends CamelTestSupport {
 
     @Produce("direct:start")
     ProducerTemplate start;
+
+    private static ChimeraResourcesBean mappingsRML;
+    @BeforeAll
+    static void fillBean(){
+        var mapping = new ChimeraResourceBean(
+                "file://./src/test/resources/file/lifting/mapping.rml.ttl",
+                "turtle");
+        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
+    }
 
     @Test
     public void testRmlPollEnrich() throws Exception {
@@ -36,7 +47,8 @@ public class RmlPollEnrichTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rmlPollEnrich");
         mock.expectedMessageCount(1);
 
-        start.sendBody(UniLoader.open("file://./src/test/resources/file/sample-gtfs/stops.txt"));
+        var r = new ChimeraResourceBean("file://./src/test/resources/file/sample-gtfs/stops.txt", null);
+        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
 
         mock.assertIsSatisfied();
 
@@ -47,9 +59,11 @@ public class RmlPollEnrichTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
+                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
+
                 from("direct:start")
                         .pollEnrich("graph://get", new RmlLiftingAggregationStrategy())
-                        .to("rml://?streamName=stops.txt&mappings=file://./src/test/resources/file/lifting/mapping.rml.ttl")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML")
                         .to("graph://dump?basePath=src/test/resources/file/result&dumpFormat=turtle&filename=rmlEnrich2Result")
                         .to("mock:rmlPollEnrich");
             }

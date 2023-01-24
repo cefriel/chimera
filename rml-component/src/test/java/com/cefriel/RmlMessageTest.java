@@ -16,25 +16,41 @@
 
 package com.cefriel;
 
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ChimeraResourcesBean;
+import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class RmlMessageTest extends CamelTestSupport {
 
     @Produce("direct:start")
     ProducerTemplate start;
 
+    private static ChimeraResourcesBean mappingsRML;
+
+    @BeforeAll
+    static void fillBean(){
+        var mapping = new ChimeraResourceBean(
+                "file://./src/test/resources/file/lifting/mapping.rml.ttl",
+                "turtle");
+        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
+    }
+
     @Test
     public void testRmlMessage() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:rmlMessage");
         mock.expectedMessageCount(1);
-
-        start.sendBody(UniLoader.open("file://./src/test/resources/file/sample-gtfs/stops.txt"));
+        var r = new ChimeraResourceBean("file://./src/test/resources/file/sample-gtfs/stops.txt", null);
+        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
 
         mock.assertIsSatisfied();
     }
@@ -43,9 +59,10 @@ public class RmlMessageTest extends CamelTestSupport {
     protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
             public void configure() {
+                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 from("direct:start")
-                        .to("rml://?streamName=stops.txt&mappings=file://./src/test/resources/file/lifting/mapping.rml.ttl&useMessage=true")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&useMessage=true")
                         .to("graph://dump?basePath=src/test/resources/file/result&dumpFormat=turtle&filename=rmlMessageResult")
                         .to("mock:rmlMessage");
             }

@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.RmlLiftingAggregationStrategy;
 import com.cefriel.util.UniLoader;
@@ -29,36 +30,30 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RmlEnrichTest extends CamelTestSupport {
 
-    static GraphBean bean = new GraphBean();
-    static RmlBean rmlBean = new RmlBean();
-
+    private static ChimeraResourcesBean triples;
+    private static ChimeraResourcesBean mappingsRML;
     @BeforeAll
     static void fillBean(){
-        ChimeraResourcesBean maps = new ArrayList<>();
-        maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
-        rmlBean.setStreamName("stops.txt");
-        rmlBean.setMappings(maps);
-        rmlBean.setSingleRecordsFactory(true);
-        rmlBean.setOrdered(true);
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/base/test.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        bean.setBasePath("src/test/resources/file/result");
-        bean.setDumpFormat("turtle");
-        bean.setFilename("rmlEnrich1Result");
+        var mapping = new ChimeraResourceBean(
+                "file://./src/test/resources/file/lifting/mapping.rml.ttl",
+                "turtle");
+        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
+
+        var r = new ChimeraResourceBean(
+                "file://./src/test/resources/file/base/test.ttl",
+                "turtle");
+        triples = new ChimeraResourcesBean(List.of(r));
     }
 
     @Test
     public void testRmlEnrich() throws Exception {
-
         MockEndpoint mock = getMockEndpoint("mock:rmlEnrich");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-
     }
 
     @Override
@@ -66,19 +61,18 @@ public class RmlEnrichTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("config", bean);
-                getCamelContext().getRegistry().bind("rmlConfig", rmlBean);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 interceptSendToEndpoint("direct:adding").skipSendToOriginalEndpoint()
                         .process(exchange -> exchange.getMessage().setBody(UniLoader.open("file://./src/test/resources/file/sample-gtfs/stops.txt")))
                         .log("intercepted");
 
                 from("graph://get")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
+                        .to("graph://add?chimeraResources=#bean:triples")
                         .enrich("direct:adding", new RmlLiftingAggregationStrategy())
-                        .to("rml://?rmlBaseConfig=#bean:rmlConfig")
-                        .to("graph://dump")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&ordered=true&singleRecordsFactory=true")
+                        .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlEnrich1Result")
                         .to("mock:rmlEnrich");
             }
         };

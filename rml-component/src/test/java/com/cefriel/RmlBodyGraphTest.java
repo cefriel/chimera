@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -27,54 +28,53 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RmlBodyGraphTest extends CamelTestSupport {
-    static GraphBean bean = new GraphBean();
-    static RmlBean rmlBean = new RmlBean();
+    private static ChimeraResourcesBean triples;
+    private static ChimeraResourcesBean inputsRML;
+    private static ChimeraResourcesBean mappingsRML;
 
     @BeforeAll
     static void fillBean(){
-        ChimeraResourcesBean maps = new ArrayList<>();
-        ChimeraResourcesBean input = new ArrayList<>();
-        maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
-        input.add("file://./src/test/resources/file/sample-gtfs/stops.txt");
-        rmlBean.setStreamName("stops.txt");
-        rmlBean.setMappings(maps);
-        rmlBean.setSingleRecordsFactory(true);
-        rmlBean.setOrdered(true);
-        rmlBean.setInputFiles(input);
-        List<String> urls = new ArrayList<>();
-        urls.add("file://./src/test/resources/file/base/test.ttl");
-        bean.setResources(urls);
-        bean.setRdfFormat("turtle");
-        bean.setBasePath("src/test/resources/file/result");
-        bean.setDumpFormat("turtle");
-        bean.setFilename("rmlGraphBodyResult");
+        var mapping = new ChimeraResourceBean(
+                "file://./src/test/resources/file/lifting/mapping.rml.ttl",
+                "turtle");
+        var input = new ChimeraResourceBean(
+                "file://./src/test/resources/file/sample-gtfs/stops.txt",
+                null);
+
+        inputsRML = new ChimeraResourcesBean(List.of(input));
+        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
+
+        var r = new ChimeraResourceBean(
+                "file://./src/test/resources/file/base/test.ttl",
+                "turtle");
+
+        triples = new ChimeraResourcesBean(List.of(r));
+        // bean.setRdfFormat("turtle");
     }
 
     @Test
     public void testRmlEnrich() throws Exception {
-
-        MockEndpoint mock = getMockEndpoint("mock:rmlEnrich");
+        MockEndpoint mock = getMockEndpoint("mock:rmlEnrichBody");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-
     }
 
     @Override
     protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
             public void configure() {
-
-                getCamelContext().getRegistry().bind("config", bean);
-                getCamelContext().getRegistry().bind("rmlConfig", rmlBean);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("inputsRML", inputsRML);
+                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 from("graph://get")
-                        .to("graph://config?baseConfig=#bean:config")
-                        .to("graph://add")
-                        .to("rml://?rmlBaseConfig=#bean:rmlConfig")
-                        .to("graph://dump")
-                        .to("mock:rmlEnrich");
+                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&inputFiles=#bean:inputsRML&ordered=true&singleRecordsFactory=true")
+                        .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlGraphBodyResult")
+                        .to("mock:rmlEnrichBody");
             }
         };
     }

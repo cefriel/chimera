@@ -29,10 +29,7 @@ import be.ugent.rml.term.NamedNode;
 import be.ugent.rml.term.Term;
 import com.cefriel.component.RmlBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.ChimeraResourcesBean;
-import com.cefriel.util.ChimeraRmlConstants;
-import com.cefriel.util.UniLoader;
+import com.cefriel.util.*;
 import org.apache.camel.Exchange;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -60,8 +57,8 @@ public class RmlConfigurator {
                 is = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_MAPPINGS, InputStream.class);
             else {
                 List<InputStream> lis = new ArrayList<>();
-                for (String map : configuration.getMappings()) {
-                    lis.add(UniLoader.open(map));
+                for (var mapping : configuration.getMappings().getResources()) {
+                    lis.add(ResourceAccessor.open(mapping, exchange.getContext()));
                 }
                 is = new SequenceInputStream(Collections.enumeration(lis));
             }
@@ -91,10 +88,15 @@ public class RmlConfigurator {
     }
 
     public static String getInitializerId(RmlBean configuration) {
-       String mappings = configuration.getMappings()
-               .stream().collect(Collectors.joining("-"));
-        String functions = configuration.getFunctionFiles()
-                .stream().collect(Collectors.joining("-"));
+        List<String> mappingFiles = configuration.getMappings().getResources().stream()
+                .map(FileResourceAccessor::getFilePath).collect(Collectors.toList());
+
+        String mappings = mappingFiles.stream().collect(Collectors.joining("-"));
+
+        List<String> functionFiles = configuration.getFunctionFiles().getResources().stream()
+                .map(FileResourceAccessor::getFilePath).collect(Collectors.toList());
+
+        String functions = functionFiles.stream().collect(Collectors.joining("-"));
 
         String hash = Long.toString((mappings+functions).hashCode());
         return hash;
@@ -103,9 +105,9 @@ public class RmlConfigurator {
     static FunctionLoader getFunctionLoader(ChimeraResourcesBean functionFiles) throws Exception {
 
         String[] fOptionValue = null;
-        if (!functionFiles.isEmpty()) {
-            fOptionValue = new String[functionFiles.size()];
-            fOptionValue = functionFiles.toArray(fOptionValue);
+        if (!functionFiles.getResources().isEmpty()) {
+            fOptionValue = new String[functionFiles.getResources().size()];
+            fOptionValue = functionFiles.getResources().toArray(fOptionValue);
         }
         // Read function description files.
         if (fOptionValue == null) {
@@ -165,8 +167,7 @@ public class RmlConfigurator {
                 outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), graph.getNamedGraph(),
                         options.getBatchSize(), options.isIncrementalUpdate());
             } else {
-                outputStore = new RDF4JRepository(graph.getRepository(), graph.getNamedGraph(),
-                        options.getBatchSize(), options.isIncrementalUpdate());
+                outputStore = new RDF4JRepository(graph.getRepository(), graph.getNamedGraph(), options.getBatchSize(), options.isIncrementalUpdate());
             }
 
             String baseIRI;
@@ -217,8 +218,8 @@ public class RmlConfigurator {
             is = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_MAPPINGS, InputStream.class);
         else {
             List<InputStream> lis = new ArrayList<>();
-            for (String map : options.getMappings()) {
-                lis.add(UniLoader.open(map));
+            for (var mapping : options.getMappings().getResources()) {
+                lis.add(ResourceAccessor.open(mapping, exchange.getContext()));
             }
             is = new SequenceInputStream(Collections.enumeration(lis));
         }

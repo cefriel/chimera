@@ -18,6 +18,7 @@ package com.cefriel;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.component.RmlBean;
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.UniLoader;
 import org.apache.camel.Produce;
@@ -29,26 +30,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RmlComponentTest extends CamelTestSupport {
 
     @Produce("direct:start")
     ProducerTemplate start;
 
-    static GraphBean bean = new GraphBean();
-    static RmlBean rmlBean = new RmlBean();
-
+    private static ChimeraResourcesBean mappingsRML;
     @BeforeAll
     static void fillBean(){
-        ChimeraResourcesBean maps = new ArrayList<>();
-        maps.add("file://./src/test/resources/file/lifting/mapping.rml.ttl");
-        rmlBean.setStreamName("stops.txt");
-        rmlBean.setMappings(maps);
-        rmlBean.setSingleRecordsFactory(true);
-        rmlBean.setOrdered(true);
-        bean.setBasePath("src/test/resources/file/result");
-        bean.setDumpFormat("turtle");
-        bean.setFilename("rmlResult");
+        var mapping = new ChimeraResourceBean(
+                "file://./src/test/resources/file/lifting/mapping.rml.ttl",
+                "turtle");
+        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
     }
 
     @Test
@@ -68,12 +63,11 @@ public class RmlComponentTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("config", bean);
-                getCamelContext().getRegistry().bind("rmlConfig", rmlBean);
+                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 from("direct:start")
-                        .to("rml://?rmlBaseConfig=#bean:rmlConfig")
-                        .to("graph://dump?baseConfig=#bean:config")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&ordered=true&singleRecordsFactory=true")
+                        .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlResult")
                         .to("mock:result");
             }
         };
