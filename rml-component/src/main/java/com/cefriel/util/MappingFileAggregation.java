@@ -20,15 +20,13 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 
 import java.io.InputStream;
-// todo set in properties not header
 public class MappingFileAggregation implements AggregationStrategy {
-
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-
-        if (newExchange.getMessage().getBody(InputStream.class)!=null)
-            oldExchange.getMessage().setHeader(ChimeraRmlConstants.RML_MAPPINGS, InputStream.class);
+        InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
+        if (newInputStream != null) {
+            oldExchange.setProperty(ChimeraRmlConstants.RML_MAPPINGS, newInputStream);
+        }
         return oldExchange;
-
     }
 }

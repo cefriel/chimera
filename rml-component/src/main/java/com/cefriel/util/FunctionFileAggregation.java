@@ -22,12 +22,12 @@ import org.apache.camel.Exchange;
 import java.io.InputStream;
 
 public class FunctionFileAggregation implements AggregationStrategy {
-    // todo set in properties not header
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-        if (newExchange.getMessage().getBody(InputStream.class)!=null)
-            oldExchange.getMessage().setHeader(ChimeraRmlConstants.RML_FUNCTION, InputStream.class);
+        InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
+        if (newInputStream != null) {
+            oldExchange.setProperty(ChimeraRmlConstants.RML_FUNCTION, newInputStream);
+        }
         return oldExchange;
-
     }
 }
