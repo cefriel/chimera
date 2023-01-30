@@ -4,3 +4,6 @@
 /rml-component/src/test/test.iml
 /rdft-component/src/test/resources/file/result/
 /graph-component/src/test/resources/file/result/
+/rdft-component/src/generated/
+/graph-component/target/
+/rml-component/src/generated/
