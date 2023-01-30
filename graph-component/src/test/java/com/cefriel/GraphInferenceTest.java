@@ -51,8 +51,9 @@ public class GraphInferenceTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:inference");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-    }
 
+        // todo check that the inferred result is correct
+    }
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
@@ -60,10 +61,9 @@ public class GraphInferenceTest extends CamelTestSupport {
 
                 getCamelContext().getRegistry().bind("ontologies", ontologies);
                 getCamelContext().getRegistry().bind("triples", triples);
-                // todo check this cant be right
+
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:ontologies")
-                        .to("graph://add?chimeraResources=#bean:ontologies")
+                        .to("graph://add?chimeraResources=#bean:triples")
                         .to("graph://inference?chimeraResources=#bean:ontologies")
                         .to("mock:inference");
             }
