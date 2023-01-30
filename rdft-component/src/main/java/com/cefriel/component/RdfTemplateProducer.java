@@ -52,7 +52,6 @@ public class RdfTemplateProducer extends DefaultProducer {
             operationConfig = new RdfTemplateBean();
         }
         operationConfig.setConfig(endpoint);
-        // either inputstream or chimera rdf graph
         switch (endpoint.getName()){
             case "rdf" -> RdfTemplateProcessor.execute(exchange, operationConfig, "rdf");
             case "xml" -> RdfTemplateProcessor.execute(exchange, operationConfig, "xml");

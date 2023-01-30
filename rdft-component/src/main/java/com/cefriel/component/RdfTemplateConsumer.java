@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutorService;
 
 public class RdfTemplateConsumer extends DefaultConsumer {
     private final RdfTemplateEndpoint endpoint;
-
     private ExecutorService executorService;
 
     public RdfTemplateConsumer(RdfTemplateEndpoint endpoint, Processor processor) {

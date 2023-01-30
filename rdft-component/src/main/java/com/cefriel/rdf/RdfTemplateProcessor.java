@@ -22,18 +22,13 @@ import com.cefriel.template.TemplateExecutor;
 import com.cefriel.template.TemplateMap;
 import com.cefriel.template.io.Formatter;
 import com.cefriel.template.io.Reader;
-import com.cefriel.template.io.csv.CSVReader;
-import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
-import com.cefriel.template.io.xml.XMLReader;
-import com.cefriel.template.utils.TemplateUtils;
+import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
 import com.cefriel.util.*;
 import com.cefriel.util.ChimeraConstants;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.spin.function.spif.For;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +47,8 @@ public class RdfTemplateProcessor {
                                     ChimeraResourceBean templateMapKV,
                                     ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
-                                    boolean isStream) {} // todo add other options which are not currently handled (time, ts adress maybe others)
+                                    boolean isStream,
+                                    TemplateFunctions templateFunctions) {} // todo add other options which are not currently handled (time, ts adress maybe others)
     private static OperationParams getOperationParams(Exchange exchange, RdfTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -66,7 +62,8 @@ public class RdfTemplateProcessor {
                 operationConfig.getKeyValuePairs(),
                 operationConfig.getKeyValuePairsCSV(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
-                operationConfig.isStream());
+                operationConfig.isStream(),
+                operationConfig.getTemplateFunctions());
     }
 
     private static boolean validateParams(OperationParams params) {
@@ -82,6 +79,14 @@ public class RdfTemplateProcessor {
         if (validateParams(params)) {
             TemplateExecutor templateExecutor = new TemplateExecutor();
             Reader reader = getReaderFromExchange(exchange, inputFormat, params.verboseReader());
+
+            TemplateFunctions templateFunctions = params.templateFunctions();
+            if (templateFunctions != null)
+                templateFunctions = templateFunctions.getClass().getDeclaredConstructor().newInstance();
+            else
+                templateFunctions = new TemplateFunctions();
+
+            templateFunctions.setPrefix(params.baseIRI());
 
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
@@ -106,11 +111,11 @@ public class RdfTemplateProcessor {
                     String queryPath = FileResourceAccessor.getFilePath(params.query());
                     List<String> resultFilesPaths =
                             templateExecutor.executeMappingParametric(reader, templatePath, false,
-                                    params.trimTemplate(), queryPath, outputFilePath, templateMap, formatter);
+                                    params.trimTemplate(), queryPath, outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
                     String resultFilePath =
-                            templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), outputFilePath, templateMap, formatter);
+                            templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
@@ -118,11 +123,11 @@ public class RdfTemplateProcessor {
                 String templatePath = FileResourceAccessor.getFilePath(params.template());
                 if (params.query() != null) {
                     String queryPath = FileResourceAccessor.getFilePath(params.query());
-                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, templatePath, false, params.trimTemplate(), queryPath, templateMap, formatter);
+                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, templatePath, false, params.trimTemplate(), queryPath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(result, Map.class);
 
                 } else {
-                    String result = templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), templateMap, formatter);
+                    String result = templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(result, String.class);
                 }
             }

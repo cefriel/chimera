@@ -16,7 +16,7 @@
 
 package com.cefriel.component;
 
-import com.cefriel.template.utils.TemplateUtils;
+import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
@@ -40,7 +40,6 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     private String name;
     @UriParam(defaultValue = "null")
     private String basePath;
-
     @UriParam(defaultValue = "null", description = "Template resource used in the mapping process")
     // compilation error if no description is provided
     private ChimeraResourceBean template;
@@ -63,9 +62,12 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
     private boolean verboseQueries;
     @UriParam(defaultValue = "false")
     private boolean stream;
+    @UriParam(defaultValue = "null", description = "Custom defined TemplateFunctions class to be used in mapping process")
+    private TemplateFunctions templateFunctions;
     @UriParam(defaultValue = "null")
     private RdfTemplateBean rdfBaseConfig;
 
+    // todo re-add utils parameter (custom functions)
     // todo add resource option if template file in resource folder
 
     public RdfTemplateEndpoint() {
@@ -193,6 +195,14 @@ public class RdfTemplateEndpoint extends DefaultEndpoint {
 
     public void setStream(boolean stream) {
         this.stream = stream;
+    }
+
+    public TemplateFunctions getTemplateFunctions() {
+        return templateFunctions;
+    }
+
+    public void setTemplateFunctions(TemplateFunctions templateFunctions) {
+        this.templateFunctions = templateFunctions;
     }
 
     /**

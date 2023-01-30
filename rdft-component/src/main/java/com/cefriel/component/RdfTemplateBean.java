@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 
 public class RdfTemplateBean {
@@ -29,6 +30,7 @@ public class RdfTemplateBean {
     private boolean trimTemplate;
     private boolean verboseQueries;
     private boolean isStream;
+    private TemplateFunctions templateFunctions;
 
     // Default Constructor
     public RdfTemplateBean() {}
@@ -44,6 +46,7 @@ public class RdfTemplateBean {
         this.trimTemplate = options.isTrimTemplate();
         this.verboseQueries = options.isVerboseQueries();
         this.isStream = options.isStream();
+        this.templateFunctions = options.getTemplateFunctions();
     }
 
     public String getBasePath() {
@@ -126,6 +129,14 @@ public class RdfTemplateBean {
         this.isStream = stream;
     }
 
+    public TemplateFunctions getTemplateFunctions() {
+        return templateFunctions;
+    }
+
+    public void setTemplateFunctions(TemplateFunctions templateFunctions) {
+        this.templateFunctions = templateFunctions;
+    }
+
     public void setConfig(RdfTemplateEndpoint endpoint){
 
         if (endpoint.getBasePath()!=null){
@@ -157,6 +168,9 @@ public class RdfTemplateBean {
         }
         if (endpoint.isStream()) {
             this.setStream(endpoint.isStream());
+        }
+        if(endpoint.getTemplate() != null) {
+            this.setTemplateFunctions(endpoint.getTemplateFunctions());
         }
     }
 }
