@@ -71,7 +71,7 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -90,15 +90,17 @@
           </execution>
         </executions>
       </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
+
+
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-resources-plugin</artifactId>-->
+<!--        <version>3.2.0</version>-->
+<!--        <configuration>-->
+<!--          <encoding>UTF-8</encoding>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
+
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -111,6 +113,10 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-component-maven-plugin</artifactId>
         <version>3.16.0</version>
+        <configuration>
+          <sourcesOutputDir>src/generated/java</sourcesOutputDir>
+          <resourcesOutputDir>src/generated/resources</resourcesOutputDir>
+        </configuration>
         <executions>
           <execution>
             <id>generate</id>
@@ -121,32 +127,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>add-source</goal>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/generated/java</source>
-              </sources>
-              <resources>
-                <resource>
-                  <directory>src/generated/resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 
