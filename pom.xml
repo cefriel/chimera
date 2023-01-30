@@ -19,6 +19,8 @@
 
         <!-- Add comment if submodules not available -->
 
+        <module>libs/rmlmapper-cefriel</module>
+
         <module>rml-component</module>
 
         <module>libs/rdf-template</module>
