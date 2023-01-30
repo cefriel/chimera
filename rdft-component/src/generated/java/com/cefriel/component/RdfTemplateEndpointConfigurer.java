@@ -42,6 +42,8 @@ public class RdfTemplateEndpointConfigurer extends PropertyConfigurerSupport imp
         case "rdfBaseConfig": target.setRdfBaseConfig(property(camelContext, com.cefriel.component.RdfTemplateBean.class, value)); return true;
         case "stream": target.setStream(property(camelContext, boolean.class, value)); return true;
         case "template": target.setTemplate(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
+        case "templatefunctions":
+        case "templateFunctions": target.setTemplateFunctions(property(camelContext, com.cefriel.template.utils.TemplateFunctions.class, value)); return true;
         case "trimtemplate":
         case "trimTemplate": target.setTrimTemplate(property(camelContext, boolean.class, value)); return true;
         case "verbosequeries":
@@ -74,6 +76,8 @@ public class RdfTemplateEndpointConfigurer extends PropertyConfigurerSupport imp
         case "rdfBaseConfig": return com.cefriel.component.RdfTemplateBean.class;
         case "stream": return boolean.class;
         case "template": return com.cefriel.util.ChimeraResourceBean.class;
+        case "templatefunctions":
+        case "templateFunctions": return com.cefriel.template.utils.TemplateFunctions.class;
         case "trimtemplate":
         case "trimTemplate": return boolean.class;
         case "verbosequeries":
@@ -107,6 +111,8 @@ public class RdfTemplateEndpointConfigurer extends PropertyConfigurerSupport imp
         case "rdfBaseConfig": return target.getRdfBaseConfig();
         case "stream": return target.isStream();
         case "template": return target.getTemplate();
+        case "templatefunctions":
+        case "templateFunctions": return target.getTemplateFunctions();
         case "trimtemplate":
         case "trimTemplate": return target.isTrimTemplate();
         case "verbosequeries":

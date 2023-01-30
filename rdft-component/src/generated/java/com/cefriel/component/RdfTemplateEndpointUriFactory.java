@@ -21,7 +21,7 @@ public class RdfTemplateEndpointUriFactory extends org.apache.camel.support.comp
     private static final Set<String> SECRET_PROPERTY_NAMES;
     private static final Set<String> MULTI_VALUE_PREFIXES;
     static {
-        Set<String> props = new HashSet<>(16);
+        Set<String> props = new HashSet<>(17);
         props.add("keyValuePairsCSV");
         props.add("template");
         props.add("verboseQueries");
@@ -36,6 +36,7 @@ public class RdfTemplateEndpointUriFactory extends org.apache.camel.support.comp
         props.add("keyValuePairs");
         props.add("stream");
         props.add("name");
+        props.add("templateFunctions");
         props.add("rdfBaseConfig");
         props.add("exceptionHandler");
         PROPERTY_NAMES = Collections.unmodifiableSet(props);
