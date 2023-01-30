@@ -69,17 +69,9 @@ public class Utils {
         // add statements from model one by one to repository instead
         // connection.add(model);
 
-        IRI graphName;
-        if (connection instanceof ContextAwareConnection) {
-            graphName = ((ContextAwareConnection) connection).getInsertContext();
-        }
-        else
-            graphName = null;
+
         for (Statement st : model.getStatements(null,null,null))
         {
-            if(graphName != null)
-                connection.add(st, graphName);
-            else
                 connection.add(st);
         }
 
