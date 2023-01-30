@@ -5,4 +5,4 @@
 [submodule "libs/rdf-template"]
 	path = libs/rdf-template
 	url = https://github.com/cefriel/rdf-template.git
-	branch = main
+	branch = csv-reader-refactoring
