@@ -28,34 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-@Converter(generateLoader = true)
-public final class StreamParser implements TypeConverters{
+// todo add other classes that reuse these to implement camel TypeConverters
+public final class StreamParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamParser.class);
 
-    // todo refactor param list, should not accept the whole exchange but just the data from the exchange that it needs
-    public static Model parse(InputStream inputStream, String rdfFormat, Exchange exchange) throws IOException {
-        Model model = new TreeModel();
-        String headerBaseIRI;
-
-        if (inputStream == null)
-            return null;
-        else {
-            RDFFormat rf = Utils.getRDFFormat(rdfFormat);
-            LOG.info("RDF Format: " + rf);
-
-            RDFParser parser = Rio.createParser(rf);
-            parser.setRDFHandler(new StatementCollector(model));
-            headerBaseIRI = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
-            if(headerBaseIRI == null){
-                headerBaseIRI = ChimeraConstants.DEFAULT_BASE_IRI;
-            }
-            parser.parse(inputStream, headerBaseIRI);
-            LOG.info("Model created");
-            return model;
-        }
-    }
     public static Model parseTriples(InputStream inputStream, String format, String baseIri) throws IOException {
         if(inputStream == null) {
             return null;
@@ -70,12 +47,12 @@ public final class StreamParser implements TypeConverters{
             return model;
         }
     }
-
     public static Model parseResource(ChimeraResourceBean resource, CamelContext context) throws IOException {
         return parseTriples(ResourceAccessor.open(resource, context), resource.getSerializationFormat(), null);
     }
 
     // todo check this logic, base iri from header does not make sense, not every inputStream (meaning resource) necessarily has the same base iri
+    /*
     @Converter
     public static Model parse(InputStream inputStream, Exchange exchange) throws IOException {
 
@@ -99,5 +76,6 @@ public final class StreamParser implements TypeConverters{
             LOG.info("Model created");
             return model;
         }
-    }
+        */
 }
+

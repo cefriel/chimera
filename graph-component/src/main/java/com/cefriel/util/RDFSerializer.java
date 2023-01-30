@@ -30,12 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-@Converter(generateLoader = true)
-public final class RDFSerializer implements TypeConverters {
+public final class RDFSerializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(RDFSerializer.class);
 
-    @Converter
     public static InputStream serialize(Model model, Exchange exchange) throws IOException {
         RDFFormat rdfFormat = Utils.getExchangeRdfFormat(exchange, ChimeraConstants.ACCEPTFORMAT);
 
