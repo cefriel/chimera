@@ -31,7 +31,6 @@ import java.util.List;
 
 public class GraphMulticastTest extends CamelTestSupport {
 
-    static GraphBean bean = new GraphBean();
     static ChimeraResourcesBean queries;
     static ChimeraResourcesBean triples1;
     static ChimeraResourcesBean triples2;
