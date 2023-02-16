@@ -63,7 +63,7 @@ public class RmlProducer extends DefaultProducer {
 
         if (exchange.getMessage().getBody(RDFGraph.class) == null) {
             if (exchange.getProperty(ChimeraConstants.GRAPH) == null) {
-                graph = new MemoryRDFGraph();
+                graph = new MemoryRDFGraph(baseIRI);
                 LOG.info("new Memory Graph");
             } else {
                 graph = exchange.getProperty(ChimeraConstants.GRAPH, RDFGraph.class);
