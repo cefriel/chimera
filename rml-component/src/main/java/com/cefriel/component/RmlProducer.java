@@ -24,6 +24,7 @@ import com.cefriel.rml.RmlProcessor;
 import com.cefriel.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class RmlProducer extends DefaultProducer {
 
         if (exchange.getMessage().getBody(RDFGraph.class) == null) {
             if (exchange.getProperty(ChimeraConstants.GRAPH) == null) {
-                graph = new MemoryRDFGraph(baseIRI);
+                graph = new MemoryRDFGraph();
                 LOG.info("new Memory Graph");
             } else {
                 graph = exchange.getProperty(ChimeraConstants.GRAPH, RDFGraph.class);
@@ -100,6 +101,8 @@ public class RmlProducer extends DefaultProducer {
                 RmlProcessor.execute(exchange, new CamelAccessFactory(exchange, false), graph);
             }
         }
+
+        graph.setBaseIRI(SimpleValueFactory.getInstance().createIRI(baseIRI));
         exchange.getMessage().setBody(graph);
     }
 }
