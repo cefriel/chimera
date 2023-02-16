@@ -102,7 +102,7 @@ public class RmlProducer extends DefaultProducer {
             }
         }
 
-        graph.setBaseIRI(SimpleValueFactory.getInstance().createIRI(baseIRI));
+        graph.setBaseIRI(SimpleValueFactory.getInstance().createIRI(configuration.getBaseIri()));
         exchange.getMessage().setBody(graph);
     }
 }
