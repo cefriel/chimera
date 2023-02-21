@@ -52,7 +52,7 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -61,6 +61,15 @@
           <source>17</source>
           <target>17</target>
         </configuration>
+        <executions>
+          <execution>
+            <id>recompile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>process-classes</phase>
+          </execution>
+        </executions>
       </plugin>
       
       <plugin>
@@ -83,6 +92,10 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-component-maven-plugin</artifactId>
         <version>3.16.0</version>
+        <configuration>
+          <sourcesOutputDir>src/generated/java</sourcesOutputDir>
+          <resourcesOutputDir>src/generated/resources</resourcesOutputDir>
+        </configuration>
         <executions>
           <execution>
             <id>generate</id>

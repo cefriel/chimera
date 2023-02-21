@@ -70,7 +70,7 @@ public class RdfTemplateParametricAgencyTest extends CamelTestSupport {
 
                 from("graph://get")
                         .to("graph://add?chimeraResources=#bean:triples")
-                        .to("rdft://rdf?template=#bean:template&query=#bean:query&basePath=./src/test/resources/file/result&fileName=agencyParametric.csv")
+                        .to("mapt://rdf?template=#bean:template&query=#bean:query&basePath=./src/test/resources/file/result&fileName=agencyParametric.csv")
                         .to("mock:rdfParamAgency");
             }
         };

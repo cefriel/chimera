@@ -93,13 +93,13 @@ public class RdfTemplateAgencyTest extends CamelTestSupport {
 
                 from("graph://get")
                         .to("graph://add?chimeraResources=#bean:triples")
-                        .to("rdft://rdf?template=#bean:template&basePath=./src/test/resources/file/result&fileName=agency.csv")
+                        .to("mapt://rdf?template=#bean:template&basePath=./src/test/resources/file/result&fileName=agency.csv")
                         .to("mock:rdfAgency");
 
                 from("direct:start")
                         .to("graph://get?rdfFormat=turtle")
                         .to("graph://add?chimeraResources=#bean:triples2")
-                        .to("rdft://rdf?template=#bean:templateMultiple&basePath=./src/test/resources/file/result&filename=multipleAgency.csv")
+                        .to("mapt://rdf?template=#bean:templateMultiple&basePath=./src/test/resources/file/result&filename=multipleAgency.csv")
                         .to("mock:rdfMultipleAgency");
             }
         };

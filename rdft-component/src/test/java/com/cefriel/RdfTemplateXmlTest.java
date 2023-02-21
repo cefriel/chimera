@@ -65,7 +65,7 @@ public class RdfTemplateXmlTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("template", template);
 
                 from("direct:start")
-                        .to("rdft://xml?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-xml.ttl")
+                        .to("mapt://xml?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-xml.ttl")
                         .to("mock:rdfXml");
             }
         };

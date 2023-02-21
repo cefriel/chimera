@@ -89,11 +89,11 @@ public class RdfTemplateCsvTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("templateNoInput", templateNoInput);
 
                 from("direct:start")
-                        .to("rdft://csv?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-csv.ttl")
+                        .to("mapt://csv?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-csv.ttl")
                         .to("mock:rdfCsv");
 
                 from("direct:foo")
-                        .to("rdft://?template=#bean:templateNoInput&basePath=./src/test/resources/file/result&fileName=output-csv-no-input.ttl")
+                        .to("mapt://?template=#bean:templateNoInput&basePath=./src/test/resources/file/result&fileName=output-csv-no-input.ttl")
                         .to("mock:rdfCsvNoInput");
             }
         };

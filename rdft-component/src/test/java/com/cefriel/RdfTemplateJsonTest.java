@@ -67,7 +67,7 @@ public class RdfTemplateJsonTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("template", template);
 
                 from("direct:start")
-                        .to("rdft://json?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-json.ttl")
+                        .to("mapt://json?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-json.ttl")
                         .to("mock:rdfJson");
             }
         };

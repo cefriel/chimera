@@ -33,7 +33,7 @@ import org.apache.camel.spi.UriPath;
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rdft", title = "rdft", syntax="rdft:name",
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name",
              category = {Category.JAVA})
 public class RdfTemplateEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
