@@ -56,7 +56,7 @@ public class RdfTemplateProcessor {
                 operationConfig.getQuery(),
                 operationConfig.getFormat(),
                 Utils.trailingSlash(operationConfig.getBasePath()),
-                handleOutputFileName(operationConfig.getFilename()),
+                operationConfig.getFilename(),
                 operationConfig.isTrimTemplate(),
                 operationConfig.isVerboseQueries(),
                 operationConfig.getKeyValuePairs(),
@@ -119,6 +119,7 @@ public class RdfTemplateProcessor {
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
+            // result of applying template in exchange body as string
             else {
                 String templatePath = FileResourceAccessor.getFilePath(params.template());
                 if (params.query() != null) {
