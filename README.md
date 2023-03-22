@@ -1,4 +1,4 @@
-_Chimera_: Composable Semantic Data Transformation
+_Chimera_: Composable Semantic Transformation Pipelines
 ===
 Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) and offering components to compose conversion pipelines based on Semantic Web solutions.
 
