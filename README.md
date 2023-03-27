@@ -24,23 +24,22 @@ The RDF graph can be interpreted as a variable which is shared among all the blo
 With this high-level process in mind, we defined a core set of blocks:
 
 * _Lifting_: this block takes a structured message as input, and enriches the RDF graph with the triples obtained by applying a "mapping" to the input.
-* _Data enricher_: this block loads a set of RDF files, or generates a set of triples (e.g. CONSTRUCT queries) and loads them into the RDF graph.
-* _Inference enricher_: this block loads a set of ontology files into the RDF graph, inference rules can generate additional triples enriching the graph.
+* _Graph Transformations_: this block loads a set of RDF files, or generates a set of triples (e.g. CONSTRUCT queries or ontology enabled inferences) and loads them into the RDF graph.
+* _Graph Validation_: this block loads a set of ontology files into the RDF graph, inference rules can generate additional triples enriching the graph.
 * _Lowering_: this block applies a “mapping” to data extracted from the RDF graph, and produces a structured message as output.
 
 <p align="left"><img src="pipeline.png" alt="Generic pipeline" width="800"></p>
 
-Chimera contains a default implementation for the mentioned blocks, plus additional _utilities_ blocks to configure a semantic conversion pipeline. Each module is decoupled from the others providing high flexibility in configuring pipelines for different requirements.
-
 ### Project structure
 The project has a parent POM (in the parent directory) that can be used to trigger the Maven builds of sub-projects respecting internal dependencies. You can modify the parent POM to select only sub-projects you are interested in.
-The main sub-project is `chimera-core` that contains the basic blocks of the Chimera framework. The [rdf4j](https://rdf4j.org/) library is used to handle the RDF graph in all the pipeline blocks. Additional blocks can be found in the other sub-projects:
+Chimera makes use of three components, available as sub-projects in this repository. 
+The [rdf4j](https://rdf4j.org/) library is used to handle the RDF graph in all the pipeline components.
 
-- `chimera-rml` contains the blocks to implement lifting using the [rml-mapper](https://github.com/cefriel/rmlmapper-cefriel) library 
+- `graph-component` Camel component used to create and manipulate RDF knowledge graphs.
+- `rml-component` Camel component used to lifting using the [rml-mapper](https://github.com/cefriel/rmlmapper-cefriel) library 
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rmlmapper-cefriel`
-- `chimera-rdf-lowerer` contains the blocks to implement lowering using the [rdf-lowerer](https://github.com/cefriel/rdf-lowerer) library 
+- `rdft-component` Camel componend able to implement both lifting and lowering steps using the [rdf-template](https://github.com/cefriel/rdf-template) library 
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
-- `chimera-records` contains a set of utility blocks to gather data (timestamps, RDF graph data,...)  within a Chimera pipeline
 
 ### How to compile the project
 - Clone the repository and the required git submodules
