@@ -23,10 +23,10 @@ The RDF graph can be interpreted as a variable which is shared among all the blo
 
 With this high-level process in mind, we defined a core set of blocks:
 
-* _Lifting_: this block takes a structured message as input, and enriches the RDF graph with the triples obtained by applying a "mapping" to the input.
+* _Lifting or Graph Construction_: this block takes a structured message as input, and enriches the RDF graph with the triples obtained by applying a "mapping" to the input.
 * _Graph Transformations_: this block loads a set of RDF files, or generates a set of triples (e.g. CONSTRUCT queries or ontology enabled inferences) and loads them into the RDF graph.
 * _Graph Validation_: this block loads a set of ontology files into the RDF graph, inference rules can generate additional triples enriching the graph.
-* _Lowering_: this block applies a “mapping” to data extracted from the RDF graph, and produces a structured message as output.
+* _Lowering or Graph Exploitation_: this block applies a “mapping” to data extracted from the RDF graph, and produces a structured message as output.
 
 <p align="left"><img src="pipeline.png" alt="Generic pipeline" width="800"></p>
 
