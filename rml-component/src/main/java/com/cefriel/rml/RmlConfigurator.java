@@ -107,7 +107,7 @@ public class RmlConfigurator {
         String[] fOptionValue = null;
         if (!functionFiles.getResources().isEmpty()) {
             fOptionValue = new String[functionFiles.getResources().size()];
-            fOptionValue = functionFiles.getResources().toArray(fOptionValue);
+            fOptionValue = (String[]) functionFiles.getResources().stream().map(ChimeraResourceBean::getUrl).toArray();
         }
         // Read function description files.
         if (fOptionValue == null) {
