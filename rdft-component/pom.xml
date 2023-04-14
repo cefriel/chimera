@@ -92,19 +92,6 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-component-maven-plugin</artifactId>
         <version>3.16.0</version>
-        <configuration>
-          <sourcesOutputDir>src/generated/java</sourcesOutputDir>
-          <resourcesOutputDir>src/generated/resources</resourcesOutputDir>
-        </configuration>
-        <executions>
-          <execution>
-            <id>generate</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <phase>process-classes</phase>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
