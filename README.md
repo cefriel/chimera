@@ -39,7 +39,7 @@ The [rdf4j](https://rdf4j.org/) library is used to handle the RDF graph in all t
 - `rml-component` Camel component used to lifting using the [rml-mapper](https://github.com/cefriel/rmlmapper-cefriel) library 
     - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rmlmapper-cefriel`
 - `rdft-component` Camel componend able to implement both lifting and lowering steps using the [rdf-template](https://github.com/cefriel/rdf-template) library 
-    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-lowerer`
+    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-template`
 
 ### How to compile the project
 - Clone the repository and the required git submodules
@@ -65,7 +65,7 @@ If you need commercial support for Chimera contact us at [info@cefriel.com](mail
 
 ### License
 
-_Copyright (c) 2019-2022 Cefriel._
+_Copyright (c) 2019-2023 Cefriel._
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
