@@ -21,11 +21,14 @@ import com.cefriel.graph.RDFGraph;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.util.ModelCollector;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareConnection;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
+import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -77,6 +80,24 @@ public class Utils {
 
         for (Namespace ns : model.getNamespaces()) {
             connection.setNamespace(ns.getPrefix(), ns.getName());
+        }
+    }
+
+    public static void populateRepository(Repository targetRepo, Repository sourceRepo) {
+        try (RepositoryConnection sourceConn = sourceRepo.getConnection();
+             RepositoryConnection targetConn = targetRepo.getConnection()) {
+
+            Model model = sourceConn.getStatements(null, null, null).stream()
+                    .collect(ModelCollector.toModel());
+
+            for (Namespace ns : model.getNamespaces()) {
+                targetConn.setNamespace(ns.getPrefix(), ns.getName());
+            }
+
+            for (Statement st : model.getStatements(null,null,null))
+            {
+                targetConn.add(st.getSubject(), st.getPredicate(), st.getObject());
+            }
         }
     }
     public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {

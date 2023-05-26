@@ -17,25 +17,27 @@
 package com.cefriel.component;
 
 import com.cefriel.graph.RDFGraph;
+import com.cefriel.util.Utils;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 public class GraphAggregation implements AggregationStrategy {
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+        if (oldExchange == null) {
+            return newExchange;
+        }
 
         RDFGraph oldGraph = oldExchange.getMessage().getBody(RDFGraph.class);
         RDFGraph newGraph = newExchange.getMessage().getBody(RDFGraph.class);
         Repository oldRepo = oldGraph.getRepository();
         Repository newRepo = newGraph.getRepository();
 
-        try (RepositoryConnection conn = oldRepo.getConnection()) {
-            try (RepositoryConnection source = newRepo.getConnection()) {
-                conn.add(source.getStatements(null, null, null, true));
-            }
-        }
+        Utils.populateRepository(oldRepo, newRepo);
+
         return oldExchange;
     }
 }
