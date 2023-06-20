@@ -2,9 +2,9 @@
 /rml-component/src/main/main.iml
 /rml-component/src/test/resources/file/result/
 /rml-component/src/test/test.iml
-/rdft-component/src/test/resources/file/result/
+/mapt-component/src/test/resources/file/result/
 /graph-component/src/test/resources/file/result/
 
 /graph-component/target/
-/rdft-component/target/
+/mapt-component/target/
 /rml-component/target/

@@ -23,9 +23,7 @@
 
         <module>rml-component</module>
 
-        <module>libs/rdf-template</module>
-
-        <module>rdft-component</module>
+        <module>mapt-component</module>
         
     </modules>
 </project>
