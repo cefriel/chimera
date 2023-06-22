@@ -6,9 +6,52 @@
   <groupId>com.cefriel</groupId>
   <artifactId>rml-component</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0</version>
+  <version>3.0.1</version>
 
-  <name>Camel rml Component</name>
+  <name>com.cefriel:rml-component</name>
+  <description>Chimera Component for the Apache Camel framework that enables RML based mappings through a fork of the rmlmapper library</description>
+  <url>https://github.com/cefriel/chimera/tree/master/rml-component</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Mario Scrocca</name>
+      <email>mario.scrocca@cefriel.com</email>
+      <organization>Cefriel</organization>
+      <organizationUrl>https://www.cefriel.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Marco Grassi</name>
+      <email>marco.grassi@cefriel.com</email>
+      <organization>Cefriel</organization>
+      <organizationUrl>https://www.cefriel.com/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Alessio Carenini</name>
+      <email>alessio.carenini@cefriel.com</email>
+      <organization>Cefriel</organization>
+      <organizationUrl>https://www.cefriel.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
+    <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
+    <url>https://github.com/cefriel/chimera/tree/master/rml-component</url>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +83,7 @@
     <dependency>
       <groupId>com.cefriel</groupId>
       <artifactId>graph-component</artifactId>
-      <version>1.0.0</version>
+      <version>3.0.1</version>
     </dependency>
       <dependency>
         <groupId>com.cefriel</groupId>
@@ -134,6 +177,58 @@
                 </resource>
               </resources>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.13</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

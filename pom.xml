@@ -12,15 +12,6 @@
     <modules>
         <module>graph-component</module>
 
-        <!-- Add comment if submodules not available
-        <module>libs/rmlmapper-cefriel</module>
-
-        <module>rml-component</module> -->
-
-        <!-- Add comment if submodules not available -->
-
-        <module>libs/rmlmapper-cefriel</module>
-
         <module>rml-component</module>
 
         <module>mapt-component</module>

@@ -1,4 +1,0 @@
-[submodule "libs/rmlmapper-cefriel"]
-	path = libs/rmlmapper-cefriel
-	url = https://github.com/cefriel/mapping-template.git
-	branch = master
