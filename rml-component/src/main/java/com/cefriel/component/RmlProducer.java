@@ -101,8 +101,8 @@ public class RmlProducer extends DefaultProducer {
                 RmlProcessor.execute(exchange, new CamelAccessFactory(exchange, false), graph);
             }
         }
-
-        graph.setBaseIRI(SimpleValueFactory.getInstance().createIRI(configuration.getBaseIri()));
+        if (graph.getBaseIRI() == null)
+            graph.setBaseIRI(SimpleValueFactory.getInstance().createIRI(configuration.getBaseIri()));
         exchange.getMessage().setBody(graph);
     }
 }
