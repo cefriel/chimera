@@ -62,7 +62,7 @@ public class RmlMessageTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 from("direct:start")
-                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&useMessage=true")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&useMessage=true&baseIri=http://example.org/")
                         .to("graph://dump?basePath=src/test/resources/file/result&dumpFormat=turtle&filename=rmlMessageResult")
                         .to("mock:rmlMessage");
             }

@@ -66,7 +66,7 @@ public class RmlComponentTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
 
                 from("direct:start")
-                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&ordered=true&singleRecordsFactory=true")
+                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&ordered=true&singleRecordsFactory=true&baseIri=http://example.org/")
                         .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlResult")
                         .to("mock:result");
             }
