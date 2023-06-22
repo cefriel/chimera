@@ -76,7 +76,7 @@ public class CamelAccessFactory extends AccessFactory {
      * @param logicalSource the Logical Source for which the Access needs to be created.
      * @param rmlStore a QuadStore with RML rules.
      * @return an Access instance from a Camel Exchange based on the RML rules in rmlStore. If the RML Mapper is processing a message
-     * the entire Exchange is casted as an InputStream accessible through the Access. Otherwise, the Exchange is casted as a Map<String, InputStream> 
+     * the entire Exchange is cast as an InputStream accessible through the Access. Otherwise, the Exchange is cast as a Map String, InputStream
      * and the literal, referred through the RML property rml:source, is used as a key to access the Map and identify the InputStream
      * accessible through the Access. 
      */
