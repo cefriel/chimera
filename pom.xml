@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cefriel</groupId>
   <artifactId>chimera</artifactId>
-  <version>3.0.2-SNAPSHOT</version>
+  <version>3.0.2</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -31,6 +29,7 @@
     <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera</url>
+    <tag>v3.0.2</tag>
   </scm>
 
   <licenses>
@@ -176,7 +175,7 @@
           <configuration>
             <serverId>ossrh</serverId>
             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            <autoReleaseAfterClose>false</autoReleaseAfterClose>
           </configuration>
         </plugin>
         <plugin>
