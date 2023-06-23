@@ -4,7 +4,7 @@
 
   <groupId>com.cefriel</groupId>
   <artifactId>chimera</artifactId>
-  <version>3.0.4-SNAPSHOT</version>
+  <version>3.0.4</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -29,7 +29,7 @@
     <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera</url>
-    <tag>HEAD</tag>
+    <tag>v3.0.4</tag>
   </scm>
 
   <licenses>
@@ -120,22 +120,18 @@
 
   <build>
     <defaultGoal>install</defaultGoal>
-
-    <plugins>      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>17</source>
-          <target>17</target>
-        </configuration>
-      </plugin>      
-    </plugins>
-
     <pluginManagement>
       <plugins>
-        <plugin>
+	<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+          <configuration>
+            <source>17</source>
+            <target>17</target>
+          </configuration>
+	</plugin>      
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>3.0.1</version>
@@ -144,8 +140,8 @@
               <checkModificationExclude>pom.xml</checkModificationExclude>
             </checkModificationExcludes>
           </configuration>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>3.2.1</version>
@@ -153,12 +149,12 @@
             <execution>
               <id>attach-sources</id>
               <goals>
-                <goal>jar-no-fork</goal>
+		<goal>jar-no-fork</goal>
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.5.0</version>
@@ -166,12 +162,12 @@
             <execution>
               <id>attach-javadocs</id>
               <goals>
-                <goal>jar</goal>
+		<goal>jar</goal>
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>1.5</version>
@@ -180,12 +176,12 @@
               <id>sign-artifacts</id>
               <phase>verify</phase>
               <goals>
-                <goal>sign</goal>
+		<goal>sign</goal>
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>nexus-staging-maven-plugin</artifactId>
           <version>1.6.13</version>
@@ -195,13 +191,13 @@
             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
             <autoReleaseAfterClose>true</autoReleaseAfterClose>
           </configuration>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.0</version>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.camel</groupId>
           <artifactId>camel-component-maven-plugin</artifactId>
           <version>3.16.0</version>
@@ -213,21 +209,36 @@
             <execution>
               <id>generate</id>
               <goals>
-                <goal>generate</goal>
+		<goal>generate</goal>
               </goals>
               <phase>process-classes</phase>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
+	</plugin>
+	<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.2.0</version>
           <configuration>
             <encoding>UTF-8</encoding>
           </configuration>
-        </plugin>
+	</plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-release-plugin</artifactId>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+
+    </plugins>
   </build>
 </project>
