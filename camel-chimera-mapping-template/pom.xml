@@ -6,12 +6,12 @@
   <parent>
     <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
   </parent>
 
   <artifactId>camel-chimera-mapping-template</artifactId>
   <packaging>jar</packaging>
-  <version>${parent.version}</version>
+  <version>3.0.2</version>
 
   <name>com.cefriel:camel-chimera-mapping-template</name>
   <description>Chimera Component for the Apache Camel framework that wraps the functionality of the mapping-template library</description>
@@ -54,6 +54,7 @@
     <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-mapping-template</url>
+    <tag>v3.0.2</tag>
   </scm>
 
   <dependencies>
