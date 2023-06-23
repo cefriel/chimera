@@ -3,18 +3,19 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent><groupId>com.cefriel</groupId>
+  <parent>
+    <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
     <version>3.0.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>rml-component</artifactId>
+  <artifactId>camel-chimera-rmlmapper</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.1</version>
+  <version>${parent.version}</version>
 
-  <name>com.cefriel:rml-component</name>
+  <name>com.cefriel:camel-chimera-rmlmapper</name>
   <description>Chimera Component for the Apache Camel framework that enables RML based mappings through a fork of the rmlmapper library</description>
-  <url>https://github.com/cefriel/chimera/tree/master/rml-component</url>
+  <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-rmlmapper</url>
 
   <licenses>
     <license>
@@ -47,7 +48,7 @@
   <scm>
     <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
-    <url>https://github.com/cefriel/chimera/tree/master/rml-component</url>
+    <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-rmlmapper</url>
   </scm>
 
   <properties>
@@ -63,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>com.cefriel</groupId>
-      <artifactId>graph-component</artifactId>
+      <artifactId>camel-chimera-graph</artifactId>
     </dependency>
       <dependency>
         <groupId>com.cefriel</groupId>

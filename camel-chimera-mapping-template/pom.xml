@@ -3,18 +3,19 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent><groupId>com.cefriel</groupId>
+  <parent>
+    <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
     <version>3.0.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>graph-component</artifactId>
+  <artifactId>camel-chimera-mapping-template</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.1</version>
+  <version>${parent.version}</version>
 
-  <name>com.cefriel:graph-component</name>
-  <description>Chimera Component for the Apache Camel framework supporting Graph Operations through the RDF4J library</description>
-  <url>https://github.com/cefriel/chimera/tree/master/graph-component</url>
+  <name>com.cefriel:camel-chimera-mapping-template</name>
+  <description>Chimera Component for the Apache Camel framework that wraps the functionality of the mapping-template library</description>
+  <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-mapping-template</url>
 
   <licenses>
     <license>
@@ -44,32 +45,30 @@
     </developer>
   </developers>
 
-  <scm>
-    <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
-    <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
-    <url>https://github.com/cefriel/chimera/tree/master/graph-component</url>
-  </scm>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
+  <scm>
+    <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
+    <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
+    <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-mapping-template</url>
+  </scm>
+
   <dependencies>
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-support</artifactId>
-      <version>${camel.version}</version>
+      <groupId>com.cefriel</groupId>
+      <artifactId>camel-chimera-graph</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cefriel</groupId>
+      <artifactId>mapping-template</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-http</artifactId>
-      <version>${camel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.rdf4j</groupId>
-      <artifactId>rdf4j-storage</artifactId>
-      <type>pom</type>
+      <artifactId>camel-test-spring-junit5</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -77,11 +76,6 @@
       <scope>import</scope>
       <type>pom</type>
       <version>${camel-bom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-test-spring-junit5</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -94,11 +88,6 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-
-      <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-component-maven-plugin</artifactId>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -118,17 +107,38 @@
           </execution>
         </executions>
       </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
       </plugin>
 
       <!-- generate camel meta-data -->
-
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-component-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 

@@ -1,11 +1,5 @@
-/.idea/
-/rml-component/src/main/main.iml
-/rml-component/src/test/resources/file/result/
-/rml-component/src/test/test.iml
-/mapt-component/src/test/resources/file/result/
-/graph-component/src/test/resources/file/result/
-
-/graph-component/target/
-/mapt-component/target/
-/rml-component/target/
-/rml-component/src/generated/
+**/*.idea
+**/*.iml
+**/src/test/resources/file/result
+**/src/generated
+**/target
