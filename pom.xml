@@ -26,7 +26,7 @@
   </properties>
 
   <scm>
-    <connection>scm:git:git://github.com/cefriel/chimera.git</connection>
+    <connection>scm:git://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera</url>
     <tag>v3.0.2</tag>
