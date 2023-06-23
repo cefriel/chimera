@@ -6,12 +6,12 @@
   <parent>
     <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>camel-chimera-graph</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>${parent.version}</version>
 
   <name>com.cefriel:camel-chimera-graph</name>
   <description>Chimera Component for the Apache Camel framework supporting Graph Operations through the RDF4J library</description>
@@ -49,7 +49,6 @@
     <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
     <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-graph</url>
-    <tag>HEAD</tag>
   </scm>
 
   <properties>
