@@ -28,8 +28,8 @@
   </properties>
 
   <scm>
-    <connection>scm:git://github.com/cefriel/chimera.git</connection>
-    <developerConnection>scm:git:ssh://github.com:cefriel/chimera.git</developerConnection>
+    <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
+    <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
     <url>https://github.com/cefriel/chimera</url>
   </scm>
 
