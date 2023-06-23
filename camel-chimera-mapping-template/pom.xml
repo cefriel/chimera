@@ -50,12 +50,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-  <scm>
-    <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
-    <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
-    <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-mapping-template</url>
-  </scm>
-
   <dependencies>
     <dependency>
       <groupId>com.cefriel</groupId>
@@ -106,38 +100,6 @@
             <phase>process-classes</phase>
           </execution>
         </executions>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-
-      <!-- generate camel meta-data -->
-      <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-component-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

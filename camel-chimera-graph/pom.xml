@@ -45,12 +45,6 @@
     </developer>
   </developers>
 
-  <scm>
-    <connection>scm:git:https://github.com/cefriel/chimera.git</connection>
-    <developerConnection>scm:git:https://github.com/cefriel/chimera.git</developerConnection>
-    <url>https://github.com/cefriel/chimera/tree/master/camel-chimera-graph</url>
-  </scm>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -97,11 +91,6 @@
     <plugins>
 
       <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-component-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
@@ -119,17 +108,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-
-      <!-- generate camel meta-data -->
-
     </plugins>
   </build>
 
