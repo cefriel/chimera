@@ -2,7 +2,8 @@ _Chimera_: Composable Semantic Transformation Pipelines
 ===
 [![Maven Central](https://img.shields.io/maven-central/v/com.cefriel/chimera.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.cefriel/chimera
 )
-Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) and offering components to compose conversion pipelines based on Semantic Web solutions.
+
+Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) offering components to define schema and data transformation pipelines based on Semantic Web solutions.
 
 :arrow_forward: The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) repository provides a complete example of a Chimera conversion pipeline.
 
@@ -32,38 +33,30 @@ With this high-level process in mind, we defined a core set of blocks:
 
 <p align="left"><img src="pipeline.png" alt="Generic pipeline" width="800"></p>
 
-### Project structure
-The project has a parent POM (in the parent directory) that can be used to trigger the Maven builds of sub-projects respecting internal dependencies. You can modify the parent POM to select only sub-projects you are interested in.
-Chimera makes use of three components, available as sub-projects in this repository. 
-The [rdf4j](https://rdf4j.org/) library is used to handle the RDF graph in all the pipeline components.
+### Use Chimera
+The project has a parent POM that can be used to trigger Maven goals and compile the project locally. The different modules can be imported as dependencies from Maven Central.
+Chimera is currently composed of three Apache Camel Components, available as sub-projects in this repository. All the components rely on the [rdf4j](https://rdf4j.org/) library to handle the RDF graph.
 
-- `graph-component` Camel component used to create and manipulate RDF knowledge graphs.
-- `rml-component` Camel component used to lifting using the [rml-mapper](https://github.com/cefriel/rmlmapper-cefriel) library 
-    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rmlmapper-cefriel`
-- `rdft-component` Camel componend able to implement both lifting and lowering steps using the [rdf-template](https://github.com/cefriel/rdf-template) library 
-    - This sub-project depends on the mentioned library that is imported as a git submodule in `libs/rdf-template`
-
-### How to compile the project
-- Clone the repository and the required git submodules
-    ```
-    git clone --recurse-submodules https://github.com/cefriel/chimera.git
-    ```
-- Remove comments from the parent `pom.xml` if required libraries (git submodules) are not already installed in the local Maven repository
-- Run `mvn:install` in the root folder to build all the sub-projects and libraries
+- `camel-chimera-graph` Camel component used to create and manipulate RDF knowledge graphs.
+- `camel-chimera-rmlmapper` Camel component used to lifting using the [rmlmapper-cefriel](https://github.com/cefriel/rmlmapper-cefriel) library 
+- `camel-chimera-mapping-template` Camel component able to implement both lifting and lowering steps using the [mapping-template](https://github.com/cefriel/mapping-template) library
 
 ### References
 
 Projects using Chimera:
 
+- SmartEdge: Semantic Low-code Programming Tools for Edge Intelligence https://www.smart-edge.eu/
+- TANGENT: Enhanced Data Processing Techniques for Dynamic Management of Multimodal Traffic https://tangent-h2020.eu/
 - SNAP: Seamless exchange of multi-modal transport data for transition to National Access Points https://snap-project.eu/
 - SPRINT: Semantics for PerfoRmant and scalable INteroperability of multimodal Transport http://sprint-transport.eu/
 
 Publications:
+- `Grassi M., Scrocca M., Comerio M., Carenini A., Celino I. (2023) Composable Semantic Data Transformation Pipelines with Chimera. In: 4th International Workshop On Knowledge Graph Construction co-located with the ESWC 2023. CEUR-WS. https://w3id.org/kg-construct/workshop/2023/resources/paper10.pdf`
 - `Scrocca M., Comerio M., Carenini A., Celino I. (2020) Turning Transport Data to Comply with EU Standards While Enabling a Multimodal Transport Knowledge Graph. In: The Semantic Web – ISWC 2020. Springer. https://doi.org/10.1007/978-3-030-62466-8_26`
 
 ### Commercial Support
 
-If you need commercial support for Chimera contact us at [info@cefriel.com](mailto:info@cefriel.com).
+If you need commercial support for Chimera contact us at [chimera-dev@cefriel.com](mailto:chimera-dev@cefriel.com).
 
 ### License
 
