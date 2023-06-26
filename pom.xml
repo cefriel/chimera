@@ -136,6 +136,11 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>3.0.1</version>
           <configuration>
+	    <tagNameFormat>v@{project.version}</tagNameFormat>
+	    <autoVersionSubmodules>true</autoVersionSubmodules>
+	    <useReleaseProfile>false</useReleaseProfile>
+	    <releaseProfiles>release</releaseProfiles>
+	    <goals>deploy</goals>
             <checkModificationExcludes>
               <checkModificationExclude>pom.xml</checkModificationExclude>
             </checkModificationExcludes>
@@ -241,4 +246,29 @@
 
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>org.sonatype.plugins</groupId>
+	    <artifactId>nexus-staging-maven-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-source-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-javadoc-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-gpg-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
