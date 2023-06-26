@@ -1,5 +1,7 @@
 _Chimera_: Composable Semantic Transformation Pipelines
 ===
+[![Maven Central](https://img.shields.io/maven-central/v/com.cefriel/chimera.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.cefriel/chimera
+)
 Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) and offering components to compose conversion pipelines based on Semantic Web solutions.
 
 :arrow_forward: The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) repository provides a complete example of a Chimera conversion pipeline.
