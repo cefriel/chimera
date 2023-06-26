@@ -7,6 +7,10 @@
   <version>3.0.6-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <name>com.cefriel:chimera</name>
+  <description>Chimera offers a set of Apache Camel components to define schema and data trasformation pipelines based on Semantic Web solutions.</description>
+  <url>https://github.com/cefriel/chimera/</url>
+
   <modules>
     <module>camel-chimera-graph</module>
 
