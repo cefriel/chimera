@@ -103,6 +103,7 @@ public class MaptTemplateProcessor {
                 formatter = Util.createFormatter(params.formatterFormat());
             }
 
+            // if filename is specified then save to file
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
                 String outputFilePath = params.basePath() + params.outputFileName();
@@ -119,7 +120,7 @@ public class MaptTemplateProcessor {
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
-            // result of applying template in exchange body as string
+            // if filename is not specified then the result of applying template is stored in the exchange body as string
             else {
                 String templatePath = FileResourceAccessor.getFilePath(params.template());
                 if (params.query() != null) {
