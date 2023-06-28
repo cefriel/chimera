@@ -83,7 +83,7 @@
       </dependency>
       <dependency>
         <groupId>com.cefriel</groupId>
-        <artifactId>rml-component</artifactId>
+        <artifactId>camel-chimera-rmlmapper</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
