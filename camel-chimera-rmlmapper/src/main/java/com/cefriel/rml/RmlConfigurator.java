@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -89,12 +90,12 @@ public class RmlConfigurator {
 
     public static String getInitializerId(RmlBean configuration) {
         List<String> mappingFiles = configuration.getMappings().getResources().stream()
-                .map(FileResourceAccessor::getFilePath).collect(Collectors.toList());
+                .map(fileUrl -> FileResourceAccessor.fileUrlToPath(fileUrl).toString()).toList();
 
         String mappings = mappingFiles.stream().collect(Collectors.joining("-"));
 
         List<String> functionFiles = configuration.getFunctionFiles().getResources().stream()
-                .map(FileResourceAccessor::getFilePath).collect(Collectors.toList());
+                .map(fileUrl -> FileResourceAccessor.fileUrlToPath(fileUrl).toString()).toList();
 
         String functions = functionFiles.stream().collect(Collectors.joining("-"));
 
