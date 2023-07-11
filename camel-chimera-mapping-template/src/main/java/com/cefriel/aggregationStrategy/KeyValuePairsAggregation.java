@@ -25,6 +25,10 @@ import java.io.InputStream;
 public class KeyValuePairsAggregation implements AggregationStrategy {
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+	if (oldExchange == null) {
+            return newExchange;
+        }
+	
         InputStream newInputStream = newExchange.getMessage().getBody(InputStream.class);
         if (newInputStream != null)
             oldExchange.setProperty(MaptTemplateConstants.KEY_VALUE_PAIRS, newInputStream);
