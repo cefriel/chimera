@@ -53,7 +53,7 @@ public class MapConverter {
         Map<String, InputStream> map = new HashMap<>();
         for (var resource : resources.getResources()) {
             InputStream is = ResourceAccessor.open(resource, exchange.getContext());
-            Path path = Path.of(FileResourceAccessor.getFilePath(resource));
+            Path path = FileResourceAccessor.fileUrlToPath(resource);
             map.put(prefix + path.getFileName(), is);
         }
         /*

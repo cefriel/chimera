@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -45,13 +46,13 @@ public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rdfParamAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
-        List<String> resultsFilesPaths = mock.getExchanges().get(0).getMessage().getBody(List.class);
+        List<Path> resultsFilesPaths = mock.getExchanges().get(0).getMessage().getBody(List.class);
         String correctOutput1 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv")).replaceAll("\\r\\n", "\n");
-        String obtainedOutput1 = Files.readString(Paths.get((resultsFilesPaths.get(0)))).replaceAll("\\r\\n", "\n");
+        String obtainedOutput1 = Files.readString(resultsFilesPaths.get(0)).replaceAll("\\r\\n", "\n");
         assert (correctOutput1.equals(obtainedOutput1));
 
         String correctOutput2 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv")).replaceAll("\\r\\n", "\n");
-        String obtainedOutput2 = Files.readString(Paths.get((resultsFilesPaths.get(1)))).replaceAll("\\r\\n", "\n");
+        String obtainedOutput2 = Files.readString(resultsFilesPaths.get(1)).replaceAll("\\r\\n", "\n");
         assert (correctOutput2.equals(obtainedOutput2));
     }
 

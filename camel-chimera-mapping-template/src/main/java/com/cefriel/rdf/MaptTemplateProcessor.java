@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MaptTemplateProcessor {
@@ -48,7 +50,7 @@ public class MaptTemplateProcessor {
                                     ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
                                     boolean isStream,
-                                    TemplateFunctions templateFunctions) {} // todo add other options which are not currently handled (time, ts adress maybe others)
+                                    TemplateFunctions templateFunctions) {}
     private static OperationParams getOperationParams(Exchange exchange, MaptTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -106,25 +108,25 @@ public class MaptTemplateProcessor {
             // if filename is specified then save to file
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
-                String outputFilePath = params.basePath() + params.outputFileName();
-                String templatePath = FileResourceAccessor.getFilePath(params.template());
+                Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
+                Path templatePath = FileResourceAccessor.fileUrlToPath(params.template());
                 if(params.query() != null) {
-                    String queryPath = FileResourceAccessor.getFilePath(params.query());
-                    List<String> resultFilesPaths =
+                    Path queryPath = FileResourceAccessor.fileUrlToPath(params.query());
+                    List<Path> resultFilesPaths =
                             templateExecutor.executeMappingParametric(reader, templatePath, false,
                                     params.trimTemplate(), queryPath, outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
-                    String resultFilePath =
+                    Path resultFilePath =
                             templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
             // if filename is not specified then the result of applying template is stored in the exchange body as string
             else {
-                String templatePath = FileResourceAccessor.getFilePath(params.template());
+                Path templatePath = FileResourceAccessor.fileUrlToPath(params.template());
                 if (params.query() != null) {
-                    String queryPath = FileResourceAccessor.getFilePath(params.query());
+                    Path queryPath = FileResourceAccessor.fileUrlToPath(params.query());
                     Map<String,String> result = templateExecutor.executeMappingParametric(reader, templatePath, false, params.trimTemplate(), queryPath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(result, Map.class);
 
@@ -135,19 +137,6 @@ public class MaptTemplateProcessor {
             }
         }
     }
-    /*
-    private static TemplateExecutor configureTemplateOptions(OperationParams params, CamelContext context, Reader reader, Exchange exchange) throws Exception {
-        TemplateUtils templateUtils = new TemplateUtils();
-        templateUtils.setPrefix(params.baseIRI());
-
-        new File(params.basePath()).mkdirs();
-        String filepath = params.basePath() + params.outputFileName();
-        exchange.getMessage().setHeader("filepath", filepath);
-
-        return templateExec;
-    }
-
-     */
     private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, boolean verbose) throws Exception {
         if (inputFormat == null) {
             // case when no reader is specified as input but are declared directly in the template file

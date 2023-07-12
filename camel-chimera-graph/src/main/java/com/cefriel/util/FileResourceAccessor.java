@@ -30,8 +30,9 @@ public class FileResourceAccessor {
 
         return response;
     }
-    public static String getFilePath(ChimeraResourceBean fileResource) {
-        return fileResource.getUrl().replace(filePrefix, "");
+    public static Path fileUrlToPath(ChimeraResourceBean fileResource) {
+        String path = fileResource.getUrl().replace(filePrefix, "");
+        return Paths.get(path);
     }
     public static InputStream getFileResource(ChimeraResourceBean resource) throws FileNotFoundException {
         String fileURI = resource.getUrl();
