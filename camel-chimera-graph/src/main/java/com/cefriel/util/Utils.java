@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
@@ -138,6 +140,21 @@ public class Utils {
     // todo validate rdfFormat everywhere
     public static boolean isSupportedRDFFormat(String rdfFormat) {
         return ChimeraConstants.SUPPORTED_RDF_FORMATS.contains(rdfFormat);
+    }
+
+    public static String writeModelToDestination(Model model, String rdfFormat, String basePath, String fileName) throws IOException {
+        InputStream inputStream = RDFSerializer.serialize(model, rdfFormat);
+        String extension = getRDFFormat(rdfFormat).getDefaultFileExtension();
+
+        Path directory = Paths.get(basePath);
+
+        if (!Files.exists(directory))
+            Files.createDirectories(directory);
+
+        Path filePath = directory.resolve(fileName + "." + extension);
+        // write to file
+        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        return filePath.toString();
     }
 
     public static String writeModelToDestination(Exchange exchange, Model model, String defaultName) throws IOException {

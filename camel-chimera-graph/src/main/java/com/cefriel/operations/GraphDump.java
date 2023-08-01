@@ -78,9 +78,6 @@ public class GraphDump {
         if (params.endpointParams().dumpRDFFormat() == null)
             throw new IllegalArgumentException("No dumpFormat parameter supplied to DUMP operation");
 
-        if (params.endpointParams().fileName() == null)
-            throw new IllegalArgumentException("No fileName parameter supplied to DUMP operation");
-
         return true;
     }
     public static void graphDump(Exchange exchange, GraphBean operationConfig) throws IOException {
@@ -100,12 +97,15 @@ public class GraphDump {
 
             //TODO Change this, add specific option to save as file or set as body
             // todo maybe can reuse camel file component for dump operation
-            if (params.endpointParams().basePath() != null) {
-                String path = Utils.writeModelToDestination(exchange, dumpModel, "graph-dump");
+            if (params.endpointParams().basePath() != null && params.endpointParams().fileName() != null) {
+                String path = Utils.writeModelToDestination(
+                        dumpModel,
+                        params.endpointParams().dumpRDFFormat(),
+                        params.endpointParams().basePath(),
+                        params.endpointParams().fileName());
                 LOG.info("Graph dumped to file " + path);
             } else {
-                InputStream inputStream = RDFSerializer.serialize(dumpModel, exchange);
-                exchange.getMessage().setBody(inputStream);
+                RDFSerializer.serialize(dumpModel, params.endpointParams().dumpRDFFormat(), exchange);
                 LOG.info("Model dump set as body");
             }
         }

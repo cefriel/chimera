@@ -33,6 +33,28 @@ import java.io.*;
 public final class RDFSerializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(RDFSerializer.class);
+    public static InputStream serialize(Model model, String rdfFormat) {
+        RDFFormat format = Utils.getRDFFormat(rdfFormat);
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        RDFWriter writer = Rio.createWriter(format, outstream);
+        writer.getWriterConfig()
+                .set(BasicWriterSettings.INLINE_BLANK_NODES, true);
+        writer.getWriterConfig()
+                .set(TurtleWriterSettings.ABBREVIATE_NUMBERS, false);
+        Rio.write(model, writer);
+        LOG.info("RDF serialisation succeeded [RDFFormat: " + rdfFormat + "]");
+        return new ByteArrayInputStream(outstream.toByteArray());
+    }
+
+    public static Exchange serialize(Model model, String rdfFormat, Exchange e) {
+        InputStream inputStream = RDFSerializer.serialize(model, rdfFormat);
+        RDFFormat format = Utils.getRDFFormat(rdfFormat);
+
+        e.getMessage().setBody(inputStream);
+        e.getMessage().setHeader(Exchange.CONTENT_TYPE, format.getDefaultMIMEType());
+        e.getMessage().setHeader(ChimeraConstants.FILE_EXTENSION, format.getDefaultFileExtension());
+        return e;
+    }
 
     public static InputStream serialize(Model model, Exchange exchange) throws IOException {
         RDFFormat rdfFormat = Utils.getExchangeRdfFormat(exchange, ChimeraConstants.ACCEPTFORMAT);
