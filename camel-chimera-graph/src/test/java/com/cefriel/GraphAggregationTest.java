@@ -107,7 +107,7 @@ public class GraphAggregationTest extends CamelTestSupport {
                 from("direct:aggregate-to-file")
                         .aggregate(constant(true), new GraphAggregation())
                         .completionSize(2)
-                        .to("graph://dump?filename=dumpGraphAggregation.ttl&basePath=src/test/resources/file/result&dumpFormat=turtle")
+                        .to("graph://dump?filename=dumpGraphAggregation&basePath=src/test/resources/file/result&dumpFormat=turtle")
                         .to("mock:end-graph-aggregate-file");
             }
         };
