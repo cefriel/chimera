@@ -51,7 +51,7 @@ Projects using Chimera:
 - SPRINT: Semantics for PerfoRmant and scalable INteroperability of multimodal Transport http://sprint-transport.eu/
 
 Publications:
-- `Grassi M., Scrocca M., Comerio M., Carenini A., Celino I. (2023) Composable Semantic Data Transformation Pipelines with Chimera. In: 4th International Workshop On Knowledge Graph Construction co-located with the ESWC 2023. CEUR-WS. https://w3id.org/kg-construct/workshop/2023/resources/paper10.pdf`
+- `Grassi M., Scrocca M., Comerio M., Carenini A., Celino I. (2023) Composable Semantic Data Transformation Pipelines with Chimera. In: 4th International Workshop On Knowledge Graph Construction co-located with the ESWC 2023. CEUR-WS. https://ceur-ws.org/Vol-3471/paper9.pdf`
 - `Scrocca M., Comerio M., Carenini A., Celino I. (2020) Turning Transport Data to Comply with EU Standards While Enabling a Multimodal Transport Knowledge Graph. In: The Semantic Web – ISWC 2020. Springer. https://doi.org/10.1007/978-3-030-62466-8_26`
 
 ### Commercial Support
