@@ -58,9 +58,9 @@ public class Utils {
         return url.endsWith("/") ? url : url + "/";
     }
 
-    public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
+    public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, Exchange exchange) throws Exception {
         for (ChimeraResourceBean resource: resourcesBean.getResources()) {
-            Model model = StreamParser.parseResource(resource, context);
+            Model model = StreamParser.parseResource(resource, exchange);
             populateRepository(repo, model);
         }
     }
@@ -102,10 +102,10 @@ public class Utils {
             }
         }
     }
-    public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, CamelContext context) throws IOException {
+    public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, Exchange exchange) throws Exception {
         Repository schema = new SailRepository(new MemoryStore());
         schema.init();
-        populateRepository(schema, resourcesBean, context);
+        populateRepository(schema, resourcesBean, exchange);
         return schema;
     }
     public static RDFFormat getExchangeRdfFormat(Exchange exchange, String headerName) {

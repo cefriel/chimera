@@ -72,7 +72,7 @@ public class MaptTemplateAgencyTest extends CamelTestSupport {
         ChimeraResourceBean file = new ChimeraResourceBean(
                 "file://./src/test/resources/file/agency-multiple-input/input.ttl",
                 "turtle");
-        start.sendBody(ResourceAccessor.open(file, camelTestSupportExtension.context()));
+        start.sendBody(ResourceAccessor.open(file, null));
         mock.assertIsSatisfied();
     }
 

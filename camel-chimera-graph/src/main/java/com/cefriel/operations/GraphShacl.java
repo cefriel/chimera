@@ -54,7 +54,7 @@ public class GraphShacl {
                 exchange.getMessage().getBody(RDFGraph.class),
                 getEndpointParams(operationConfiguration));
     }
-    public static void graphShacl(Exchange exchange, GraphBean operationConfiguration) throws IOException {
+    public static void graphShacl(Exchange exchange, GraphBean operationConfiguration) throws Exception {
         OperationParams operationParams = getOperationParams(exchange, operationConfiguration);
 
         List<ChimeraResourceBean> shaclUrls = operationParams.endpointParams().shaclUrls().getResources();
@@ -63,7 +63,7 @@ public class GraphShacl {
             sailRepository.init();
             try (SailRepositoryConnection connection = sailRepository.getConnection()) {
                 for (ChimeraResourceBean shacleUrl : shaclUrls) {
-                    InputStream is = ResourceAccessor.open(shacleUrl, exchange.getContext());
+                    InputStream is = ResourceAccessor.open(shacleUrl, exchange);
                     connection.begin();
                     RDFFormat format = Rio.getParserFormatForMIMEType(shacleUrl.getSerializationFormat()).orElse(RDFFormat.TURTLE);
                     connection.add(is, "", format, RDF4J.SHACL_SHAPE_GRAPH);

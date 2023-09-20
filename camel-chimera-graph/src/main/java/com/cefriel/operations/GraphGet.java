@@ -106,7 +106,7 @@ public class GraphGet {
         }
     }
     // called by the producer
-    public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws IOException {
+    public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws Exception {
         OperationParams params = getOperationParams(exchange, operationConfig);
         if (validateParams(params)) {
             return obtainGraph(params, exchange, inputStream);
@@ -116,14 +116,14 @@ public class GraphGet {
         }
 
     }
-    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws IOException {
+    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws Exception {
         RDFGraph graph = obtainGraph(params, exchange);
         Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().rdfFormat());
         return graph;
     }
 
     // called by the consumer
-    public static void obtainGraph(Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static void obtainGraph(Exchange exchange, GraphBean operationConfig) throws Exception {
         OperationParams params = getOperationParams(exchange, operationConfig);
         if (validateParams(params)) {
             RDFGraph graph = obtainGraph(params, exchange);
@@ -133,7 +133,7 @@ public class GraphGet {
             throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
         }
     }
-    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws IOException {
+    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws Exception {
 
         String namedGraph, baseIRI;
         NamedGraphAndBaseIRI x = handleNamedGraphAndBaseIRI(params.endpointParams().defaultGraph(),
@@ -143,7 +143,7 @@ public class GraphGet {
 
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {
-            Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), exchange.getContext());
+            Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), exchange);
             if (namedGraph != null)
                 graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
             else

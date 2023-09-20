@@ -71,12 +71,14 @@ public class GraphDetach {
                     }
                     if (params.endpointParams().ontologyUrls() != null)
                         for (ChimeraResourceBean ontologyUrl : params.endpointParams().ontologyUrls().getResources()) {
-                            Model l = StreamParser.parseResource(ontologyUrl, exchange.getContext());
+                            Model l = StreamParser.parseResource(ontologyUrl, exchange);
                             Set<Namespace> namespaces = l.getNamespaces();
                             for (Namespace n : namespaces)
                                 con.removeNamespace(n.getPrefix());
                             LOG.info("Removed namespaces listed in file " + ontologyUrl.getUrl());
                         }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
             if (params.endpointParams().repoOff())

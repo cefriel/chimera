@@ -45,7 +45,7 @@ public class MaptTemplateXmlTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
 
         ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/xml/example.xml", "xml");
-        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
+        start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
         long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/xml/output-correct.ttl"),

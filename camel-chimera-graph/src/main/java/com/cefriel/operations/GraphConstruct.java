@@ -67,12 +67,12 @@ public class GraphConstruct {
             return List.of(query);
         } else return queries;
     }
-    public static List<String> readSparqlQueries(ChimeraResourcesBean queryUrls, CamelContext context) throws IOException {
+    public static List<String> readSparqlQueries(ChimeraResourcesBean queryUrls, Exchange exchange) throws Exception {
 
         List<String> sparqlQueries = new ArrayList<>();
 
         for(ChimeraResourceBean queryUrl : queryUrls.getResources()) {
-            InputStream inputStream = ResourceAccessor.open(queryUrl, context);
+            InputStream inputStream = ResourceAccessor.open(queryUrl, exchange);
             //Creating a Scanner object
             Scanner scanner = new Scanner(inputStream);
             //Reading line by line from scanner to StringBuffer
@@ -97,19 +97,19 @@ public class GraphConstruct {
         con.close();
     }
 
-    public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws Exception {
         OperationParams operationParams = getOperationParams(exchange, operationConfig);
 
         if (validParams(operationParams)) {
             RDFGraph graph = operationParams.graph();
-            graphConstruct(graph, operationParams, exchange.getContext());
+            graphConstruct(graph, operationParams, exchange);
             exchange.getMessage().setBody(graph, RDFGraph.class);
         }
     }
-    private static void graphConstruct(RDFGraph graph, OperationParams params, CamelContext context) throws IOException {
+    private static void graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws Exception {
         List<String> sparqlQueries = mergeQueries(
                 params.endpointParams().literalQuery(),
-                readSparqlQueries(params.endpointParams().queryUrls(), context));
+                readSparqlQueries(params.endpointParams().queryUrls(), exchange));
 
         for (String query : sparqlQueries) {
             executeQueryOnGraph(graph, query, params.endpointParams().namedGraph());

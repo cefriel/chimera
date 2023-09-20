@@ -92,11 +92,11 @@ public class MaptTemplateProcessor {
 
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
-                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange.getContext()),
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange),
                         false);
             }
             if(params.templateMapKVCsv() != null) {
-                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange.getContext()),
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange),
                         true);
             }
 
@@ -109,16 +109,15 @@ public class MaptTemplateProcessor {
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
                 Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
-                Path templatePath = FileResourceAccessor.fileUrlToPath(params.template());
                 if(params.query() != null) {
                     Path queryPath = FileResourceAccessor.fileUrlToPath(params.query());
                     List<Path> resultFilesPaths =
-                            templateExecutor.executeMappingParametric(reader, templatePath, false,
-                                    params.trimTemplate(), queryPath, outputFilePath, templateMap, formatter, templateFunctions);
+                            templateExecutor.executeMappingParametric(reader, ResourceAccessor.open(params.template(), exchange),
+                                    ResourceAccessor.open(params.query(), exchange), outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
                     Path resultFilePath =
-                            templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), outputFilePath, templateMap, formatter, templateFunctions);
+                            templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), outputFilePath, templateMap, formatter, templateFunctions);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }

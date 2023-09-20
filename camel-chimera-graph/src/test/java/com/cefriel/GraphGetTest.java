@@ -136,7 +136,7 @@ public class GraphGetTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
 
         ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/base/test.ttl", "turtle");
-        start.sendBodyAndHeader(ResourceAccessor.open(r, camelTestSupportExtension.context()),
+        start.sendBodyAndHeader(ResourceAccessor.open(r, null),
                 ChimeraConstants.RDF_FORMAT, r.getSerializationFormat());
 
         mock.assertIsSatisfied();

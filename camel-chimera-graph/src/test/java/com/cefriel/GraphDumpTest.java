@@ -27,7 +27,7 @@ public class GraphDumpTest extends CamelTestSupport {
     @Test
     public void testDumpToFile() throws Exception {
         var graph = new MemoryRDFGraph();
-        Utils.populateRepository(graph.getRepository(), triples, camelTestSupportExtension.context());
+        Utils.populateRepository(graph.getRepository(), triples, null);
         start.sendBody("direct:dumpToFile", graph);
 
         MockEndpoint mock = getMockEndpoint("mock:dumpToFile");
@@ -41,7 +41,7 @@ public class GraphDumpTest extends CamelTestSupport {
     @Test
     public void testDump() throws Exception {
         var graph = new MemoryRDFGraph();
-        Utils.populateRepository(graph.getRepository(), triples, camelTestSupportExtension.context());
+        Utils.populateRepository(graph.getRepository(), triples, null);
         start.sendBody("direct:dump", graph);
 
         MockEndpoint mock = getMockEndpoint("mock:dump");

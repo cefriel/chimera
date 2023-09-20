@@ -50,7 +50,7 @@ public class RmlMessageTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rmlMessage");
         mock.expectedMessageCount(1);
         var r = new ChimeraResourceBean("file://./src/test/resources/file/sample-gtfs/stops.txt", null);
-        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
+        start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
     }

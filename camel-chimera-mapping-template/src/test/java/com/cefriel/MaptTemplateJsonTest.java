@@ -47,7 +47,7 @@ public class MaptTemplateJsonTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
 
         ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/json/example.json", "json");
-        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
+        start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
         long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/json/output-correct.ttl"),

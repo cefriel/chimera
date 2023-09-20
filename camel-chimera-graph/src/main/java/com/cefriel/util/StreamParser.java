@@ -47,8 +47,8 @@ public final class StreamParser {
             return model;
         }
     }
-    public static Model parseResource(ChimeraResourceBean resource, CamelContext context) throws IOException {
-        return parseTriples(ResourceAccessor.open(resource, context), resource.getSerializationFormat(), null);
+    public static Model parseResource(ChimeraResourceBean resource, Exchange exchange) throws Exception {
+        return parseTriples(ResourceAccessor.open(resource, exchange), resource.getSerializationFormat(), null);
     }
 
     // todo check this logic, base iri from header does not make sense, not every inputStream (meaning resource) necessarily has the same base iri

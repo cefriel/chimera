@@ -40,7 +40,7 @@ public class GraphInference {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphInference.class);
     private record EndpointParams(ChimeraResourcesBean ontologies, boolean allRules){}
-    private record OperationParams(RDFGraph graph, CamelContext context, EndpointParams endpointParams){}
+    private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams endpointParams){}
 
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
@@ -50,16 +50,16 @@ public class GraphInference {
     private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
         return new OperationParams(
                 e.getMessage().getBody(RDFGraph.class),
-                e.getContext(),
+                e,
                 getEndpointParams(operationConfig));
     }
 
-    public static void graphInference(Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static void graphInference(Exchange exchange, GraphBean operationConfig) throws Exception {
         OperationParams operationParams = getOperationParams(exchange, operationConfig);
         graphInference(operationParams, exchange);
     }
-    public static void graphInference(OperationParams params, Exchange exchange) throws IOException {
-        Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), params.context());
+    public static void graphInference(OperationParams params, Exchange exchange) throws Exception {
+        Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), params.exchange());
         SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
         Repository inferenceRepo = new SailRepository(inferencer);
         inferenceRepo.init();

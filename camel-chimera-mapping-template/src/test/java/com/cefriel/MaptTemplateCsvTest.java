@@ -53,7 +53,7 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
 
         ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/csv/example.csv", "csv");
-        start.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
+        start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
         long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/csv/output-correct.ttl"),

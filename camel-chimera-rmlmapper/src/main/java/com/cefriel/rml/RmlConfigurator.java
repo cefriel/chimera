@@ -59,7 +59,7 @@ public class RmlConfigurator {
             else {
                 List<InputStream> lis = new ArrayList<>();
                 for (var mapping : configuration.getMappings().getResources()) {
-                    lis.add(ResourceAccessor.open(mapping, exchange.getContext()));
+                    lis.add(ResourceAccessor.open(mapping, exchange));
                 }
                 is = new SequenceInputStream(Collections.enumeration(lis));
             }
@@ -211,7 +211,7 @@ public class RmlConfigurator {
         return null;
     }
 
-    private static String getBaseIRIFromMappings(Exchange exchange, RmlBean options) throws IOException {
+    private static String getBaseIRIFromMappings(Exchange exchange, RmlBean options) throws Exception {
 
         InputStream is;
         // Concatenate all mapping files
@@ -220,7 +220,7 @@ public class RmlConfigurator {
         else {
             List<InputStream> lis = new ArrayList<>();
             for (var mapping : options.getMappings().getResources()) {
-                lis.add(ResourceAccessor.open(mapping, exchange.getContext()));
+                lis.add(ResourceAccessor.open(mapping, exchange));
             }
             is = new SequenceInputStream(Collections.enumeration(lis));
         }

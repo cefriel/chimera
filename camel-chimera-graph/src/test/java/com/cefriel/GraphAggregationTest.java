@@ -42,9 +42,9 @@ public class GraphAggregationTest extends CamelTestSupport {
 
         // random.ttl and my-source.ttl different data
         var graph1 = new MemoryRDFGraph();
-        Utils.populateRepository(graph1.getRepository(), triples1, camelTestSupportExtension.context());
+        Utils.populateRepository(graph1.getRepository(), triples1, null);
         var graph2 = new MemoryRDFGraph();
-        Utils.populateRepository(graph2.getRepository(), triples2, camelTestSupportExtension.context());
+        Utils.populateRepository(graph2.getRepository(), triples2, null);
 
         var expectedNumberOfStatements = graph1.getRepository().getConnection().size() +
                 graph2.getRepository().getConnection().size();
@@ -75,9 +75,9 @@ public class GraphAggregationTest extends CamelTestSupport {
 
         // random.ttl and my-source.ttl different data
         var graph1 = new MemoryRDFGraph();
-        Utils.populateRepository(graph1.getRepository(), triples1, camelTestSupportExtension.context());
+        Utils.populateRepository(graph1.getRepository(), triples1, null);
         var graph2 = new MemoryRDFGraph();
-        Utils.populateRepository(graph2.getRepository(), triples2, camelTestSupportExtension.context());
+        Utils.populateRepository(graph2.getRepository(), triples2, null);
 
         var expectedNumberOfStatements = graph1.getRepository().getConnection().size() +
                 graph2.getRepository().getConnection().size();

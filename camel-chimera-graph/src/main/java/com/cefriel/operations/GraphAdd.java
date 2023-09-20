@@ -38,7 +38,7 @@ public class GraphAdd {
     private static final Logger LOG = LoggerFactory.getLogger(GraphAdd.class);
 
     private record EndpointParams(ChimeraResourcesBean ontologies) {}
-    private record OperationParams(RDFGraph graph, CamelContext context, EndpointParams operationParams) {}
+    private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams operationParams) {}
     private static boolean validParams(OperationParams params) throws IllegalArgumentException {
         if (params.graph() == null)
             throw new RuntimeException("graph in Exchange body cannot be null");
@@ -50,22 +50,22 @@ public class GraphAdd {
     private static OperationParams getOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
         return new OperationParams(
                 graph,
-                exchange.getContext(),
+                exchange,
                 getEndpointParams(operationConfig));
     }
-    public static void graphAdd(Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static void graphAdd(Exchange exchange, GraphBean operationConfig) throws Exception {
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
         exchange.getMessage().setBody(graphAdd(graph, exchange, operationConfig), RDFGraph.class);
     }
-    public static RDFGraph graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws IOException {
+    public static RDFGraph graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws Exception {
         OperationParams params = getOperationParams(graph, exchange, operationConfig);
         if (validParams(params))
             return graphAdd(params);
         return null;
     }
-    private static RDFGraph graphAdd(OperationParams params) throws IOException {
+    private static RDFGraph graphAdd(OperationParams params) throws Exception {
         if (validParams(params)){
-            Utils.populateRepository(params.graph().getRepository(), params.operationParams().ontologies(), params.context());
+            Utils.populateRepository(params.graph().getRepository(), params.operationParams().ontologies(), params.exchange());
             return params.graph();
         }
         throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
