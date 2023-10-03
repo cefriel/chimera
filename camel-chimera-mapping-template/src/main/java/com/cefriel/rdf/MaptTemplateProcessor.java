@@ -28,11 +28,19 @@ import com.cefriel.template.utils.Util;
 import com.cefriel.util.*;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.Exchange;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -50,7 +58,7 @@ public class MaptTemplateProcessor {
                                     ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
                                     boolean isStream,
-                                    TemplateFunctions templateFunctions) {}
+                                    ChimeraResourceBean templateFunctions) {}
     private static OperationParams getOperationParams(Exchange exchange, MaptTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -82,13 +90,21 @@ public class MaptTemplateProcessor {
             TemplateExecutor templateExecutor = new TemplateExecutor();
             Reader reader = getReaderFromExchange(exchange, inputFormat, params.verboseReader());
 
-            TemplateFunctions templateFunctions = params.templateFunctions();
-            if (templateFunctions != null)
-                templateFunctions = templateFunctions.getClass().getDeclaredConstructor().newInstance();
-            else
-                templateFunctions = new TemplateFunctions();
+            TemplateFunctions usedTemplateFunctions;
 
-            templateFunctions.setPrefix(params.baseIRI());
+            if (params.templateFunctions() != null) {
+                InputStream x = ResourceAccessor.open(params.templateFunctions(),exchange);
+                Path tempFile = Files.createFile(Path.of("CustomFunctions.java"));
+                FileUtils.copyInputStreamToFile(x, tempFile.toFile());
+                usedTemplateFunctions = getCustomTemplateFunctions(tempFile.toAbsolutePath().toString());
+                Files.deleteIfExists(tempFile);
+            }
+
+            else {
+                usedTemplateFunctions = new TemplateFunctions();
+                usedTemplateFunctions.setPrefix(params.baseIRI());
+            }
+
 
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
@@ -110,27 +126,24 @@ public class MaptTemplateProcessor {
                 new File(params.basePath()).mkdirs();
                 Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
                 if(params.query() != null) {
-                    Path queryPath = FileResourceAccessor.fileUrlToPath(params.query());
                     List<Path> resultFilesPaths =
                             templateExecutor.executeMappingParametric(reader, ResourceAccessor.open(params.template(), exchange),
-                                    ResourceAccessor.open(params.query(), exchange), outputFilePath, templateMap, formatter, templateFunctions);
+                                    ResourceAccessor.open(params.query(), exchange), outputFilePath, templateMap, formatter, usedTemplateFunctions);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
                     Path resultFilePath =
-                            templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), outputFilePath, templateMap, formatter, templateFunctions);
+                            templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), outputFilePath, templateMap, formatter, usedTemplateFunctions);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
             // if filename is not specified then the result of applying template is stored in the exchange body as string
             else {
-                Path templatePath = FileResourceAccessor.fileUrlToPath(params.template());
                 if (params.query() != null) {
-                    Path queryPath = FileResourceAccessor.fileUrlToPath(params.query());
-                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, templatePath, false, params.trimTemplate(), queryPath, templateMap, formatter, templateFunctions);
+                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, ResourceAccessor.open(params.template(), exchange), ResourceAccessor.open(params.query(), exchange), templateMap, formatter, usedTemplateFunctions);
                     exchange.getMessage().setBody(result, Map.class);
 
                 } else {
-                    String result = templateExecutor.executeMapping(reader, templatePath, false, params.trimTemplate(), templateMap, formatter, templateFunctions);
+                    String result = templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), templateMap, formatter, usedTemplateFunctions);
                     exchange.getMessage().setBody(result, String.class);
                 }
             }
@@ -171,5 +184,30 @@ public class MaptTemplateProcessor {
 
     private static String handleOutputFileName(String outputFileName) {
         return Objects.requireNonNullElseGet(outputFileName, () -> "mapt-" + UUID.randomUUID() + ".txt");
+    }
+
+    private static TemplateFunctions getCustomTemplateFunctions(String functionsPath) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, FileNotFoundException {
+        if (functionsPath != null) {
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            File utilsFile = new File(functionsPath);
+            compiler.run(null, null, null, utilsFile.getPath());
+
+            File classDir = new File(utilsFile.getParent());
+            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{(classDir).toURI().toURL()});
+
+            // List all the files in the directory and identify the class file
+            File[] classFiles = classDir.listFiles((dir, name) -> name.endsWith(".class"));
+            if (classFiles != null) {
+                for (File classFile : classFiles) {
+                    String className = classFile.getName().replace(".class", "");
+                    Class<?> loadedClass = Class.forName(className, true, classLoader);
+
+                    if ((TemplateFunctions.class).isAssignableFrom(loadedClass)) {
+                        return (TemplateFunctions) loadedClass.getDeclaredConstructor().newInstance();
+                    }
+                }
+            }
+        }
+        throw new FileNotFoundException("File: " + functionsPath + " not found");
     }
 }

@@ -63,7 +63,7 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "false")
     private boolean stream;
     @UriParam(defaultValue = "null", description = "Custom defined TemplateFunctions class to be used in mapping process")
-    private TemplateFunctions templateFunctions;
+    private ChimeraResourceBean templateFunctions;
     @UriParam(defaultValue = "null")
     private MaptTemplateBean rdfBaseConfig;
 
@@ -197,11 +197,11 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
         this.stream = stream;
     }
 
-    public TemplateFunctions getTemplateFunctions() {
+    public ChimeraResourceBean getTemplateFunctions() {
         return templateFunctions;
     }
 
-    public void setTemplateFunctions(TemplateFunctions templateFunctions) {
+    public void setTemplateFunctions(ChimeraResourceBean templateFunctions) {
         this.templateFunctions = templateFunctions;
     }
 

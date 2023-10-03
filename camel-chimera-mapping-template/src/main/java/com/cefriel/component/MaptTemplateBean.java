@@ -30,7 +30,7 @@ public class MaptTemplateBean {
     private boolean trimTemplate;
     private boolean verboseQueries;
     private boolean isStream;
-    private TemplateFunctions templateFunctions;
+    private ChimeraResourceBean templateFunctions;
 
     // Default Constructor
     public MaptTemplateBean() {}
@@ -129,11 +129,11 @@ public class MaptTemplateBean {
         this.isStream = stream;
     }
 
-    public TemplateFunctions getTemplateFunctions() {
+    public ChimeraResourceBean getTemplateFunctions() {
         return templateFunctions;
     }
 
-    public void setTemplateFunctions(TemplateFunctions templateFunctions) {
+    public void setTemplateFunctions(ChimeraResourceBean templateFunctions) {
         this.templateFunctions = templateFunctions;
     }
 
