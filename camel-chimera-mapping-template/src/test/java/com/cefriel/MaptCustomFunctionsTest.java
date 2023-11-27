@@ -1,5 +1,6 @@
 package com.cefriel;
 
+import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -10,25 +11,37 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class MaptCustomFunctionsTest extends CamelTestSupport {
+
+    public static class CustomFunctionsBean extends TemplateFunctions {
+        public String printMessage() {
+            return "test";
+        }
+    }
+
     @Produce("direct:start")
     ProducerTemplate start;
 
+    @Produce("direct:start2")
+    ProducerTemplate start2;
     private static ChimeraResourceBean template;
-    private static ChimeraResourceBean templateFunctions;
+    private static ChimeraResourceBean resourceCustomFunctions;
+    private static TemplateFunctions customFunctionsBean;
 
     @BeforeAll
     static void fillBeans(){
         template = new ChimeraResourceBean(
                 "file://./src/test/resources/custom-functions/template.vm",
                 "vtl");
-        templateFunctions = new ChimeraResourceBean(
+        resourceCustomFunctions = new ChimeraResourceBean(
                 "file://./src/test/resources/custom-functions/CustomFunctions.java",
                 "java");
+
+        customFunctionsBean = new CustomFunctionsBean();
     }
 
     @Test
-    public void testCustomFunctions() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:customFunctionsTest");
+    public void testCustomFunctionsResource() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:resourceCustomFunctionsTest");
         mock.expectedMessageCount(1);
         start.sendBody(template);
         mock.assertIsSatisfied();
@@ -37,6 +50,19 @@ public class MaptCustomFunctionsTest extends CamelTestSupport {
         assert(result.equals("test"));
     }
 
+    @Test
+    public void testCustomFunctionsBean() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:customFunctionsTest");
+        mock.expectedMessageCount(1);
+        start2.sendBody(template);
+        mock.assertIsSatisfied();
+        String result = mock.getExchanges().get(0).getMessage().getBody(String.class);
+        // the custom function only prints "test"
+        assert(result.equals("test"));
+    }
+
+
+
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception{
         return new RouteBuilder() {
@@ -44,10 +70,16 @@ public class MaptCustomFunctionsTest extends CamelTestSupport {
             public void configure() throws Exception {
 
                 getCamelContext().getRegistry().bind("template", template);
-                getCamelContext().getRegistry().bind("templateFunctions", templateFunctions);
+                getCamelContext().getRegistry().bind("resourceCustomFunctions", resourceCustomFunctions);
+                getCamelContext().getRegistry().bind("customFunctionsBean", customFunctionsBean);
+
 
                 from("direct:start")
-                        .to("mapt://?template=#bean:template&templateFunctions=#bean:templateFunctions")
+                        .to("mapt://?template=#bean:template&resourceCustomFunctions=#bean:resourceCustomFunctions")
+                        .to("mock:resourceCustomFunctionsTest");
+
+                from("direct:start2")
+                        .to("mapt://?template=#bean:template&customFunctions=#bean:customFunctionsBean")
                         .to("mock:customFunctionsTest");
             }
         };

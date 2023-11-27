@@ -62,12 +62,14 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     private boolean verboseQueries;
     @UriParam(defaultValue = "false")
     private boolean stream;
-    @UriParam(defaultValue = "null", description = "Custom defined TemplateFunctions class to be used in mapping process")
-    private ChimeraResourceBean templateFunctions;
+    @UriParam(defaultValue = "null", description = "User defined class that extends the TemplateFunctions class. Use this parameter when the user defined class is loaded from outside the Java project. Used to define java functions that can be called in a template file. ")
+    private ChimeraResourceBean resourceCustomFunctions;
+    @UriParam(defaultValue = "null", description = "User defined class that extends the TemplateFunctions class. Use this parameter when the user defined class is included in the Java project. Used to define java functions that can be called in a template file. ")
+    private TemplateFunctions customFunctions;
+    
     @UriParam(defaultValue = "null")
     private MaptTemplateBean rdfBaseConfig;
 
-    // todo re-add utils parameter (custom functions)
     // todo add resource option if template file in resource folder
 
     public MaptTemplateEndpoint() {
@@ -197,12 +199,20 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
         this.stream = stream;
     }
 
-    public ChimeraResourceBean getTemplateFunctions() {
-        return templateFunctions;
+    public ChimeraResourceBean getResourceCustomFunctions() {
+        return resourceCustomFunctions;
     }
 
-    public void setTemplateFunctions(ChimeraResourceBean templateFunctions) {
-        this.templateFunctions = templateFunctions;
+    public void setResourceCustomFunctions(ChimeraResourceBean resourceCustomFunctions) {
+        this.resourceCustomFunctions = resourceCustomFunctions;
+    }
+
+    public TemplateFunctions getCustomFunctions() {
+        return customFunctions;
+    }
+
+    public void setCustomFunctions(TemplateFunctions customFunctions) {
+        this.customFunctions = customFunctions;
     }
 
     /**

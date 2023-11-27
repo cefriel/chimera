@@ -30,7 +30,9 @@ public class MaptTemplateBean {
     private boolean trimTemplate;
     private boolean verboseQueries;
     private boolean isStream;
-    private ChimeraResourceBean templateFunctions;
+    private ChimeraResourceBean resourceCustomFunctions;
+
+    private TemplateFunctions customFunctions;
 
     // Default Constructor
     public MaptTemplateBean() {}
@@ -46,7 +48,7 @@ public class MaptTemplateBean {
         this.trimTemplate = options.isTrimTemplate();
         this.verboseQueries = options.isVerboseQueries();
         this.isStream = options.isStream();
-        this.templateFunctions = options.getTemplateFunctions();
+        this.resourceCustomFunctions = options.getResourceCustomFunctions();
     }
 
     public String getBasePath() {
@@ -129,12 +131,20 @@ public class MaptTemplateBean {
         this.isStream = stream;
     }
 
-    public ChimeraResourceBean getTemplateFunctions() {
-        return templateFunctions;
+    public ChimeraResourceBean getResourceCustomFunctions() {
+        return resourceCustomFunctions;
     }
 
-    public void setTemplateFunctions(ChimeraResourceBean templateFunctions) {
-        this.templateFunctions = templateFunctions;
+    public void setResourceCustomFunctions(ChimeraResourceBean resourceCustomFunctions) {
+        this.resourceCustomFunctions = resourceCustomFunctions;
+    }
+
+    public TemplateFunctions getCustomFunctions() {
+        return customFunctions;
+    }
+
+    public void setCustomFunctions(TemplateFunctions customFunctions) {
+        this.customFunctions = customFunctions;
     }
 
     public void setConfig(MaptTemplateEndpoint endpoint){
@@ -169,8 +179,12 @@ public class MaptTemplateBean {
         if (endpoint.isStream()) {
             this.setStream(endpoint.isStream());
         }
-        if(endpoint.getTemplate() != null) {
-            this.setTemplateFunctions(endpoint.getTemplateFunctions());
+        if(endpoint.getResourceCustomFunctions() != null) {
+            this.setResourceCustomFunctions(endpoint.getResourceCustomFunctions());
+        }
+
+        if(endpoint.getCustomFunctions() != null) {
+            this.setCustomFunctions(endpoint.getCustomFunctions());
         }
     }
 }

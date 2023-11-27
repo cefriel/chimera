@@ -43,6 +43,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.util.*;
 
 public class MaptTemplateProcessor {
@@ -58,7 +59,8 @@ public class MaptTemplateProcessor {
                                     ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
                                     boolean isStream,
-                                    ChimeraResourceBean templateFunctions) {}
+                                    ChimeraResourceBean resourceCustomFunctions,
+                                    TemplateFunctions customFunctions) {}
     private static OperationParams getOperationParams(Exchange exchange, MaptTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -73,11 +75,12 @@ public class MaptTemplateProcessor {
                 operationConfig.getKeyValuePairsCSV(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
                 operationConfig.isStream(),
-                operationConfig.getTemplateFunctions());
+                operationConfig.getResourceCustomFunctions(),
+                operationConfig.getCustomFunctions());
     }
 
     private static boolean validateParams(OperationParams params) {
-        // only allow file resources
+        // only allow file resources (why this comment????)
         return true;
     }
     public static void execute(Exchange exchange, MaptTemplateBean operationConfig, String inputFormat) throws Exception {
@@ -90,14 +93,27 @@ public class MaptTemplateProcessor {
             TemplateExecutor templateExecutor = new TemplateExecutor();
             Reader reader = getReaderFromExchange(exchange, inputFormat, params.verboseReader());
 
+            // which custom template functions to use ???
+            // the one that is defined, what if both are defined?
+            // throw a warning
+
             TemplateFunctions usedTemplateFunctions;
 
-            if (params.templateFunctions() != null) {
-                InputStream x = ResourceAccessor.open(params.templateFunctions(),exchange);
+            if ((params.resourceCustomFunctions() != null) && (params.customFunctions() != null)) {
+                throw new InvalidParameterException("custom templateFunctions be passed either using resourceCustomFunctions or customFunction");
+            }
+
+            else if ((params.resourceCustomFunctions() != null) && (params.customFunctions == null)) {
+                InputStream x = ResourceAccessor.open(params.resourceCustomFunctions(),exchange);
                 Path tempFile = Files.createFile(Path.of("CustomFunctions.java"));
                 FileUtils.copyInputStreamToFile(x, tempFile.toFile());
                 usedTemplateFunctions = getCustomTemplateFunctions(tempFile.toAbsolutePath().toString());
                 Files.deleteIfExists(tempFile);
+            }
+
+            else if ((params.resourceCustomFunctions() == null) && (params.customFunctions != null)) {
+                usedTemplateFunctions = params.customFunctions();
+                usedTemplateFunctions.setPrefix(params.baseIRI());
             }
 
             else {
