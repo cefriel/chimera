@@ -22,7 +22,7 @@
   <properties>
     <camel.version>3.16.0</camel.version>
     <rdf4j.version>4.2.2</rdf4j.version>
-    <mapping-template.version>2.3.1</mapping-template.version>
+    <mapping-template.version>2.3.2</mapping-template.version>
     <rmlmapper.version>1.1.0</rmlmapper.version>
     <camel-test-spring-junit.version>3.16.0</camel-test-spring-junit.version>
     <camel-bom.version>3.16.0</camel-bom.version>
