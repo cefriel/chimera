@@ -34,16 +34,16 @@ public class ResourceAccessor {
     public static InputStream open(ChimeraResourceBean resource, Exchange exchange) throws Exception {
         ChimeraResource chimeraResource = specialize(resource);
 
-        if (chimeraResource instanceof FileResource)
-            return open((FileResource) chimeraResource);
-        else if (chimeraResource instanceof HttpResource)
-            return open((HttpResource) chimeraResource, exchange.getContext());
-        else if (chimeraResource instanceof ClassPathResource)
-            return open((ClassPathResource) chimeraResource);
-        else if (chimeraResource instanceof HeaderResource)
-            return open((HeaderResource) chimeraResource, exchange);
-        else if (chimeraResource instanceof PropertyResource)
-            return open((PropertyResource) chimeraResource, exchange);
+        if (chimeraResource instanceof FileResource fileResource)
+            return open(fileResource);
+        else if (chimeraResource instanceof HttpResource httpResource)
+            return open(httpResource, exchange.getContext());
+        else if (chimeraResource instanceof ClassPathResource classPathResource)
+            return open(classPathResource);
+        else if (chimeraResource instanceof HeaderResource headerResource)
+            return open(headerResource, exchange);
+        else if (chimeraResource instanceof PropertyResource propertyResource)
+            return open(propertyResource, exchange);
         else
             throw new InvalidParameterException("Resource: " + chimeraResource + " is not of a supported type.");
     }
@@ -62,11 +62,11 @@ public class ResourceAccessor {
         String callUrl;
         TypeAuthConfig authConfig = resource.authConfig();
         // ugly syntax that is fixed with switch pattern matching (requires bump to java 19)
-        if (authConfig instanceof AuthTokenConfigBean) {
-            exchangeRequestTemp.withHeader("Authorization", "Bearer " + ((AuthTokenConfigBean) authConfig).getAuthToken());
+        if (authConfig instanceof AuthTokenConfigBean authTokenConfigBean) {
+            exchangeRequestTemp.withHeader("Authorization", "Bearer " + authTokenConfigBean.getAuthToken());
             callUrl = resource.url();
-        } else if (authConfig instanceof AuthConfigBean) {
-            callUrl = resource.url() + "?" + authConfig.toString();
+        } else if (authConfig instanceof AuthConfigBean authConfigBean) {
+            callUrl = resource.url() + "?" + authConfigBean.toString();
         } else {
             // if no AuthConfig is passed, might be because it is not needed or because of a mistake
             callUrl = resource.url();
