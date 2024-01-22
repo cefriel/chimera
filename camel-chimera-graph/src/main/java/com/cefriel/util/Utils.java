@@ -17,18 +17,12 @@
 package com.cefriel.util;
 
 import com.cefriel.component.GraphBean;
-import com.cefriel.graph.RDFGraph;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelCollector;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.contextaware.ContextAwareConnection;
-import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
-import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -43,8 +37,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Objects;
 
 public class Utils {
 
@@ -58,11 +50,9 @@ public class Utils {
         return url.endsWith("/") ? url : url + "/";
     }
 
-    public static void populateRepository(Repository repo, ChimeraResourcesBean resourcesBean, Exchange exchange) throws Exception {
-        for (ChimeraResourceBean resource: resourcesBean.getResources()) {
-            Model model = StreamParser.parseResource(resource, exchange);
-            populateRepository(repo, model);
-        }
+    public static void populateRepository(Repository repo, ChimeraResourceBean resourceBean, Exchange exchange) throws Exception {
+        Model model = StreamParser.parseResource(resourceBean, exchange);
+        populateRepository(repo, model);
     }
     public static void populateRepository(Repository repo, InputStream inputStream, String format) throws IOException {
         Model model = StreamParser.parseTriples(inputStream, format, null);
@@ -102,7 +92,7 @@ public class Utils {
             }
         }
     }
-    public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, Exchange exchange) throws Exception {
+    public static Repository createSchemaRepository(ChimeraResourceBean resourcesBean, Exchange exchange) throws Exception {
         Repository schema = new SailRepository(new MemoryStore());
         schema.init();
         populateRepository(schema, resourcesBean, exchange);

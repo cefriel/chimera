@@ -35,12 +35,12 @@ import java.util.*;
 public class GraphConstruct {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConstruct.class);
-    private record EndpointParams(String literalQuery, ChimeraResourcesBean queryUrls, String namedGraph) {}
+    private record EndpointParams(String literalQuery, ChimeraResourceBean queryResource, String namedGraph) {}
     private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
                 operationConfig.getQuery(),
-                operationConfig.getChimeraResources(),
+                operationConfig.getChimeraResource(),
                 operationConfig.getNamedGraph());
     }
     private static OperationParams getOperationParams (Exchange e, GraphBean operationConfig) {
@@ -54,37 +54,24 @@ public class GraphConstruct {
             throw new RuntimeException("graph in Exchange body cannot be null");
 
         if (params.endpointParams().literalQuery() == null &&
-                (params.endpointParams().queryUrls() == null || params.endpointParams().queryUrls().getResources().size() == 0))
-            throw new IllegalArgumentException("No query and no queryUrls specified");
+                params.endpointParams().queryResource() == null)
+            throw new IllegalArgumentException("No query and no queryResource specified");
 
         return true;
     }
-    private static List<String> mergeQueries (String query, List<String> queries) {
-        if (queries != null && query != null){
-            queries.add(query);
-            return queries.stream().distinct().toList();
-        } else if (query != null){
-            return List.of(query);
-        } else return queries;
-    }
-    public static List<String> readSparqlQueries(ChimeraResourcesBean queryUrls, Exchange exchange) throws Exception {
-
-        List<String> sparqlQueries = new ArrayList<>();
-
-        for(ChimeraResourceBean queryUrl : queryUrls.getResources()) {
-            InputStream inputStream = ResourceAccessor.open(queryUrl, exchange);
-            //Creating a Scanner object
-            Scanner scanner = new Scanner(inputStream);
-            //Reading line by line from scanner to StringBuffer
-            StringBuilder stringBuilder = new StringBuilder();
-            while(scanner.hasNext()){
-                stringBuilder.append(scanner.nextLine());
-            }
-            sparqlQueries.add(stringBuilder.toString());
-            inputStream.close();
+    public static String readSparqlQuery(ChimeraResourceBean queryResource, Exchange exchange) throws Exception {
+        InputStream inputStream = ResourceAccessor.open(queryResource, exchange);
+        //Creating a Scanner object
+        Scanner scanner = new Scanner(inputStream);
+        //Reading line by line from scanner to StringBuffer
+        StringBuilder stringBuilder = new StringBuilder();
+        while(scanner.hasNext()){
+            stringBuilder.append(scanner.nextLine());
         }
-        LOG.info("All queryUrls extracted");
-        return sparqlQueries;
+        String result = (stringBuilder.toString());
+        inputStream.close();
+
+        return result;
     }
     private static void executeQueryOnGraph(RDFGraph graph, String query, String newNamedGraph) {
         Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
@@ -107,12 +94,16 @@ public class GraphConstruct {
         }
     }
     private static void graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws Exception {
-        List<String> sparqlQueries = mergeQueries(
-                params.endpointParams().literalQuery(),
-                readSparqlQueries(params.endpointParams().queryUrls(), exchange));
 
-        for (String query : sparqlQueries) {
-            executeQueryOnGraph(graph, query, params.endpointParams().namedGraph());
+        if (params.endpointParams().literalQuery() != null) {
+            executeQueryOnGraph(graph, params.endpointParams().literalQuery(), params.endpointParams().namedGraph());
+        } else if (params.endpointParams().queryResource() != null) {
+            executeQueryOnGraph(graph,
+                    readSparqlQuery(params.endpointParams().queryResource(), exchange),
+                    params.endpointParams().namedGraph());
+        }
+        else {
+            throw new IllegalArgumentException("No query and no queryResource specified");
         }
     }
 }

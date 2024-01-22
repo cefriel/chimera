@@ -9,9 +9,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.util.Memory;
 
 import java.io.File;
 import java.util.List;
@@ -20,10 +18,9 @@ public class GraphDumpTest extends CamelTestSupport {
 
     @Produce("direct:start")
     ProducerTemplate start;
-    static ChimeraResourcesBean triples = new ChimeraResourcesBean(
-            List.of((new ChimeraResourceBean(
-                    "file://./src/test/resources/file/template/my-source.ttl",
-                    "turtle"))));
+    static ChimeraResourceBean triples = new ChimeraResourceBean(
+            "file://./src/test/resources/file/template/my-source.ttl",
+            "turtle");
     @Test
     public void testDumpToFile() throws Exception {
         var graph = new MemoryRDFGraph();

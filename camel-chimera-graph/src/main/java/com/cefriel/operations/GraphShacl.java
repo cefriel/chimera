@@ -43,11 +43,11 @@ import java.util.List;
 public class GraphShacl {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphShacl.class);
-    private record EndpointParams(ChimeraResourcesBean shaclUrls) {}
+    private record EndpointParams(ChimeraResourceBean shaclResource) {}
     private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
 
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(operationConfig.getChimeraResources());
+        return new EndpointParams(operationConfig.getChimeraResource());
     }
     private static OperationParams getOperationParams(Exchange exchange, GraphBean operationConfiguration) {
         return new OperationParams(
@@ -57,7 +57,7 @@ public class GraphShacl {
     public static void graphShacl(Exchange exchange, GraphBean operationConfiguration) throws Exception {
         OperationParams operationParams = getOperationParams(exchange, operationConfiguration);
 
-        List<ChimeraResourceBean> shaclUrls = operationParams.endpointParams().shaclUrls().getResources();
+        List<ChimeraResourceBean> shaclUrls = List.of(operationParams.endpointParams().shaclResource());
         if (!shaclUrls.isEmpty()) {
             SailRepository sailRepository = new SailRepository(new ShaclSail(new MemoryStore()));
             sailRepository.init();

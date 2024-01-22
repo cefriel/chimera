@@ -31,18 +31,17 @@ import java.util.List;
 
 public class GraphAddTest extends CamelTestSupport {
 
-    private static ChimeraResourcesBean ontologies;
-    private static ChimeraResourcesBean ontologies2;
+    private static ChimeraResourceBean triples;
+    private static ChimeraResourceBean triples2;
     @BeforeAll
     static void fillBean(){
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/template_agency.ttl",
                 "turtle");
-        ontologies = new ChimeraResourcesBean(List.of(r1));
-        ChimeraResourceBean r2 = new ChimeraResourceBean(
+
+        triples2 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/random.ttl",
                 "turtle");
-        ontologies2 = new ChimeraResourcesBean(List.of(r2));
     }
 
     @Test
@@ -70,15 +69,15 @@ public class GraphAddTest extends CamelTestSupport {
 
             public void configure() throws Exception {
 
-                getCamelContext().getRegistry().bind("ontologies", ontologies);
-                getCamelContext().getRegistry().bind("ontologies2", ontologies2);
+                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("triples2", triples2);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:ontologies")
+                        .to("graph://add?chimeraResource=#bean:triples")
                         .to("mock:add");
 
                 from("graph://get?namedGraph=http://example.org/Picasso")
-                        .to("graph://add?chimeraResources=#bean:ontologies")
+                        .to("graph://add?chimeraResource=#bean:triples")
                         .to("mock:add2");
             }
         };

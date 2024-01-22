@@ -24,26 +24,23 @@ import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class GraphInferenceTest extends CamelTestSupport {
-    private static ChimeraResourcesBean ontologies;
-    private static ChimeraResourcesBean triples;
+    private static ChimeraResourceBean ontology;
+    private static ChimeraResourceBean triples1;
+    private static ChimeraResourceBean triples2;
     @BeforeAll
     static void fillBean(){
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        ontology = new ChimeraResourceBean(
                 "file://./src/test/resources/file/ontologies/ontology.owl",
                 "rdfxml");
-        ontologies = new ChimeraResourcesBean(List.of(r1));
-
-        ChimeraResourceBean r2 = new ChimeraResourceBean(
+        triples1 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/my-source.ttl",
                 "turtle");
-        ChimeraResourceBean r3 = new ChimeraResourceBean(
+        triples2 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/enrich.ttl",
                 "turtle");
-        triples = new ChimeraResourcesBean(List.of(r2,r3));
     }
 
     @Test
@@ -59,12 +56,14 @@ public class GraphInferenceTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("ontologies", ontologies);
-                getCamelContext().getRegistry().bind("triples", triples);
+                getCamelContext().getRegistry().bind("ontology", ontology);
+                getCamelContext().getRegistry().bind("triples1", triples1);
+                getCamelContext().getRegistry().bind("triples2", triples2);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
-                        .to("graph://inference?chimeraResources=#bean:ontologies")
+                        .to("graph://add?chimeraResource=#bean:triples1")
+                        .to("graph://add?chimeraResource=#bean:triples2")
+                        .to("graph://inference?chimeraResource=#bean:ontology")
                         .to("mock:inference");
             }
         };

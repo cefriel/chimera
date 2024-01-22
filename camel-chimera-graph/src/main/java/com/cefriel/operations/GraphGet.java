@@ -13,7 +13,7 @@ public class GraphGet {
     private record HeaderParams(String namedGraph, String baseIRI, String rdfFormat) {}
     private record EndpointParams(String namedGraph, String baseIri, Boolean defaultGraph,
                                   String rdfFormat,
-                                  ChimeraResourcesBean ontologies,
+                                  ChimeraResourceBean triples,
                                   // HTTPRDF specific parameters
                                   String serverURL,
                                   String repositoryId,
@@ -40,7 +40,7 @@ public class GraphGet {
                 operationConfig.getBaseIri(),
                 operationConfig.isDefaultGraph(),
                 operationConfig.getRdfFormat(),
-                operationConfig.getChimeraResources(),
+                operationConfig.getChimeraResource(),
                 operationConfig.getServerUrl(),
                 operationConfig.getRepositoryID(),
                 operationConfig.getSparqlEndpoint(),
@@ -61,7 +61,7 @@ public class GraphGet {
                 headerParams.baseIRI() != null ? headerParams.baseIRI() : endpointParams.baseIri(),
                 endpointParams.defaultGraph(),
                 headerParams.rdfFormat() != null ? headerParams.rdfFormat() : endpointParams.rdfFormat(),
-                endpointParams.ontologies(),
+                endpointParams.triples(),
                 endpointParams.serverURL(),
                 endpointParams.repositoryId(),
                 endpointParams.sparqlEndpoint(),
@@ -72,8 +72,7 @@ public class GraphGet {
         return params.endpointParams().pathDataDir() != null;
     }
     private static Boolean isInferenceRDFGraph (OperationParams params) {
-        return (params.endpointParams().ontologies() != null) &&
-                (params.endpointParams().ontologies().getResources().size() > 0);
+        return (params.endpointParams().triples() != null);
     }
     private static Boolean isHTTPRDFGraph (OperationParams params) {
         return params.endpointParams().serverURL() != null &&
@@ -143,7 +142,7 @@ public class GraphGet {
 
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {
-            Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), exchange);
+            Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), exchange);
             if (namedGraph != null)
                 graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
             else

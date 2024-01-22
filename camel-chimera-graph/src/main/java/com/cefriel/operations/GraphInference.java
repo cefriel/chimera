@@ -19,6 +19,7 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.Utils;
 import org.apache.camel.CamelContext;
@@ -39,12 +40,12 @@ import java.util.List;
 public class GraphInference {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphInference.class);
-    private record EndpointParams(ChimeraResourcesBean ontologies, boolean allRules){}
+    private record EndpointParams(ChimeraResourceBean triples, boolean allRules){}
     private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams endpointParams){}
 
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
-                operationConfig.getChimeraResources(),
+                operationConfig.getChimeraResource(),
                 operationConfig.isAllRules());
     }
     private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
@@ -59,7 +60,7 @@ public class GraphInference {
         graphInference(operationParams, exchange);
     }
     public static void graphInference(OperationParams params, Exchange exchange) throws Exception {
-        Repository schema = Utils.createSchemaRepository(params.endpointParams().ontologies(), params.exchange());
+        Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), params.exchange());
         SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
         Repository inferenceRepo = new SailRepository(inferencer);
         inferenceRepo.init();

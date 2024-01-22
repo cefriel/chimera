@@ -16,7 +16,7 @@
 
 package com.cefriel.component;
 
-import com.cefriel.util.ChimeraResourcesBean;
+import com.cefriel.util.ChimeraResourceBean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class GraphBean {
     private String basePath = "./";
     private List<String> resources = new ArrayList<>();
 
-    private ChimeraResourcesBean chimeraResources;
+    private ChimeraResourceBean chimeraResource;
 
     public List<String> getQueryUrls() {
         return queryUrls;
@@ -259,17 +259,17 @@ public class GraphBean {
         this.filename = filename;
     }
 
-    public ChimeraResourcesBean getChimeraResources() {
-        return chimeraResources;
+    public ChimeraResourceBean getChimeraResource() {
+        return chimeraResource;
     }
 
-    public void setChimeraResources(ChimeraResourcesBean chimeraResources) {
-        this.chimeraResources = chimeraResources;
+    public void setChimeraResource(ChimeraResourceBean chimeraResources) {
+        this.chimeraResource = chimeraResources;
     }
 
     public void setEndpointParameters(GraphEndpoint endpoint){
-        if(endpoint.getChimeraResources()!=null){
-            this.setChimeraResources(endpoint.getChimeraResources());
+        if(endpoint.getChimeraResource()!=null){
+            this.setChimeraResource(endpoint.getChimeraResource());
         }
         if(endpoint.getNamedGraph()!=null){
             this.setNamedGraph(endpoint.getNamedGraph());

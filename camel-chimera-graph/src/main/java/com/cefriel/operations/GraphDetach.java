@@ -36,11 +36,11 @@ import java.util.Set;
 
 public class GraphDetach {
     private static final Logger LOG = LoggerFactory.getLogger(GraphDetach.class);
-    private record EndpointParams(ChimeraResourcesBean ontologyUrls, boolean clearGraph, boolean repoOff, boolean routeOff) {}
+    private record EndpointParams(ChimeraResourceBean triples, boolean clearGraph, boolean repoOff, boolean routeOff) {}
     private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
-                operationConfig.getChimeraResources(),
+                operationConfig.getChimeraResource(),
                 operationConfig.isClear(),
                 operationConfig.isRepoOff(),
                 operationConfig.isRouteOff());
@@ -69,8 +69,8 @@ public class GraphDetach {
                         con.clear(contextIRI);
                         LOG.info("Cleared named graph " + contextIRI.stringValue());
                     }
-                    if (params.endpointParams().ontologyUrls() != null)
-                        for (ChimeraResourceBean ontologyUrl : params.endpointParams().ontologyUrls().getResources()) {
+                    if (params.endpointParams().triples() != null)
+                        for (ChimeraResourceBean ontologyUrl : List.of(params.endpointParams().triples())) {
                             Model l = StreamParser.parseResource(ontologyUrl, exchange);
                             Set<Namespace> namespaces = l.getNamespaces();
                             for (Namespace n : namespaces)
@@ -89,7 +89,7 @@ public class GraphDetach {
             }
             if(params.endpointParams().routeOff()){
                 CamelContext camelContext = exchange.getContext();
-                // Remove myself from the in flight registry so we can stop this route without trouble
+                // Remove myself from the in flight registry, so we can stop this route without trouble
                 Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
                 if (caused !=null)
                     LOG.error(stackToString(caused));

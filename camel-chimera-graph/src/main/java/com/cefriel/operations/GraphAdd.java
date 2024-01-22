@@ -19,25 +19,15 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.*;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Namespace;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 public class GraphAdd {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphAdd.class);
 
-    private record EndpointParams(ChimeraResourcesBean ontologies) {}
+    private record EndpointParams(ChimeraResourceBean triples) {}
     private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams operationParams) {}
     private static boolean validParams(OperationParams params) throws IllegalArgumentException {
         if (params.graph() == null)
@@ -45,7 +35,7 @@ public class GraphAdd {
         return true;
     }
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(operationConfig.getChimeraResources());
+        return new EndpointParams(operationConfig.getChimeraResource());
     }
     private static OperationParams getOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
         return new OperationParams(
@@ -65,7 +55,7 @@ public class GraphAdd {
     }
     private static RDFGraph graphAdd(OperationParams params) throws Exception {
         if (validParams(params)){
-            Utils.populateRepository(params.graph().getRepository(), params.operationParams().ontologies(), params.exchange());
+            Utils.populateRepository(params.graph().getRepository(), params.operationParams().triples(), params.exchange());
             return params.graph();
         }
         throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");

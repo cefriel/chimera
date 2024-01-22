@@ -31,26 +31,23 @@ import java.util.List;
 
 public class GraphMulticastTest extends CamelTestSupport {
 
-    static ChimeraResourcesBean queries;
-    static ChimeraResourcesBean triples1;
-    static ChimeraResourcesBean triples2;
+    static ChimeraResourceBean query;
+    static ChimeraResourceBean triples1;
+    static ChimeraResourceBean triples2;
 
     @BeforeAll
     static void fillBean(){
-        queries = new ChimeraResourcesBean(List.of(
-                new ChimeraResourceBean(
-                        "file://./src/test/resources/file/construct/construct.txt",
-                        "turtle")));
+        query = new ChimeraResourceBean(
+                "file://./src/test/resources/file/construct/construct.txt",
+                "turtle");
 
-        triples1 = new ChimeraResourcesBean(List.of((
-                new ChimeraResourceBean(
-                        "file://./src/test/resources/file/template/my-source.ttl",
-                        "turtle"))));
+        triples1 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/my-source.ttl",
+                "turtle");
 
-        triples2 = new ChimeraResourcesBean(List.of((
-                new ChimeraResourceBean(
-                        "file://./src/test/resources/file/template/enrich.ttl",
-                        "turtle"))));
+        triples2 = new ChimeraResourceBean(
+                "file://./src/test/resources/file/template/enrich.ttl",
+                "turtle");
     }
 
     @Test
@@ -65,16 +62,16 @@ public class GraphMulticastTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("queries", queries);
+                getCamelContext().getRegistry().bind("query", query);
                 getCamelContext().getRegistry().bind("triples1", triples1);
                 getCamelContext().getRegistry().bind("triples2", triples2);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples1")
-                        .to("graph://construct?chimeraResources=#bean:queries")
+                        .to("graph://add?chimeraResource=#bean:triples1")
+                        .to("graph://construct?chimeraResource=#bean:query")
                         .multicast()
                         .to("graph://dump?filename=beforeEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
-                        .to("graph://add?chimeraResources=#bean:triples2")
+                        .to("graph://add?chimeraResource=#bean:triples2")
                         .to("graph://dump?filename=afterEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
                         .to("graph://detach?clear=true&routeOff=true")
                         .end()

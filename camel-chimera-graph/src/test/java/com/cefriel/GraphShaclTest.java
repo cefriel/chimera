@@ -11,20 +11,18 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 public class GraphShaclTest extends CamelTestSupport {
-    private static ChimeraResourcesBean shaclUrls;
-    private static ChimeraResourcesBean triples;
+    private static ChimeraResourceBean shaclResource;
+    private static ChimeraResourceBean triples;
 
     @BeforeAll
     static void fillBean(){
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        shaclResource = new ChimeraResourceBean(
                 "file://./src/test/resources/file/shacl/stop_shape.ttl",
                 "turtle");
-        shaclUrls = new ChimeraResourcesBean(List.of(r1));
 
-        ChimeraResourceBean r3 = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/enrich.ttl",
                 "turtle");
-        triples = new ChimeraResourcesBean(List.of(r3));
     }
 
     @Test
@@ -40,12 +38,12 @@ public class GraphShaclTest extends CamelTestSupport {
 
             public void configure() throws Exception {
 
-                getCamelContext().getRegistry().bind("shaclUrls", shaclUrls);
+                getCamelContext().getRegistry().bind("shaclResource", shaclResource);
                 getCamelContext().getRegistry().bind("triples", triples);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
-                        .to("graph://shacl?chimeraResources=#bean:shaclUrls")
+                        .to("graph://add?chimeraResource=#bean:triples")
+                        .to("graph://shacl?chimeraResource=#bean:shaclResource")
                         .to("mock:shacl");
             }
         };

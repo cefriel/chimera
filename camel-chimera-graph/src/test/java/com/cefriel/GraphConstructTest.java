@@ -33,22 +33,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphConstructTest extends CamelTestSupport {
-    private static ChimeraResourcesBean triples;
-    private static ChimeraResourcesBean constructQueries;
+    private static ChimeraResourceBean triples;
+    private static ChimeraResourceBean constructQuery;
     private static final String baseIri = "http://example.org/";
     private static final String namedGraph = baseIri + "newContext";
     @BeforeAll
     static void fillBean(){
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/base/test.ttl",
                 "turtle");
-        triples = new ChimeraResourcesBean(List.of(r1));
 
-        ChimeraResourceBean q1 = new ChimeraResourceBean(
+        constructQuery = new ChimeraResourceBean(
                 "file://./src/test/resources/file/construct/construct.txt",
-                "txt"
-        );
-        constructQueries = new ChimeraResourcesBean(List.of(q1));
+                "txt");
     }
     @Test
     public void testConstructNew() throws Exception {
@@ -81,16 +78,16 @@ public class GraphConstructTest extends CamelTestSupport {
             public void configure() {
 
                 getCamelContext().getRegistry().bind("triples", triples);
-                getCamelContext().getRegistry().bind("constructQueries", constructQueries);
+                getCamelContext().getRegistry().bind("constructQuery", constructQuery);
 
                 from("graph://get?defaultGraph=false&baseIri=" + baseIri + "&namedGraph=" + baseIri + "Pre")
-                        .to("graph://add?chimeraResources=#bean:triples")
-                        .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResources=#bean:constructQueries")
+                        .to("graph://add?chimeraResource=#bean:triples")
+                        .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResource=#bean:constructQuery")
                         .to("mock:constructNew");
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
-                        .to("graph://construct?chimeraResources=#bean:constructQueries")
+                        .to("graph://add?chimeraResource=#bean:triples")
+                        .to("graph://construct?chimeraResource=#bean:constructQuery")
                         .to("mock:constructOld");
             }
         };

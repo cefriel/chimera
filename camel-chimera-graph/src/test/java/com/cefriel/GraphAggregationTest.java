@@ -31,14 +31,13 @@ public class GraphAggregationTest extends CamelTestSupport {
     public void testGraphAggregation() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:end-graph-aggregate");
 
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        ChimeraResourceBean triples1 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/my-source.ttl",
                 "turtle");
-        var triples1 = new ChimeraResourcesBean(List.of(r1));
-        ChimeraResourceBean r2 = new ChimeraResourceBean(
+
+        ChimeraResourceBean triples2 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/random.ttl",
                 "turtle");
-        var triples2 = new ChimeraResourcesBean(List.of(r2));
 
         // random.ttl and my-source.ttl different data
         var graph1 = new MemoryRDFGraph();
@@ -64,14 +63,13 @@ public class GraphAggregationTest extends CamelTestSupport {
     public void testGraphAggregationToFile() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:end-graph-aggregate-file");
 
-        ChimeraResourceBean r1 = new ChimeraResourceBean(
+        ChimeraResourceBean triples1 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/my-source.ttl",
                 "turtle");
-        var triples1 = new ChimeraResourcesBean(List.of(r1));
-        ChimeraResourceBean r2 = new ChimeraResourceBean(
+
+        ChimeraResourceBean triples2 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/template/random.ttl",
                 "turtle");
-        var triples2 = new ChimeraResourcesBean(List.of(r2));
 
         // random.ttl and my-source.ttl different data
         var graph1 = new MemoryRDFGraph();
