@@ -289,9 +289,6 @@ public class GraphBean {
         if(endpoint.getSparqlEndpoint()!=null){
             this.setSparqlEndpoint(endpoint.getSparqlEndpoint());
         }
-        if(endpoint.getResources()!=null){
-            this.setResources(Arrays.asList(endpoint.getResources().split("\\|")));
-        }
         if(endpoint.getQueryUrls()!=null){
             this.setQueryUrls(Arrays.asList(endpoint.getQueryUrls().split("\\|")));
         }

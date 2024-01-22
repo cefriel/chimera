@@ -38,9 +38,6 @@ public class GraphEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
-    private String resources;
-
-    @UriParam(defaultValue = "null")
     private String queryUrls;
     @UriParam(defaultValue = "null")
     private String rdfFormat;
@@ -111,20 +108,6 @@ public class GraphEndpoint extends DefaultEndpoint {
         return name;
     }
 
-    /**
-     * This parameter contains the path of the triples you would like to add to your graph. It can be a file, a classpath or an url
-     */
-    public String getResources() {
-        return resources;
-    }
-
-    public void setResources(String resources) {
-        this.resources = resources;
-    }
-
-    /**
-     * File, classpath or url which points to where the SPARQL queries for the CONSTRUCT operation are located.
-     */
     public String getQueryUrls() {
         return queryUrls; }
 
