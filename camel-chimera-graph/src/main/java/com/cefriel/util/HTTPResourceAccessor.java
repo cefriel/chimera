@@ -16,21 +16,21 @@ public class HTTPResourceAccessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(HTTPResourceAccessor.class);
 
-    public static Optional<Exchange> getHTTPResource(ChimeraResourceBean resource, CamelContext context) {
+    public static Optional<Exchange> getHTTPResource(ChimeraResource.HttpResource resource, CamelContext context) {
         ProducerTemplate producer = context.createProducerTemplate();
         ExchangeBuilder exchangeRequestTemp =  ExchangeBuilder.anExchange(context).withHeader(Exchange.HTTP_METHOD, "GET");
 
         String callUrl;
-        TypeAuthConfig authConfig = resource.getAuthConfig();
+        TypeAuthConfig authConfig = resource.authConfig();
         // ugly syntax that is fixed with switch pattern matching (requires bump to java 19)
         if (authConfig instanceof AuthTokenConfigBean) {
             exchangeRequestTemp.withHeader("Authorization", "Bearer " + ((AuthTokenConfigBean) authConfig).getAuthToken());
-            callUrl = resource.getUrl();
+            callUrl = resource.url();
         } else if (authConfig instanceof AuthConfigBean) {
-            callUrl = resource.getUrl() + "?" + authConfig.toString();
+            callUrl = resource.url() + "?" + authConfig.toString();
         } else {
             // if no AuthConfig is passed, might be because it is not needed or because of a mistake
-            callUrl = resource.getUrl();
+            callUrl = resource.url();
         }
         Exchange exchangeRequest = exchangeRequestTemp.build();
 
@@ -44,7 +44,7 @@ public class HTTPResourceAccessor {
 
         return Optional.ofNullable(response);
     }
-    public static Optional<InputStream> getHTTPResourceInputStream(ChimeraResourceBean resource, CamelContext context) {
+    public static Optional<InputStream> getHTTPResourceInputStream(ChimeraResource.HttpResource resource, CamelContext context) {
         Optional<Exchange> response = getHTTPResource(resource, context);
         InputStream inputStream = null;
 

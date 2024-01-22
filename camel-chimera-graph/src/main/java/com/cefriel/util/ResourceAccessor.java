@@ -16,46 +16,31 @@ import java.security.InvalidParameterException;
 public class ResourceAccessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceAccessor.class);
-
-    sealed interface ChimeraResource permits ClassPathResource, FileResource, HeaderResource, HttpResource, PropertyResource {}
-    private record FileResource (String url, String serializationFormat) implements ChimeraResource {}
-    private record HttpResource (String url, String serializationFormat, TypeAuthConfig authConfig) implements ChimeraResource {}
-    private record HeaderResource (String url, String serializationFormat) implements ChimeraResource {}
-    private record PropertyResource (String url, String serializationFormat) implements ChimeraResource {}
-    private record ClassPathResource(String url, String serializationFormat) implements ChimeraResource {}
-
-    private final static String filePrefix = "file://";
-    private final static String httpPrefix = "http://";
-    private final static String httpsPrefix = "https://";
-    private final static String classPathPrefix = "classpath://";
-    private final static String headerPrefix = "header://";
-    private final static String propertyPrefix = "property://";
-
     public static InputStream open(ChimeraResourceBean resource, Exchange exchange) throws Exception {
-        ChimeraResource chimeraResource = specialize(resource);
+        ChimeraResource chimeraResource = resource.specialize();
 
-        if (chimeraResource instanceof FileResource fileResource)
+        if (chimeraResource instanceof ChimeraResource.FileResource fileResource)
             return open(fileResource);
-        else if (chimeraResource instanceof HttpResource httpResource)
+        else if (chimeraResource instanceof ChimeraResource.HttpResource httpResource)
             return open(httpResource, exchange.getContext());
-        else if (chimeraResource instanceof ClassPathResource classPathResource)
+        else if (chimeraResource instanceof ChimeraResource.ClassPathResource classPathResource)
             return open(classPathResource);
-        else if (chimeraResource instanceof HeaderResource headerResource)
+        else if (chimeraResource instanceof ChimeraResource.HeaderResource headerResource)
             return open(headerResource, exchange);
-        else if (chimeraResource instanceof PropertyResource propertyResource)
+        else if (chimeraResource instanceof ChimeraResource.PropertyResource propertyResource)
             return open(propertyResource, exchange);
         else
             throw new InvalidParameterException("Resource: " + chimeraResource + " is not of a supported type.");
     }
 
-    private static InputStream open(FileResource resource) throws FileNotFoundException {
+    private static InputStream open(ChimeraResource.FileResource resource) throws FileNotFoundException {
         String fileURI = resource.url();
-        fileURI = fileURI.replace(filePrefix, "");
+        fileURI = fileURI.replace(ChimeraResourceConstants.FILE_PREFIX, "");
         Path filePath = Paths.get(fileURI);
         return new FileInputStream(filePath.toString());
     }
 
-    private static InputStream open(HttpResource resource, CamelContext context) throws Exception {
+    private static InputStream open(ChimeraResource.HttpResource resource, CamelContext context) throws Exception {
         ProducerTemplate producer = context.createProducerTemplate();
         ExchangeBuilder exchangeRequestTemp =  ExchangeBuilder.anExchange(context).withHeader(Exchange.HTTP_METHOD, "GET");
 
@@ -83,9 +68,9 @@ public class ResourceAccessor {
         return response.getMessage().getBody(InputStream.class);
     }
 
-    private static InputStream open(HeaderResource resource, Exchange exchange) throws NoSuchHeaderException {
+    private static InputStream open(ChimeraResource.HeaderResource resource, Exchange exchange) throws NoSuchHeaderException {
         // assume that a resource can only specify one header
-        String headerName = resource.url().replace("header://", "");
+        String headerName = resource.url().replace(ChimeraResourceConstants.HEADER_PREFIX, "");
 
         if (exchange.getMessage().getHeader(headerName) != null) {
             return exchange.getMessage().getHeader(headerName, InputStream.class);
@@ -94,32 +79,17 @@ public class ResourceAccessor {
             throw new NoSuchHeaderException(exchange, headerName, String.class);
         }
     }
-    private static InputStream open(PropertyResource resource, Exchange exchange) throws NoSuchPropertyException {
-        String propertyName = resource.url().replace("property://", "");
+    private static InputStream open(ChimeraResource.PropertyResource resource, Exchange exchange) throws NoSuchPropertyException {
+        String propertyName = resource.url().replace(ChimeraResourceConstants.PROPERTY_PREFIX, "");
         if (exchange.getProperty(propertyName) != null)
             return exchange.getProperty(propertyName, InputStream.class);
         else
             throw new NoSuchPropertyException(exchange, propertyName, String.class);
     }
 
-    private static InputStream open(ClassPathResource resource) {
+    private static InputStream open(ChimeraResource.ClassPathResource resource) {
         String res = resource.url();
-        res = res.replace(classPathPrefix, "");
+        res = res.replace(ChimeraResourceConstants.CLASSPATH_PREFIX, "");
         return UniLoader.class.getClassLoader().getResourceAsStream(res);
-    }
-
-    private static ChimeraResource specialize (ChimeraResourceBean resourceBean) {
-        if (resourceBean.getUrl().startsWith(filePrefix))
-            return new FileResource(resourceBean.getUrl(), resourceBean.getSerializationFormat());
-        else if (resourceBean.getUrl().startsWith(httpPrefix) || resourceBean.getUrl().startsWith(httpsPrefix))
-            return new HttpResource(resourceBean.getUrl(), resourceBean.getSerializationFormat(), resourceBean.getAuthConfig());
-        else if (resourceBean.getUrl().startsWith(headerPrefix))
-            return new HeaderResource(resourceBean.getUrl(), resourceBean.getSerializationFormat());
-        else if (resourceBean.getUrl().startsWith(propertyPrefix))
-            return new PropertyResource(resourceBean.getUrl(), resourceBean.getSerializationFormat());
-        else if (resourceBean.getUrl().startsWith(classPathPrefix))
-            return new ClassPathResource(resourceBean.getUrl(), resourceBean.getSerializationFormat());
-        else
-            throw new InvalidParameterException("Resource: " + resourceBean + " with url " + resourceBean.getUrl() + " is not supported.");
     }
 }
