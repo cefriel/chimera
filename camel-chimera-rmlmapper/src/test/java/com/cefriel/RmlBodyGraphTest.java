@@ -31,28 +31,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RmlBodyGraphTest extends CamelTestSupport {
-    private static ChimeraResourcesBean triples;
-    private static ChimeraResourcesBean inputsRML;
-    private static ChimeraResourcesBean mappingsRML;
+    private static ChimeraResourceBean triples;
+    private static ChimeraResourceBean inputRML;
+    private static ChimeraResourceBean mappingRML;
 
     @BeforeAll
     static void fillBean(){
-        var mapping = new ChimeraResourceBean(
+        mappingRML = new ChimeraResourceBean(
                 "file://./src/test/resources/file/lifting/mapping.rml.ttl",
                 "turtle");
-        var input = new ChimeraResourceBean(
+        inputRML = new ChimeraResourceBean(
                 "file://./src/test/resources/file/sample-gtfs/stops.txt",
                 null);
-
-        inputsRML = new ChimeraResourcesBean(List.of(input));
-        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
-
-        var r = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/base/test.ttl",
                 "turtle");
-
-        triples = new ChimeraResourcesBean(List.of(r));
-        // bean.setRdfFormat("turtle");
     }
 
     @Test
@@ -67,12 +60,12 @@ public class RmlBodyGraphTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
                 getCamelContext().getRegistry().bind("triples", triples);
-                getCamelContext().getRegistry().bind("inputsRML", inputsRML);
-                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
+                getCamelContext().getRegistry().bind("inputRML", inputRML);
+                getCamelContext().getRegistry().bind("mappingRML", mappingRML);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
-                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&inputFiles=#bean:inputsRML&ordered=true&singleRecordsFactory=true")
+                        .to("graph://add?chimeraResource=#bean:triples")
+                        .to("rml://?streamName=stops.txt&mapping=#bean:mappingRML&inputFile=#bean:inputRML&ordered=true&singleRecordsFactory=true")
                         .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlGraphBodyResult")
                         .to("mock:rmlEnrichBody");
             }

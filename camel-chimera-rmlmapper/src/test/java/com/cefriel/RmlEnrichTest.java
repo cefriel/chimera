@@ -34,19 +34,16 @@ import java.util.concurrent.TimeUnit;
 
 public class RmlEnrichTest extends CamelTestSupport {
 
-    private static ChimeraResourcesBean triples;
-    private static ChimeraResourcesBean mappingsRML;
+    private static ChimeraResourceBean triples;
+    private static ChimeraResourceBean mappingRML;
     @BeforeAll
     static void fillBean(){
-        var mapping = new ChimeraResourceBean(
+        mappingRML = new ChimeraResourceBean(
                 "file://./src/test/resources/file/lifting/mapping.rml.ttl",
                 "turtle");
-        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
-
-        var r = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/base/test.ttl",
                 "turtle");
-        triples = new ChimeraResourcesBean(List.of(r));
     }
 
     @Test
@@ -62,16 +59,16 @@ public class RmlEnrichTest extends CamelTestSupport {
             public void configure() {
 
                 getCamelContext().getRegistry().bind("triples", triples);
-                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
+                getCamelContext().getRegistry().bind("mappingRML", mappingRML);
 
                 interceptSendToEndpoint("direct:adding").skipSendToOriginalEndpoint()
                         .process(exchange -> exchange.getMessage().setBody(UniLoader.open("file://./src/test/resources/file/sample-gtfs/stops.txt")))
                         .log("intercepted");
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("graph://add?chimeraResource=#bean:triples")
                         .enrich("direct:adding", new RmlLiftingAggregationStrategy())
-                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML&ordered=true&singleRecordsFactory=true")
+                        .to("rml://?streamName=stops.txt&mapping=#bean:mappingRML&ordered=true&singleRecordsFactory=true")
                         .to("graph://dump?dumpFormat=turtle&basePath=src/test/resources/file/result&filename=rmlEnrich1Result")
                         .to("mock:rmlEnrich");
             }

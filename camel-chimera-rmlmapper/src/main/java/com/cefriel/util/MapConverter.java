@@ -44,18 +44,18 @@ public class MapConverter {
         }
     }
 
-    public static void fileConvert(Exchange exchange, ChimeraResourcesBean resources) throws Exception {
+    public static void fileConvert(Exchange exchange, ChimeraResourceBean resource) throws Exception {
 
         RmlBean configuration = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_CONFIG, RmlBean.class);
         String prefix = configuration.getPrefixLogicalSource();
         if(prefix == null)
             prefix = "is://";
         Map<String, InputStream> map = new HashMap<>();
-        for (var resource : resources.getResources()) {
-            InputStream is = ResourceAccessor.open(resource, exchange);
-            Path path = FileResourceAccessor.fileUrlToPath(resource);
-            map.put(prefix + path.getFileName(), is);
-        }
+
+        InputStream is = ResourceAccessor.open(resource, exchange);
+        Path path = FileResourceAccessor.fileUrlToPath(resource);
+        map.put(prefix + path.getFileName(), is);
+
         /*
         for (String file : files) {
             InputStream is = UniLoader.open(file);

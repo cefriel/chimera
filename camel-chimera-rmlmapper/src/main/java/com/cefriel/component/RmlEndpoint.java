@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
@@ -40,13 +41,13 @@ public class RmlEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
-    private ChimeraResourcesBean inputFiles;
+    private ChimeraResourceBean inputFile;
     @UriParam(defaultValue = "false")
     private boolean useMessage;
     @UriParam(defaultValue = "null")
-    private ChimeraResourcesBean mappings;
+    private ChimeraResourceBean mapping;
     @UriParam(defaultValue = "null")
-    private ChimeraResourcesBean functionFiles;
+    private ChimeraResourceBean functionFile;
     @UriParam(defaultValue = "0")
     private int batchSize = 0;
     @UriParam(defaultValue = "false")
@@ -123,15 +124,12 @@ public class RmlEndpoint extends DefaultEndpoint {
         this.basePath = basePath;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public ChimeraResourcesBean getInputFiles() {
-        return inputFiles;
+    public ChimeraResourceBean getInputFile() {
+        return inputFile;
     }
 
-    public void setInputFiles(ChimeraResourcesBean inputFiles) {
-        this.inputFiles = inputFiles;
+    public void setInputFile(ChimeraResourceBean inputFile) {
+        this.inputFile = inputFile;
     }
 
     /**
@@ -145,26 +143,20 @@ public class RmlEndpoint extends DefaultEndpoint {
         this.useMessage = useMessage;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public ChimeraResourcesBean getMappings() {
-        return mappings;
+    public ChimeraResourceBean getMapping() {
+        return mapping;
     }
 
-    public void setMappings(ChimeraResourcesBean mappings) {
-        this.mappings = mappings;
+    public void setMapping(ChimeraResourceBean mapping) {
+        this.mapping = mapping;
     }
 
-    /**
-     * Some description of this option, and what it does
-     */
-    public ChimeraResourcesBean getFunctionFiles() {
-        return functionFiles;
+    public ChimeraResourceBean getFunctionFile() {
+        return functionFile;
     }
 
-    public void setFunctionFiles(ChimeraResourcesBean functionFiles) {
-        this.functionFiles = functionFiles;
+    public void setFunctionFile(ChimeraResourceBean functionFile) {
+        this.functionFile = functionFile;
     }
 
     /**

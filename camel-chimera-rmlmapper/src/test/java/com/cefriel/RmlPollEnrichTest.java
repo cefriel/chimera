@@ -32,13 +32,12 @@ public class RmlPollEnrichTest extends CamelTestSupport {
     @Produce("direct:start")
     ProducerTemplate start;
 
-    private static ChimeraResourcesBean mappingsRML;
+    private static ChimeraResourceBean mappingRML;
     @BeforeAll
     static void fillBean(){
-        var mapping = new ChimeraResourceBean(
+        mappingRML = new ChimeraResourceBean(
                 "file://./src/test/resources/file/lifting/mapping.rml.ttl",
                 "turtle");
-        mappingsRML = new ChimeraResourcesBean(List.of(mapping));
     }
 
     @Test
@@ -59,11 +58,11 @@ public class RmlPollEnrichTest extends CamelTestSupport {
         return new RouteBuilder() {
             public void configure() {
 
-                getCamelContext().getRegistry().bind("mappingsRML", mappingsRML);
+                getCamelContext().getRegistry().bind("mappingRML", mappingRML);
 
                 from("direct:start")
                         .pollEnrich("graph://get", new RmlLiftingAggregationStrategy())
-                        .to("rml://?streamName=stops.txt&mappings=#bean:mappingsRML")
+                        .to("rml://?streamName=stops.txt&mapping=#bean:mappingRML")
                         .to("graph://dump?basePath=src/test/resources/file/result&dumpFormat=turtle&filename=rmlEnrich2Result")
                         .to("mock:rmlPollEnrich");
             }

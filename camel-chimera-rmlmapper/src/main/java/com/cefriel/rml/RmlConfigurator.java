@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RmlConfigurator {
 
@@ -58,9 +59,7 @@ public class RmlConfigurator {
                 is = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_MAPPINGS, InputStream.class);
             else {
                 List<InputStream> lis = new ArrayList<>();
-                for (var mapping : configuration.getMappings().getResources()) {
-                    lis.add(ResourceAccessor.open(mapping, exchange));
-                }
+                lis.add(ResourceAccessor.open(configuration.getMapping(), exchange));
                 is = new SequenceInputStream(Collections.enumeration(lis));
             }
 
@@ -71,8 +70,11 @@ public class RmlConfigurator {
             if(exchange.getMessage().getHeader(ChimeraRmlConstants.RML_FUNCTION) != null)
                 functionLoader = getFunctionLoader(exchange.getMessage().getHeader(ChimeraRmlConstants.RML_FUNCTION, InputStream.class));
             else {
-                ChimeraResourcesBean functionFiles = configuration.getFunctionFiles();
-                functionLoader = getFunctionLoader(functionFiles);
+                ChimeraResourceBean functionFile = configuration.getFunctionFile();
+                if (configuration.getFunctionFile().getUrl() != null) {
+                    functionLoader = getFunctionLoader(List.of(functionFile));
+                }
+                else functionLoader = getFunctionLoader(List.of());
             }
 
             return new Initializer(rmlStore, functionLoader);
@@ -89,26 +91,30 @@ public class RmlConfigurator {
     }
 
     public static String getInitializerId(RmlBean configuration) {
-        List<String> mappingFiles = configuration.getMappings().getResources().stream()
+        List<String> mappingFiles = Stream.of(configuration.getMapping())
                 .map(fileUrl -> FileResourceAccessor.fileUrlToPath(fileUrl).toString()).toList();
 
-        String mappings = mappingFiles.stream().collect(Collectors.joining("-"));
+        String mappings = String.join("-", mappingFiles);
 
-        List<String> functionFiles = configuration.getFunctionFiles().getResources().stream()
-                .map(fileUrl -> FileResourceAccessor.fileUrlToPath(fileUrl).toString()).toList();
+        List<String> functionFiles;
+        if (configuration.getFunctionFile().getUrl() != null){
+            functionFiles = List.of(configuration.getFunctionFile()).stream()
+                    .map(fileUrl -> FileResourceAccessor.fileUrlToPath(fileUrl).toString()).toList();
+        }
+        else {
+            functionFiles = List.of();
+        }
 
-        String functions = functionFiles.stream().collect(Collectors.joining("-"));
-
-        String hash = Long.toString((mappings+functions).hashCode());
-        return hash;
+        String functions = String.join("-", functionFiles);
+        return Long.toString((mappings+functions).hashCode());
     }
 
-    static FunctionLoader getFunctionLoader(ChimeraResourcesBean functionFiles) throws Exception {
+    static FunctionLoader getFunctionLoader(List<ChimeraResourceBean> functionFiles) throws Exception {
 
         String[] fOptionValue = null;
-        if (!functionFiles.getResources().isEmpty()) {
-            fOptionValue = new String[functionFiles.getResources().size()];
-            fOptionValue = (String[]) functionFiles.getResources().stream().map(ChimeraResourceBean::getUrl).toArray();
+        if (!functionFiles.isEmpty()) {
+            fOptionValue = new String[functionFiles.size()];
+            fOptionValue = (String[]) functionFiles.stream().map(ChimeraResourceBean::getUrl).toArray();
         }
         // Read function description files.
         if (fOptionValue == null) {
@@ -219,7 +225,7 @@ public class RmlConfigurator {
             is = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_MAPPINGS, InputStream.class);
         else {
             List<InputStream> lis = new ArrayList<>();
-            for (var mapping : options.getMappings().getResources()) {
+            for (var mapping : List.of(options.getMapping())) {
                 lis.add(ResourceAccessor.open(mapping, exchange));
             }
             is = new SequenceInputStream(Collections.enumeration(lis));

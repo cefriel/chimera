@@ -76,16 +76,13 @@ public class RmlProducer extends DefaultProducer {
 
         if (exchange.getMessage().getBody() == null) {
             LOG.info("Body is null");
-            if (configuration.getInputFiles() == null) {
+            if (configuration.getInputFile() == null) {
                 String basePath = configuration.getBasePath();
                 if (basePath == null)
                     basePath = System.getProperty("user.id");
                 RmlProcessor.execute(exchange, new AccessFactory(basePath), graph);
-            } else if (configuration.getInputFiles().getResources().size() == 1) {
-                exchange.getMessage().setBody(ResourceAccessor.open(configuration.getInputFiles().getResources().get(0), exchange));
-                // exchange.getMessage().setBody(UniLoader.open(configuration.getInputFiles().getResources().get(0)));
             } else {
-                MapConverter.fileConvert(exchange, configuration.getInputFiles());
+                MapConverter.fileConvert(exchange, configuration.getInputFile());
             }
         }
         if (exchange.getMessage().getBody(Map.class) != null) {
