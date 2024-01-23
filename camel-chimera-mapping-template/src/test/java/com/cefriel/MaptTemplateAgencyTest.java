@@ -33,21 +33,18 @@ import java.util.List;
 public class MaptTemplateAgencyTest extends CamelTestSupport {
     @Produce("direct:start")
     ProducerTemplate start;
-    private static ChimeraResourcesBean triples;
-    private static ChimeraResourcesBean triples2;
+    private static ChimeraResourceBean triples;
+    private static ChimeraResourceBean triples2;
     private static ChimeraResourceBean template;
     private static ChimeraResourceBean templateMultiple;
     @BeforeAll
     static void fillBeans(){
-        ChimeraResourceBean r = new ChimeraResourceBean(
+        triples = new ChimeraResourceBean(
                 "file://./src/test/resources/file/agency/input.ttl",
                 "turtle");
-        triples = new ChimeraResourcesBean(List.of(r));
-        ChimeraResourceBean r2 = new ChimeraResourceBean(
+        triples2 = new ChimeraResourceBean(
                 "file://./src/test/resources/file/agency-multiple-input/input2.ttl",
                 "turtle");
-        triples2 = new ChimeraResourcesBean(List.of(r, r2));
-
         template = new ChimeraResourceBean(
                 "file://./src/test/resources/file/agency/template.vm",
                 "");
@@ -88,13 +85,13 @@ public class MaptTemplateAgencyTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("templateMultiple", templateMultiple);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("graph://add?chimeraResource=#bean:triples")
                         .to("mapt://rdf?template=#bean:template&basePath=./src/test/resources/file/result&fileName=agency.csv")
                         .to("mock:rdfAgency");
 
                 from("direct:start")
                         .to("graph://get?rdfFormat=turtle")
-                        .to("graph://add?chimeraResources=#bean:triples2")
+                        .to("graph://add?chimeraResource=#bean:triples2")
                         .to("mapt://rdf?template=#bean:templateMultiple&basePath=./src/test/resources/file/result&filename=multipleAgency.csv")
                         .to("mock:rdfMultipleAgency");
             }

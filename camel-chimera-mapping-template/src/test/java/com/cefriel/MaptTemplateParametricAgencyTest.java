@@ -30,15 +30,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
-    private static ChimeraResourcesBean triples;
+    private static ChimeraResourceBean triples;
     private static ChimeraResourceBean template;
     private static ChimeraResourceBean query;
 
     @BeforeAll
     static void fillBeans(){
-        ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/agency-parametric/input.ttl", "turtle");
+        triples = new ChimeraResourceBean("file://./src/test/resources/file/agency-parametric/input.ttl", "turtle");
         template = new ChimeraResourceBean("file://./src/test/resources/file/agency-parametric/template.vm", null);
-        triples = new ChimeraResourcesBean(List.of(r));
         query = new ChimeraResourceBean("file://./src/test/resources/file/agency-parametric/query.txt", null);
     }
     @Test
@@ -66,7 +65,7 @@ public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("query", query);
 
                 from("graph://get")
-                        .to("graph://add?chimeraResources=#bean:triples")
+                        .to("graph://add?chimeraResource=#bean:triples")
                         .to("mapt://rdf?template=#bean:template&query=#bean:query&basePath=./src/test/resources/file/result&fileName=agencyParametric.csv")
                         .to("mock:rdfParamAgency");
             }
