@@ -16,10 +16,8 @@
 
 package com.cefriel;
 
-import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
@@ -28,9 +26,6 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GraphConstructTest extends CamelTestSupport {
     private static ChimeraResourceBean triples;

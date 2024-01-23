@@ -2,7 +2,6 @@ package com.cefriel;
 
 import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ChimeraResourcesBean;
 import com.cefriel.util.Utils;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -12,7 +11,6 @@ import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.List;
 
 public class GraphDumpTest extends CamelTestSupport {
 

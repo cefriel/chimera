@@ -17,7 +17,6 @@
 package com.cefriel.component;
 
 import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.Category;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;

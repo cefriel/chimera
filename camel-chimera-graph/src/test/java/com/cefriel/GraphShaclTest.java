@@ -1,14 +1,11 @@
 package com.cefriel;
 
 import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ChimeraResourcesBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 public class GraphShaclTest extends CamelTestSupport {
     private static ChimeraResourceBean shaclResource;
