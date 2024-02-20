@@ -38,8 +38,6 @@ public class GraphEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
-    private String queryUrls;
-    @UriParam(defaultValue = "null")
     private String rdfFormat;
     @UriParam(defaultValue = "null")
     private String serverUrl;
@@ -104,13 +102,6 @@ public class GraphEndpoint extends DefaultEndpoint {
 
     public String getName() {
         return name;
-    }
-
-    public String getQueryUrls() {
-        return queryUrls; }
-
-    public void setQueryUrls(String queryUrls) {
-        this.queryUrls = queryUrls;
     }
 
     /**
