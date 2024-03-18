@@ -70,23 +70,7 @@ public class Utils {
     }
     public static void populateRepository(Repository repo, Model model) {
         RepositoryConnection connection = repo.getConnection();
-        // triggers stack overflow error due to a problem for only ContextAwareRepositories
-        // add statements from model one by one to repository instead
-        // connection.add(model);
-
-        IRI graphName;
-        if (connection instanceof ContextAwareConnection) {
-            graphName = ((ContextAwareConnection) connection).getInsertContext();
-        }
-        else
-            graphName = null;
-        for (Statement st : model.getStatements(null,null,null))
-        {
-            if(graphName != null)
-                connection.add(st, graphName);
-            else
-                connection.add(st);
-        }
+        connection.add(model);
 
         for (Namespace ns : model.getNamespaces()) {
             connection.setNamespace(ns.getPrefix(), ns.getName());
