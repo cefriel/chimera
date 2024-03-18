@@ -74,9 +74,17 @@ public class Utils {
         // add statements from model one by one to repository instead
         // connection.add(model);
 
-
+        IRI graphName;
+        if (connection instanceof ContextAwareConnection) {
+            graphName = ((ContextAwareConnection) connection).getInsertContext();
+        }
+        else
+            graphName = null;
         for (Statement st : model.getStatements(null,null,null))
         {
+            if(graphName != null)
+                connection.add(st, graphName);
+            else
                 connection.add(st);
         }
 
@@ -85,21 +93,14 @@ public class Utils {
         }
     }
 
+    // copies content of sourceRepo to targetRepo
     public static void populateRepository(Repository targetRepo, Repository sourceRepo) {
-        try (RepositoryConnection sourceConn = sourceRepo.getConnection();
-             RepositoryConnection targetConn = targetRepo.getConnection()) {
+        try (RepositoryConnection sourceConn = sourceRepo.getConnection()) {
 
-            Model model = sourceConn.getStatements(null, null, null).stream()
+            Model sourceModel = sourceConn.getStatements(null, null, null).stream()
                     .collect(ModelCollector.toModel());
 
-            for (Namespace ns : model.getNamespaces()) {
-                targetConn.setNamespace(ns.getPrefix(), ns.getName());
-            }
-
-            for (Statement st : model.getStatements(null,null,null))
-            {
-                targetConn.add(st.getSubject(), st.getPredicate(), st.getObject());
-            }
+            populateRepository(targetRepo, sourceModel);
         }
     }
     public static Repository createSchemaRepository(ChimeraResourcesBean resourcesBean, Exchange exchange) throws Exception {
