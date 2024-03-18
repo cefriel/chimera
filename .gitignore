@@ -3,3 +3,4 @@
 **/src/test/resources/file/result
 **/src/generated
 **/target
+/camel-chimera-mapping-template/CustomFunctions.class
