@@ -52,21 +52,28 @@ public class Utils {
 
     public static void populateRepository(Repository repo, ChimeraResourceBean resourceBean, Exchange exchange) throws Exception {
         Model model = StreamParser.parseResource(resourceBean, exchange);
-        populateRepository(repo, model);
+        if (model != null) {
+            populateRepository(repo, model);
+        }
     }
     public static void populateRepository(Repository repo, InputStream inputStream, String format) throws IOException {
         Model model = StreamParser.parseTriples(inputStream, format, null);
-        populateRepository(repo, model);
+        if (model != null) {
+            populateRepository(repo, model);
+        }
     }
     public static void populateRepository(Repository repo, Model model) {
         RepositoryConnection connection = repo.getConnection();
-        connection.add(model);
+        if (model != null) {
+            if(!model.isEmpty()) {
+                connection.add(model);
 
-        for (Namespace ns : model.getNamespaces()) {
-            connection.setNamespace(ns.getPrefix(), ns.getName());
+                for (Namespace ns : model.getNamespaces()) {
+                    connection.setNamespace(ns.getPrefix(), ns.getName());
+                }
+            }
         }
     }
-
     // copies content of sourceRepo to targetRepo
     public static void populateRepository(Repository targetRepo, Repository sourceRepo) {
         try (RepositoryConnection sourceConn = sourceRepo.getConnection()) {

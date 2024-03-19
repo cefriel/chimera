@@ -28,6 +28,12 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.impl.EmptyModel;
+import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.util.Values;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -38,9 +44,11 @@ import org.slf4j.LoggerFactory;
 public class GraphGetTest extends CamelTestSupport {
 
     private static final Logger log = LoggerFactory.getLogger(GraphGetTest.class);
-
     @Produce("direct:start")
     ProducerTemplate start;
+
+    @Produce("direct:start2")
+    ProducerTemplate start2;
 
     @Test
     public void testInMemoryGraph() throws Exception {
@@ -53,6 +61,17 @@ public class GraphGetTest extends CamelTestSupport {
         assert(graph.getRepository().isInitialized());
         // assert(graph.getRepository().getClass().equals(SailRepository.class));
     }
+    @Test
+    public void testEmptyInput() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:emptyInput");
+        mock.expectedMessageCount(1);
+        start2.sendBodyAndHeader(null, ChimeraConstants.RDF_FORMAT, "turtle");
+        mock.assertIsSatisfied();
+
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+        assert(graph.getRepository().getConnection().size() == 0);
+    }
+
     /*
     @Test
     public void testNamedGraph() throws Exception {
@@ -163,6 +182,11 @@ public class GraphGetTest extends CamelTestSupport {
                 from("direct:start")
                         .to("graph://get")
                         .to("mock:toMemory");
+
+                from("direct:start2").
+                        to("graph://get").
+                        to("mock:emptyInput");
+
 
                 // from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")
                    //     .to("mock:namedGraph");
