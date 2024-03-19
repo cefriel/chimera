@@ -22,7 +22,10 @@ import com.cefriel.template.TemplateExecutor;
 import com.cefriel.template.TemplateMap;
 import com.cefriel.template.io.Formatter;
 import com.cefriel.template.io.Reader;
+import com.cefriel.template.io.csv.CSVReader;
+import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
+import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
 import com.cefriel.util.*;
@@ -166,18 +169,19 @@ public class MaptTemplateProcessor {
         }
     }
     private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, boolean verbose) throws Exception {
+
         if (inputFormat == null) {
             // case when no reader is specified as input but are declared directly in the template file
             return null;
         }
-        else if (inputFormat.equals("rdf")) {
 
-            return configureRDFReader(exchange, verbose);
-        }
-        else {
-            String input = exchange.getMessage().getBody(String.class);
-            return Util.createNonRdfReaderFromInput(input, inputFormat, verbose);
-        }
+        return switch (inputFormat) {
+            case "rdf" -> configureRDFReader(exchange, verbose);
+            case "json" -> new JSONReader(exchange.getMessage().getBody(String.class));
+            case "xml" -> new XMLReader(exchange.getMessage().getBody(String.class));
+            case "csv" -> new CSVReader(exchange.getMessage().getBody(String.class));
+            default -> throw new InvalidParameterException("Cannot create Reader for inputFormat: " + inputFormat);
+        };
     }
 
     private static RDFReader configureRDFReader(Exchange exchange, boolean verbose) throws Exception {
@@ -186,8 +190,10 @@ public class MaptTemplateProcessor {
         if(graph != null) {
             String graphName = graph.getNamedGraph() != null ? graph.getNamedGraph().toString() : null;
             String baseIri = graph.getBaseIRI().toString();
-
-            return Util.createRDFReader(graphName, baseIri, graph.getRepository(), verbose);
+            RDFReader rdfReader = new RDFReader(graph.getRepository());
+            rdfReader.setContext(graphName);
+            rdfReader.setBaseIRI(baseIri);
+            return rdfReader;
         }
 
         else {
