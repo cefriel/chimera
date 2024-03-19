@@ -60,36 +60,21 @@ public class Utils {
     }
     public static void populateRepository(Repository repo, Model model) {
         RepositoryConnection connection = repo.getConnection();
-        // triggers stack overflow error due to a problem for only ContextAwareRepositories
-        // add statements from model one by one to repository instead
-        // connection.add(model);
-
-
-        for (Statement st : model.getStatements(null,null,null))
-        {
-                connection.add(st);
-        }
+        connection.add(model);
 
         for (Namespace ns : model.getNamespaces()) {
             connection.setNamespace(ns.getPrefix(), ns.getName());
         }
     }
 
+    // copies content of sourceRepo to targetRepo
     public static void populateRepository(Repository targetRepo, Repository sourceRepo) {
-        try (RepositoryConnection sourceConn = sourceRepo.getConnection();
-             RepositoryConnection targetConn = targetRepo.getConnection()) {
+        try (RepositoryConnection sourceConn = sourceRepo.getConnection()) {
 
-            Model model = sourceConn.getStatements(null, null, null).stream()
+            Model sourceModel = sourceConn.getStatements(null, null, null).stream()
                     .collect(ModelCollector.toModel());
 
-            for (Namespace ns : model.getNamespaces()) {
-                targetConn.setNamespace(ns.getPrefix(), ns.getName());
-            }
-
-            for (Statement st : model.getStatements(null,null,null))
-            {
-                targetConn.add(st.getSubject(), st.getPredicate(), st.getObject());
-            }
+            populateRepository(targetRepo, sourceModel);
         }
     }
     public static Repository createSchemaRepository(ChimeraResourceBean resourcesBean, Exchange exchange) throws Exception {
