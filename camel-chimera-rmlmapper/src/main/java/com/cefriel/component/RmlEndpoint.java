@@ -32,8 +32,8 @@ import org.apache.camel.spi.UriPath;
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name",
-             category = {Category.JAVA})
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name")
+
 public class RmlEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
     private String name;
@@ -88,271 +88,271 @@ public class RmlEndpoint extends DefaultEndpoint {
     }
 
     public RmlEndpoint(String uri, RmlComponent component) {
-        super(uri, component);
+	super(uri, component);
     }
 
     public Producer createProducer() throws Exception {
-        return new RmlProducer(this);
+	return new RmlProducer(this);
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        Consumer consumer = new RmlConsumer(this, processor);
-        configureConsumer(consumer);
-        return consumer;
+	Consumer consumer = new RmlConsumer(this, processor);
+	configureConsumer(consumer);
+	return consumer;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getBasePath() {
-        return basePath;
+	return basePath;
     }
 
     public void setBasePath(String basePath) {
-        this.basePath = basePath;
+	this.basePath = basePath;
     }
 
     public ChimeraResourceBean getInputFile() {
-        return inputFile;
+	return inputFile;
     }
 
     public void setInputFile(ChimeraResourceBean inputFile) {
-        this.inputFile = inputFile;
+	this.inputFile = inputFile;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isUseMessage() {
-        return useMessage;
+	return useMessage;
     }
 
     public void setUseMessage(boolean useMessage) {
-        this.useMessage = useMessage;
+	this.useMessage = useMessage;
     }
 
     public ChimeraResourceBean getMapping() {
-        return mapping;
+	return mapping;
     }
 
     public void setMapping(ChimeraResourceBean mapping) {
-        this.mapping = mapping;
+	this.mapping = mapping;
     }
 
     public ChimeraResourceBean getFunctionFile() {
-        return functionFile;
+	return functionFile;
     }
 
     public void setFunctionFile(ChimeraResourceBean functionFile) {
-        this.functionFile = functionFile;
+	this.functionFile = functionFile;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public int getBatchSize() {
-        return batchSize;
+	return batchSize;
     }
 
     public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
+	this.batchSize = batchSize;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isIncrementalUpdate() {
-        return incrementalUpdate;
+	return incrementalUpdate;
     }
 
     public void setIncrementalUpdate(boolean incrementalUpdate) {
-        this.incrementalUpdate = incrementalUpdate;
+	this.incrementalUpdate = incrementalUpdate;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isNoCache() {
-        return noCache;
+	return noCache;
     }
 
     public void setNoCache(boolean noCache) {
-        this.noCache = noCache;
+	this.noCache = noCache;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isOrdered() {
-        return ordered;
+	return ordered;
     }
 
     public void setOrdered(boolean ordered) {
-        this.ordered = ordered;
+	this.ordered = ordered;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getBaseIri() {
-        return baseIri;
+	return baseIri;
     }
 
     public void setBaseIri(String baseIri) {
-        this.baseIri = baseIri;
+	this.baseIri = baseIri;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getBaseIriPrefix() {
-        return baseIriPrefix;
+	return baseIriPrefix;
     }
 
     public void setBaseIriPrefix(String baseIriPrefix) {
-        this.baseIriPrefix = baseIriPrefix;
+	this.baseIriPrefix = baseIriPrefix;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isEmptyStrings() {
-        return emptyStrings;
+	return emptyStrings;
     }
 
     public void setEmptyStrings(boolean emptyStrings) {
-        this.emptyStrings = emptyStrings;
+	this.emptyStrings = emptyStrings;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isConcurrentWrites() {
-        return concurrentWrites;
+	return concurrentWrites;
     }
 
     public void setConcurrentWrites(boolean concurrentWrites) {
-        this.concurrentWrites = concurrentWrites;
+	this.concurrentWrites = concurrentWrites;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isConcurrentRecords() {
-        return concurrentRecords;
+	return concurrentRecords;
     }
 
     public void setConcurrentRecords(boolean concurrentRecords) {
-        this.concurrentRecords = concurrentRecords;
+	this.concurrentRecords = concurrentRecords;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isDefaultRecordFactory() {
-        return defaultRecordFactory;
+	return defaultRecordFactory;
     }
 
     public void setDefaultRecordFactory(boolean defaultRecordFactory) {
-        this.defaultRecordFactory = defaultRecordFactory;
+	this.defaultRecordFactory = defaultRecordFactory;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public int getNumThreadsRecords() {
-        return numThreadsRecords;
+	return numThreadsRecords;
     }
 
     public void setNumThreadsRecords(int numThreadsRecords) {
-        this.numThreadsRecords = numThreadsRecords;
+	this.numThreadsRecords = numThreadsRecords;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public int getNumThreadsWrites() {
-        return numThreadsWrites;
+	return numThreadsWrites;
     }
 
     public void setNumThreadsWrites(int numThreadsWrites) {
-        this.numThreadsWrites = numThreadsWrites;
+	this.numThreadsWrites = numThreadsWrites;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getConcurrency() {
-        return concurrency;
+	return concurrency;
     }
 
     public void setConcurrency(String concurrency) {
-        this.concurrency = concurrency;
+	this.concurrency = concurrency;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isSingleRecordsFactory() {
-        return singleRecordsFactory;
+	return singleRecordsFactory;
     }
 
     public void setSingleRecordsFactory(boolean singleRecordsFactory) {
-        this.singleRecordsFactory = singleRecordsFactory;
+	this.singleRecordsFactory = singleRecordsFactory;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getStreamName() {
-        return streamName;
+	return streamName;
     }
 
     public void setStreamName(String streamName) {
-        this.streamName = streamName;
+	this.streamName = streamName;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getPrefixLogicalSource() {
-        return prefixLogicalSource;
+	return prefixLogicalSource;
     }
 
     public void setPrefixLogicalSource(String prefixLogicalSource) {
-        this.prefixLogicalSource = prefixLogicalSource;
+	this.prefixLogicalSource = prefixLogicalSource;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getBaseUrl() {
-        return baseUrl;
+	return baseUrl;
     }
 
     public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+	this.baseUrl = baseUrl;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public RmlBean getRmlBaseConfig() {
-        return rmlBaseConfig;
+	return rmlBaseConfig;
     }
 
     public void setRmlBaseConfig(RmlBean rmlBaseConfig) {
-        this.rmlBaseConfig = rmlBaseConfig;
+	this.rmlBaseConfig = rmlBaseConfig;
     }
 }

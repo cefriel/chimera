@@ -33,8 +33,8 @@ import org.apache.camel.spi.UriPath;
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name",
-             category = {Category.JAVA})
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name")
+
 public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
     private String name;
@@ -66,7 +66,7 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     private ChimeraResourceBean resourceCustomFunctions;
     @UriParam(defaultValue = "null", description = "User defined class that extends the TemplateFunctions class. Use this parameter when the user defined class is included in the Java project. Used to define java functions that can be called in a template file. ")
     private TemplateFunctions customFunctions;
-    
+
     @UriParam(defaultValue = "null")
     private MaptTemplateBean rdfBaseConfig;
 
@@ -76,154 +76,154 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     }
 
     public MaptTemplateEndpoint(String uri, String remaining, MaptTemplateComponent component) {
-        super(uri, component);
-        setName(remaining);
+	super(uri, component);
+	setName(remaining);
     }
 
     public Producer createProducer() throws Exception {
-        return new MaptTemplateProducer(this);
+	return new MaptTemplateProducer(this);
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        Consumer consumer = new MaptTemplateConsumer(this, processor);
-        configureConsumer(consumer);
-        return consumer;
+	Consumer consumer = new MaptTemplateConsumer(this, processor);
+	configureConsumer(consumer);
+	return consumer;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getBasePath() {
-        return basePath;
+	return basePath;
     }
 
     public void setBasePath(String basePath) {
-        this.basePath = basePath;
+	this.basePath = basePath;
     }
 
     public ChimeraResourceBean getTemplate() {
-        return template;
+	return template;
     }
 
     public void setTemplate(ChimeraResourceBean template) {
-        this.template = template;
+	this.template = template;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getFilename() {
-        return filename;
+	return filename;
     }
 
     public void setFilename(String filename) {
-        this.filename = filename;
+	this.filename = filename;
     }
 
     public ChimeraResourceBean getKeyValuePairs() {
-        return keyValuePairs;
+	return keyValuePairs;
     }
 
     public void setKeyValuePairs(ChimeraResourceBean keyValuePairs) {
-        this.keyValuePairs = keyValuePairs;
+	this.keyValuePairs = keyValuePairs;
     }
 
     public ChimeraResourceBean getKeyValuePairsCSV() {
-        return keyValuePairsCSV;
+	return keyValuePairsCSV;
     }
 
     public void setKeyValuePairsCSV(ChimeraResourceBean keyValuePairsCSV) {
-        this.keyValuePairsCSV = keyValuePairsCSV;
+	this.keyValuePairsCSV = keyValuePairsCSV;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public String getFormat() {
-        return format;
+	return format;
     }
 
     public void setFormat(String format) {
-        this.format = format;
+	this.format = format;
     }
 
     public ChimeraResourceBean getQuery() {
-        return query;
+	return query;
     }
 
     public void setQuery(ChimeraResourceBean query) {
-        this.query = query;
+	this.query = query;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isTrimTemplate() {
-        return trimTemplate;
+	return trimTemplate;
     }
 
     public void setTrimTemplate(boolean trimTemplate) {
-        this.trimTemplate = trimTemplate;
+	this.trimTemplate = trimTemplate;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isVerboseQueries() {
-        return verboseQueries;
+	return verboseQueries;
     }
 
     public void setVerboseQueries(boolean verboseQueries) {
-        this.verboseQueries = verboseQueries;
+	this.verboseQueries = verboseQueries;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public boolean isStream() {
-        return stream;
+	return stream;
     }
 
     public void setStream(boolean stream) {
-        this.stream = stream;
+	this.stream = stream;
     }
 
     public ChimeraResourceBean getResourceCustomFunctions() {
-        return resourceCustomFunctions;
+	return resourceCustomFunctions;
     }
 
     public void setResourceCustomFunctions(ChimeraResourceBean resourceCustomFunctions) {
-        this.resourceCustomFunctions = resourceCustomFunctions;
+	this.resourceCustomFunctions = resourceCustomFunctions;
     }
 
     public TemplateFunctions getCustomFunctions() {
-        return customFunctions;
+	return customFunctions;
     }
 
     public void setCustomFunctions(TemplateFunctions customFunctions) {
-        this.customFunctions = customFunctions;
+	this.customFunctions = customFunctions;
     }
 
     /**
      * Some description of this option, and what it does
      */
     public MaptTemplateBean getRdfBaseConfig() {
-        return rdfBaseConfig;
+	return rdfBaseConfig;
     }
 
     public void setRdfBaseConfig(MaptTemplateBean rdfBaseConfig) {
-        this.rdfBaseConfig = rdfBaseConfig;
+	this.rdfBaseConfig = rdfBaseConfig;
     }
 
 }

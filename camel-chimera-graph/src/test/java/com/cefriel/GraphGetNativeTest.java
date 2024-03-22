@@ -36,18 +36,10 @@ import java.io.IOException;
 public class GraphGetNativeTest extends CamelTestSupport {
 
     private static final Logger log = LoggerFactory.getLogger(GraphGetNativeTest.class);
-
-    @EndpointInject("mock:native")
-    static MockEndpoint mock;
-
-    @AfterAll
-    static void clean() throws IOException {
-        mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class).getRepository().shutDown();
-        FileUtils.deleteDirectory(new File("tempDir"));
-    }
-
     @Test
     public void testNativeGraph() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:native");
+
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
 
@@ -56,13 +48,17 @@ public class GraphGetNativeTest extends CamelTestSupport {
         assert(graph.getRepository().isInitialized());
         // assert(graph.getRepository().getClass().equals(SailRepository.class));
         assert(graph.getRepository().getDataDir().getPath().equals("tempDir"));
+
+        mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class).getRepository().shutDown();
+        FileUtils.deleteDirectory(new File("tempDir"));
     }
 
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("graph://get?pathDataDir=tempDir").to("mock:native");
+                from("graph://get?pathDataDir=tempDir").
+                        to("mock:native");
             }
         };
     }
