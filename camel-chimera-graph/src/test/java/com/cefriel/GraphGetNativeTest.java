@@ -57,8 +57,8 @@ public class GraphGetNativeTest extends CamelTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("graph://get?pathDataDir=tempDir").
-                        to("mock:native");
+                from("graph://get?pathDataDir=tempDir")
+		    .to("mock:native");
             }
         };
     }
