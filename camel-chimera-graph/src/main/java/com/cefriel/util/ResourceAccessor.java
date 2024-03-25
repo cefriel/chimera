@@ -1,6 +1,5 @@
 package com.cefriel.util;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.apache.camel.*;
 import org.apache.camel.builder.ExchangeBuilder;
 import org.slf4j.Logger;

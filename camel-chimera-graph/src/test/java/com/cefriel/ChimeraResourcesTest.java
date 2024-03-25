@@ -3,7 +3,6 @@ package com.cefriel;
 import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ResourceAccessor;
 import org.apache.camel.Exchange;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.support.DefaultExchange;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;

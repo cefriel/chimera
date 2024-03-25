@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Optional;
 
-import static org.apache.camel.builder.Builder.constant;
-
 public class HTTPResourceAccessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(HTTPResourceAccessor.class);

@@ -32,7 +32,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
-import org.eclipse.rdf4j.sail.shacl.ast.constraintcomponents.XoneConstraintComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

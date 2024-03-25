@@ -2,11 +2,12 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.*;
-import com.cefriel.util.*;
+import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.repository.Repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class GraphGet {

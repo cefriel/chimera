@@ -18,8 +18,9 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.*;
-import org.apache.camel.CamelContext;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ResourceAccessor;
+import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.QueryResults;
@@ -28,9 +29,8 @@ import org.eclipse.rdf4j.repository.util.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Scanner;
 
 public class GraphConstruct {
 

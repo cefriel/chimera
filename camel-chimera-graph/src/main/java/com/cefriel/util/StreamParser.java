@@ -16,7 +16,7 @@
 
 package com.cefriel.util;
 
-import org.apache.camel.*;
+import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.rio.RDFFormat;

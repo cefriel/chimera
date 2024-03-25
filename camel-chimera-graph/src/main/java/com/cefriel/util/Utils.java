@@ -18,7 +18,9 @@ package com.cefriel.util;
 
 import com.cefriel.component.GraphBean;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelCollector;
 import org.eclipse.rdf4j.repository.Repository;
@@ -52,21 +54,28 @@ public class Utils {
 
     public static void populateRepository(Repository repo, ChimeraResourceBean resourceBean, Exchange exchange) throws Exception {
         Model model = StreamParser.parseResource(resourceBean, exchange);
-        populateRepository(repo, model);
+        if (model != null) {
+            populateRepository(repo, model);
+        }
     }
     public static void populateRepository(Repository repo, InputStream inputStream, String format) throws IOException {
         Model model = StreamParser.parseTriples(inputStream, format, null);
-        populateRepository(repo, model);
+        if (model != null) {
+            populateRepository(repo, model);
+        }
     }
     public static void populateRepository(Repository repo, Model model) {
         RepositoryConnection connection = repo.getConnection();
-        connection.add(model);
+        if (model != null) {
+            if(!model.isEmpty()) {
+                connection.add(model);
 
-        for (Namespace ns : model.getNamespaces()) {
-            connection.setNamespace(ns.getPrefix(), ns.getName());
+                for (Namespace ns : model.getNamespaces()) {
+                    connection.setNamespace(ns.getPrefix(), ns.getName());
+                }
+            }
         }
     }
-
     // copies content of sourceRepo to targetRepo
     public static void populateRepository(Repository targetRepo, Repository sourceRepo) {
         try (RepositoryConnection sourceConn = sourceRepo.getConnection()) {
