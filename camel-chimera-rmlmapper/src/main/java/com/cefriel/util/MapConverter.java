@@ -19,7 +19,6 @@ package com.cefriel.util;
 import com.cefriel.component.RmlBean;
 import org.apache.camel.Exchange;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;

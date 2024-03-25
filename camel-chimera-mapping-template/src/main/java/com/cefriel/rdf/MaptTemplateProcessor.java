@@ -28,8 +28,10 @@ import com.cefriel.template.io.rdf.RDFReader;
 import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
-import com.cefriel.util.*;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ResourceAccessor;
+import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -38,7 +40,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,7 +51,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class MaptTemplateProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MaptTemplateProcessor.class);

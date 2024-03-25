@@ -18,7 +18,8 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.*;
+import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

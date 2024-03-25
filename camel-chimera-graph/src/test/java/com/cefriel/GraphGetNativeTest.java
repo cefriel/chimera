@@ -16,16 +16,14 @@
 
 package com.cefriel;
 
-import com.cefriel.graph.*;
+import com.cefriel.graph.NativeRDFGraph;
+import com.cefriel.graph.RDFGraph;
 import org.apache.camel.EndpointInject;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

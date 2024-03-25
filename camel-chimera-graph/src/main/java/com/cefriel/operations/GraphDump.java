@@ -17,29 +17,21 @@
 package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
-import com.cefriel.component.GraphEndpoint;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.RDFSerializer;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.query.QueryResults;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 public class GraphDump {
 

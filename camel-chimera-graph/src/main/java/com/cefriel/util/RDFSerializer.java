@@ -16,9 +16,7 @@
 
 package com.cefriel.util;
 
-import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
-import org.apache.camel.TypeConverters;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriter;
@@ -28,7 +26,10 @@ import org.eclipse.rdf4j.rio.helpers.TurtleWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public final class RDFSerializer {
 

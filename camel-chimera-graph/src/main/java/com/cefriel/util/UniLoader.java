@@ -16,7 +16,6 @@
 
 package com.cefriel.util;
 
-import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

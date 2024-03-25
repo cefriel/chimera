@@ -18,15 +18,15 @@ package com.cefriel.component;
 
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.operations.*;
-import com.cefriel.util.*;
+import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.NoSuchEndpointException;
 import org.apache.camel.support.DefaultProducer;
-import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.InputStream;
 
 public class GraphProducer extends DefaultProducer {
 

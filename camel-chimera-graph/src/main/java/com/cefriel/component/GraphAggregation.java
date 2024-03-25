@@ -20,9 +20,7 @@ import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.Utils;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 public class GraphAggregation implements AggregationStrategy {
     @Override

@@ -15,8 +15,8 @@
  */
 package com.cefriel.rml;
 
-import be.ugent.rml.*;
 import be.ugent.rml.Utils;
+import be.ugent.rml.*;
 import be.ugent.rml.access.AccessFactory;
 import be.ugent.rml.functions.FunctionLoader;
 import be.ugent.rml.functions.lib.IDLabFunctions;
@@ -36,13 +36,10 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RmlConfigurator {

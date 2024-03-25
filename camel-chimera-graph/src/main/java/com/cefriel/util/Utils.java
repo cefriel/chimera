@@ -18,7 +18,9 @@ package com.cefriel.util;
 
 import com.cefriel.component.GraphBean;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelCollector;
 import org.eclipse.rdf4j.repository.Repository;
