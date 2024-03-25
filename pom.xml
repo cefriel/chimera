@@ -13,19 +13,17 @@
 
   <modules>
     <module>camel-chimera-graph</module>
-
     <module>camel-chimera-rmlmapper</module>
-
     <module>camel-chimera-mapping-template</module>
   </modules>
 
   <properties>
-    <camel.version>3.16.0</camel.version>
+    <camel.version>4.4.1</camel.version>
     <rdf4j.version>4.3.10</rdf4j.version>
     <mapping-template.version>2.4.1</mapping-template.version>
     <rmlmapper.version>1.1.0</rmlmapper.version>
-    <camel-test-spring-junit.version>3.16.0</camel-test-spring-junit.version>
-    <camel-bom.version>3.16.0</camel-bom.version>
+    <camel-test-junit.version>${camel.version}</camel-test-junit.version>
+    <camel-bom.version>${camel.version}</camel-bom.version>
     <slf4j.version>2.17.2</slf4j.version>
   </properties>
 
@@ -93,8 +91,8 @@
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
-        <artifactId>camel-test-spring-junit5</artifactId>
-        <version>${camel-test-spring-junit.version}</version>
+        <artifactId>camel-test-junit5</artifactId>
+        <version>${camel-test-junit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.rdf4j</groupId>
