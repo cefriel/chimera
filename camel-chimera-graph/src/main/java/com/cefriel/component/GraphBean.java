@@ -29,15 +29,6 @@ public class GraphBean {
 
     private ChimeraResourceBean chimeraResource;
 
-    public List<String> getQueryUrls() {
-        return queryUrls;
-    }
-
-    public void setQueryUrls(List<String> queryUrls) {
-        this.queryUrls = queryUrls;
-    }
-
-    private List<String> queryUrls = new ArrayList<>();
     private String rdfFormat;
     private boolean allRules;
     private String ontologyFormat;
@@ -288,9 +279,6 @@ public class GraphBean {
         }
         if(endpoint.getSparqlEndpoint()!=null){
             this.setSparqlEndpoint(endpoint.getSparqlEndpoint());
-        }
-        if(endpoint.getQueryUrls()!=null){
-            this.setQueryUrls(Arrays.asList(endpoint.getQueryUrls().split("\\|")));
         }
         if(endpoint.getOntologyFormat()!=null){
             this.setOntologyFormat(endpoint.getOntologyFormat());

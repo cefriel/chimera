@@ -39,13 +39,13 @@ public class RmlEndpoint extends DefaultEndpoint {
     private String name;
     @UriParam(defaultValue = "null")
     private String basePath;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "Input file")
     private ChimeraResourceBean inputFile;
     @UriParam(defaultValue = "false")
     private boolean useMessage;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "RML mapping")
     private ChimeraResourceBean mapping;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "RML functions used in mapping")
     private ChimeraResourceBean functionFile;
     @UriParam(defaultValue = "0")
     private int batchSize = 0;
