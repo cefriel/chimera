@@ -28,11 +28,11 @@ import org.apache.camel.spi.UriPath;
 import org.apache.camel.support.DefaultEndpoint;
 
 /**
- * rml component which does bla bla.
+ * RML Component.
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name")
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name", category = {Category.TRANSFORMATION})
 
 public class RmlEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)

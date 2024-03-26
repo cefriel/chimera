@@ -30,7 +30,7 @@ import org.apache.camel.support.DefaultEndpoint;
 /**
  * Graph component
  */
-@UriEndpoint(firstVersion = "1.0.0", scheme = "graph", title = "graph", syntax="graph:name")
+@UriEndpoint(firstVersion = "1.0.0", scheme = "graph", title = "graph", syntax="graph:name", category = {Category.TRANSFORMATION})
 public class GraphEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
     private String name;
