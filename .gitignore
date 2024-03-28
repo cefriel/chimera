@@ -1,6 +1,5 @@
 **/*.idea
 **/*.iml
 **/src/test/resources/file/result
-**/src/generated
 **/target
 *.class

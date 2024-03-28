@@ -29,11 +29,11 @@ import org.apache.camel.spi.UriPath;
 import org.apache.camel.support.DefaultEndpoint;
 
 /**
- * rdft component which does bla bla.
+ * Mapping template component.
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name")
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name", category = {Category.TRANSFORMATION})
 
 public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)

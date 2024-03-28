@@ -207,7 +207,7 @@
 	<plugin>
           <groupId>org.apache.camel</groupId>
           <artifactId>camel-component-maven-plugin</artifactId>
-          <version>3.16.0</version>
+          <version>${camel.version}</version>
           <configuration>
             <sourcesOutputDir>src/generated/java</sourcesOutputDir>
             <resourcesOutputDir>src/generated/resources</resourcesOutputDir>
@@ -245,7 +245,10 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
       </plugin>
-
+      <plugin>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-component-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
   <profiles>

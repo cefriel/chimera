@@ -30,14 +30,12 @@ import org.apache.camel.support.DefaultEndpoint;
 /**
  * Graph component
  */
-@UriEndpoint(firstVersion = "1.0.0", scheme = "graph", title = "graph", syntax="graph:name")
+@UriEndpoint(firstVersion = "1.0.0", scheme = "graph", title = "graph", syntax="graph:name", category = {Category.TRANSFORMATION})
 public class GraphEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
     private String name;
     @UriParam(defaultValue = "null")
     private String basePath;
-    @UriParam(defaultValue = "null")
-    private String queryUrls;
     @UriParam(defaultValue = "null")
     private String rdfFormat;
     @UriParam(defaultValue = "null")
@@ -103,13 +101,6 @@ public class GraphEndpoint extends DefaultEndpoint {
 
     public String getName() {
         return name;
-    }
-
-    public String getQueryUrls() {
-        return queryUrls; }
-
-    public void setQueryUrls(String queryUrls) {
-        this.queryUrls = queryUrls;
     }
 
     /**

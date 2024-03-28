@@ -28,24 +28,24 @@ import org.apache.camel.spi.UriPath;
 import org.apache.camel.support.DefaultEndpoint;
 
 /**
- * rml component which does bla bla.
+ * RML Component.
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name")
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "rml", title = "rml", syntax="rml:name", category = {Category.TRANSFORMATION})
 
 public class RmlEndpoint extends DefaultEndpoint {
     @UriPath @Metadata(required = true)
     private String name;
     @UriParam(defaultValue = "null")
     private String basePath;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "Input file")
     private ChimeraResourceBean inputFile;
     @UriParam(defaultValue = "false")
     private boolean useMessage;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "RML mapping")
     private ChimeraResourceBean mapping;
-    @UriParam(defaultValue = "null")
+    @UriParam(defaultValue = "null", description = "RML functions used in mapping")
     private ChimeraResourceBean functionFile;
     @UriParam(defaultValue = "0")
     private int batchSize = 0;

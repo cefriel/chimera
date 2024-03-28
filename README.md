@@ -41,6 +41,15 @@ Chimera is currently composed of three Apache Camel Components, available as sub
 - `camel-chimera-rmlmapper` Camel component used to lifting using the [rmlmapper-cefriel](https://github.com/cefriel/rmlmapper-cefriel) library 
 - `camel-chimera-mapping-template` Camel component able to implement both lifting and lowering steps using the [mapping-template](https://github.com/cefriel/mapping-template) library
 
+### Chimera Pipeline Configuration
+
+Apache Camel provides support for multiple domain-specific languages
+([DSL](https://camel.apache.org/manual/dsl.html)) to define routes,
+with the primary options being the Java, XML, and YAML DSLs. When
+utilizing the YAML DSL, routes can be configured graphically through
+Camel Karavan, as detailed in the approach outlined
+[here](./karavan/).
+
 ### References
 
 Projects using Chimera:
