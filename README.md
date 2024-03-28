@@ -44,7 +44,7 @@ Chimera is currently composed of three Apache Camel Components, available as sub
 ### Chimera Pipeline Configuration
 
 Apache Camel provides support for multiple domain-specific languages
-(([DSL](https://camel.apache.org/manual/dsl.html))) to define routes,
+([DSL](https://camel.apache.org/manual/dsl.html)) to define routes,
 with the primary options being the Java, XML, and YAML DSLs. When
 utilizing the YAML DSL, routes can be configured graphically through
 Camel Karavan, as detailed in the approach outlined
