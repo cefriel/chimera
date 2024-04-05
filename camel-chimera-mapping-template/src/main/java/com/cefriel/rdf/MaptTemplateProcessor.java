@@ -101,7 +101,8 @@ public class MaptTemplateProcessor {
 
         if (validateParams(params)) {
             TemplateExecutor templateExecutor = new TemplateExecutor();
-            Reader reader = getReaderFromExchange(exchange, inputFormat, params.verboseReader());
+	    
+	    Reader reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
 
             // which custom template functions to use ???
             // the one that is defined, what if both are defined?
@@ -175,20 +176,23 @@ public class MaptTemplateProcessor {
             }
         }
     }
-    private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, boolean verbose) throws Exception {
+    private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, String outputFormat, boolean verbose) throws Exception {
 
         if (inputFormat == null) {
             // case when no reader is specified as input but are declared directly in the template file
             return null;
         }
 
-        return switch (inputFormat) {
+        Reader reader = switch (inputFormat) {
             case "rdf" -> configureRDFReader(exchange, verbose);
             case "json" -> new JSONReader(exchange.getMessage().getBody(String.class));
             case "xml" -> new XMLReader(exchange.getMessage().getBody(String.class));
             case "csv" -> new CSVReader(exchange.getMessage().getBody(String.class));
             default -> throw new InvalidParameterException("Cannot create Reader for inputFormat: " + inputFormat);
         };
+
+        reader.setOutputFormat(outputFormat);
+        return reader;
     }
 
     private static RDFReader configureRDFReader(Exchange exchange, boolean verbose) throws Exception {
