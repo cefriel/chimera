@@ -9,6 +9,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,13 +45,11 @@ public class GraphSparqlTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
 
-        TupleQueryResult result = mock.getExchanges().get(0).getMessage().getBody(TupleQueryResult.class);
-        List<String> queryBindings = result.getBindingNames();
-        assert (queryBindings.size() == 3);
-        assert (queryBindings.get(0).equals("s"));
-        assert (queryBindings.get(1).equals("p"));
-        assert (queryBindings.get(2).equals("o"));
-
+        List<BindingSet> result = (List<BindingSet>) mock.getExchanges().get(0).getMessage().getBody();
+        for(BindingSet binding: result) {
+            assert (binding.getBindingNames().size() == 3);
+            assert (binding.getBindingNames().containsAll(List.of("s", "p", "o")));
+        }
     }
 
     @Test
@@ -63,12 +62,11 @@ public class GraphSparqlTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
 
-        TupleQueryResult result = mock.getExchanges().get(0).getMessage().getBody(TupleQueryResult.class);
-        List<String> queryBindings = result.getBindingNames();
-        assert (queryBindings.size() == 3);
-        assert (queryBindings.get(0).equals("s"));
-        assert (queryBindings.get(1).equals("p"));
-        assert (queryBindings.get(2).equals("o"));
+        List<BindingSet> result = (List<BindingSet>) mock.getExchanges().get(0).getMessage().getBody();
+        for(BindingSet binding: result) {
+            assert (binding.getBindingNames().size() == 3);
+            assert (binding.getBindingNames().containsAll(List.of("s", "p", "o")));
+        }
     }
 
     @Test

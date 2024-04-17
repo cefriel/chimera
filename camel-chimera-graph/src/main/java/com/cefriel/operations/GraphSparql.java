@@ -6,6 +6,8 @@ import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ResourceAccessor;
 import org.apache.camel.Exchange;
 import org.apache.commons.logging.Log;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -90,8 +93,13 @@ public class GraphSparql {
         LOG.info("Executing sparql query...");
 
         if (outputFormat.equals("memory")) {
-            TupleQueryResult result = tupleQuery.evaluate();
-            exchange.getMessage().setBody(result, TupleQueryResult.class);
+            List<BindingSet> resultList;
+            try (TupleQueryResult result = tupleQuery.evaluate()) {
+                // this is needed because TupleQueryResult is lazy and keeps a connection open to the repository.
+                // we want to get the results and then not care about the repository.
+                resultList = QueryResults.asList(result);
+                exchange.getMessage().setBody(resultList, List.class);
+            }
         }
         else {
             StringWriter stringWriter = new StringWriter();
