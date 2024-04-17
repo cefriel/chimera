@@ -65,6 +65,8 @@ public class GraphSparql {
 
     private static String resolveQuery(Optional<String> literalQuery, Optional<ChimeraResourceBean> resourceQuery, Exchange exchange) throws Exception {
         if(literalQuery.isPresent()) {
+            if(resourceQuery.isPresent())
+                LOG.info("Two SPARQL queries have been supplied to the GraphSparql operation. Using the 'query' endpoint parameter supplied query.");
             return literalQuery.get();
         } else if (resourceQuery.isPresent())
         {
