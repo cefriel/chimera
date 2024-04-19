@@ -16,14 +16,20 @@
 
 package com.cefriel;
 
+import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.Utils;
+import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +38,10 @@ public class GraphConstructTest extends CamelTestSupport {
     private static ChimeraResourceBean constructQuery;
     private static final String baseIri = "http://example.org/";
     private static final String namedGraph = baseIri + "newContext";
+
+    private static final String sparqlSelectQuery = "SELECT ?s ?p ?o WHERE { ?s ?p ?o}";
+    @Produce("direct:start")
+    ProducerTemplate start;
     @BeforeAll
     static void fillBean(){
         triples = new ChimeraResourceBean(
@@ -66,6 +76,29 @@ public class GraphConstructTest extends CamelTestSupport {
 
         assert (statements.stream().count() == 9);
     }
+    @Test
+    public void testConstructSparqlSelectQuery() throws Exception {
+        var graph = new MemoryRDFGraph();
+        Utils.populateRepository(graph.getRepository(), triples, null);
+
+        MockEndpoint mock = getMockEndpoint("mock:sparqlSelectQuery");
+        mock.expectedMessageCount(0);
+        mock.assertIsSatisfied();
+
+        Assertions.assertThrows(CamelExecutionException.class,
+                () -> {
+                    try {
+                        start.sendBody("direct:sparqlSelectQuery", graph);
+                    }
+                    catch (CamelExecutionException e) {
+                        Throwable cause = e.getCause();
+                        Assertions.assertThrows(IllegalArgumentException.class,
+                                () -> {throw cause;});
+                        throw e;
+                    }
+                });
+    }
+
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
@@ -84,6 +117,11 @@ public class GraphConstructTest extends CamelTestSupport {
                         .to("graph://add?chimeraResource=#bean:triples")
                         .to("graph://construct?chimeraResource=#bean:constructQuery")
                         .to("mock:constructOld");
+
+                from("direct:sparqlSelectQuery")
+                        .setVariable("sparqlSelectQuery", constant(sparqlSelectQuery))
+                        .toD("graph://construct?query=${variable.sparqlSelectQuery}")
+                        .to("mock:sparqlSelectQuery");
             }
         };
     }
