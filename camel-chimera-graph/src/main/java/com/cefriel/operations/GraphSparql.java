@@ -3,9 +3,8 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ResourceAccessor;
+import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
-import org.apache.commons.logging.Log;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -19,21 +18,18 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 public class GraphSparql {
     private static final Logger LOG = LoggerFactory.getLogger(GraphSparql.class);
     private static final Set<String> validOutputFormats = Set.of("json", "csv", "xml", "tsv", "memory");
-    private record EndpointParams (Optional<String> literalQuery, Optional<ChimeraResourceBean> resourceQuery, String outputFormat) {
+    private record EndpointParams (String literalQuery, ChimeraResourceBean resourceQuery, String outputFormat) {
         EndpointParams(GraphBean operationConfig) {
-            this(Optional.ofNullable(operationConfig.getQuery()),
-                    Optional.ofNullable(operationConfig.getChimeraResource()),
+            this(operationConfig.getQuery(),
+                    operationConfig.getChimeraResource(),
                     operationConfig.getDumpFormat());
         }
         EndpointParams {
@@ -42,7 +38,7 @@ public class GraphSparql {
             if (!validOutputFormats.contains(outputFormat))
                 throw new IllegalArgumentException("unsupported format " + outputFormat + ", must be one of: " + validOutputFormats);
 
-            if (literalQuery.isEmpty() && resourceQuery.isEmpty())
+            if (literalQuery == null&& resourceQuery == null)
                 throw new NullPointerException("both sparql queries query cannot be null");
         }
     }
@@ -50,7 +46,7 @@ public class GraphSparql {
         OperationParams(Exchange exchange, EndpointParams endpointParams) throws Exception {
             this(exchange,
                     exchange.getMessage().getBody(RDFGraph.class),
-                    resolveQuery(endpointParams.literalQuery, endpointParams.resourceQuery, exchange),
+                    Utils.resolveQuery(endpointParams.literalQuery, endpointParams.resourceQuery, exchange),
                     endpointParams.outputFormat);
         }
 
@@ -62,32 +58,11 @@ public class GraphSparql {
                 throw new IllegalArgumentException("SPARQL query cannot be blank");
         }
     }
-
-    private static String resolveQuery(Optional<String> literalQuery, Optional<ChimeraResourceBean> resourceQuery, Exchange exchange) throws Exception {
-        if(literalQuery.isPresent()) {
-            if(resourceQuery.isPresent())
-                LOG.info("Two SPARQL queries have been supplied to the GraphSparql operation. Using the 'query' endpoint parameter supplied query.");
-            return literalQuery.get();
-        } else if (resourceQuery.isPresent())
-        {
-            ByteArrayOutputStream o;
-            try (InputStream inputstream = ResourceAccessor.open(resourceQuery.get(), exchange)) {
-                o = new ByteArrayOutputStream();
-                inputstream.transferTo(o);
-            }
-            return o.toString();
-        }
-        else {
-            throw new NullPointerException("both sparql queries query cannot be null");
-        }
-    }
-
     public static void graphSparql(Exchange exchange, GraphBean operationConfig) throws Exception {
         EndpointParams endpointParams = new EndpointParams(operationConfig);
         OperationParams operationParams = new OperationParams(exchange, endpointParams);
         graphSparql(exchange, operationParams.graph, operationParams.query, operationParams.outputFormat);
     }
-
     private static void graphSparql (Exchange exchange, RDFGraph graph, String query, String outputFormat) {
         Repository repo = graph.getRepository();
         RepositoryConnection connection = repo.getConnection();
@@ -95,11 +70,10 @@ public class GraphSparql {
         LOG.info("Executing sparql query...");
 
         if (outputFormat.equals("memory")) {
-            List<BindingSet> resultList;
             try (TupleQueryResult result = tupleQuery.evaluate()) {
                 // this is needed because TupleQueryResult is lazy and keeps a connection open to the repository.
                 // we want to get the results and then not care about the repository.
-                resultList = QueryResults.asList(result);
+                List<BindingSet> resultList = QueryResults.asList(result);
                 exchange.getMessage().setBody(resultList, List.class);
             }
         }
