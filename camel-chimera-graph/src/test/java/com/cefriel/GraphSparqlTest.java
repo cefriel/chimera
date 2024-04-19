@@ -23,6 +23,7 @@ public class GraphSparqlTest extends CamelTestSupport {
     private static ChimeraResourceBean triples;
     private static ChimeraResourceBean resourceQuery;
     private static final String sparqlQuery = "SELECT ?s ?p ?o WHERE { ?s ?p ?o}";
+    private static final String sparqlAskQuery = "ASK WHERE { ?s ?p ?o}";
 
     @BeforeAll
     static void fillBean(){
@@ -50,6 +51,29 @@ public class GraphSparqlTest extends CamelTestSupport {
             assert (binding.getBindingNames().size() == 3);
             assert (binding.getBindingNames().containsAll(List.of("s", "p", "o")));
         }
+    }
+
+    @Test
+    public void testSparqlAskQuery() throws Exception {
+        var graph = new MemoryRDFGraph();
+        Utils.populateRepository(graph.getRepository(), triples, null);
+
+        MockEndpoint mock = getMockEndpoint("mock:sparqlAskQuery");
+        mock.expectedMessageCount(0);
+        mock.assertIsSatisfied();
+
+        Assertions.assertThrows(CamelExecutionException.class,
+                () -> {
+                    try {
+                        start.sendBody("direct:sparqlAskQuery", graph);
+                    }
+                    catch (CamelExecutionException e) {
+                        Throwable cause = e.getCause();
+                        Assertions.assertThrows(IllegalArgumentException.class,
+                                () -> {throw cause;});
+                        throw e;
+                    }
+                });
     }
 
     @Test
@@ -128,6 +152,11 @@ public class GraphSparqlTest extends CamelTestSupport {
                         .setVariable("sparqlQuery", constant(sparqlQuery))
                         .toD("graph://sparql?dumpFormat=memory&query=${variable.sparqlQuery}")
                         .to("mock:sparqlQuery");
+
+                from("direct:sparqlAskQuery")
+                        .setVariable("sparqlAskQuery", constant(sparqlAskQuery))
+                        .toD("graph://sparql?dumpFormat=memory&query=${variable.sparqlAskQuery}")
+                        .to("mock:sparqlAskQuery");
 
                 from("direct:sparqlResourceQuery")
                         .toD("graph://sparql?dumpFormat=memory&chimeraResource=#bean:resourceQuery")
