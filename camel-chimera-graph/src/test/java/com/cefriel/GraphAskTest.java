@@ -116,21 +116,21 @@ public class GraphAskTest extends CamelTestSupport {
 
                 from("direct:sparqlAskQuery")
                         .setVariable("sparqlAskQuery", constant(sparqlAskQuery))
-                        .toD("graph://ask?dumpFormat=memory&query=${variable.sparqlAskQuery}")
+                        .toD("graph://ask?query=${variable.sparqlAskQuery}")
                         .to("mock:sparqlAskQuery");
 
                 from("direct:sparqlAskSelectQuery")
                         .setVariable("sparqlSelectQuery", constant(sparqlSelectQuery))
-                        .toD("graph://ask?dumpFormat=memory&query=${variable.sparqlSelectQuery}")
+                        .toD("graph://ask?query=${variable.sparqlSelectQuery}")
                         .to("mock:sparqlAskQuery");
 
                 from("direct:sparqlAskResourceQuery")
-                        .toD("graph://ask?dumpFormat=memory&chimeraResource=#bean:resourceQuery")
+                        .toD("graph://ask?chimeraResource=#bean:resourceQuery")
                         .to("mock:sparqlAskResourceQuery");
 
                 from("direct:sparqlAskQueryNoQueries")
                         .setVariable("sparqlQuery", constant(""))
-                        .toD("graph://ask?dumpFormat=parquet&query=${variable.sparqlQuery}")
+                        .toD("graph://ask?query=${variable.sparqlQuery}")
                         .to("mock:sparqlAskQueryUnsupportedFormat");
             }
         };
