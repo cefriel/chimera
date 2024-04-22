@@ -23,6 +23,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Operation to perform SPARQL SELECT queries.
+ *
+ * A query can be supplied in the following ways:
+ * <ul>
+ *   <li>Using the 'query' endpoint parameter and passing the query as a String</li>
+ *   <li>Using the 'chimeraResource' endpoint parameter and passing it in as a ChimeraResourceBean</li>
+ * </ul>
+ *
+ * At least one of these queries must be not null. If both are specified then the 'query' String parameter has priority.
+ *
+ * Results from the query can be obtained in the outgoing exchange body in the following formats:
+ * <ul>
+ *   <li>json, a json formatted string</li>
+ *   <li>csv, a csv formatted string</li>
+ *   <li>xml, a xml formatted string</li>
+ *   <li>tsv, a tsv formatted string</li>
+ *   <li>memory, an RDF4J specific List&lt;BindingSet&gt;. This result can then, for example, be further processed by a custom Camel Processor.</li>
+ * </ul>
+ * *
+ */
 public class GraphSparql {
     private static final Logger LOG = LoggerFactory.getLogger(GraphSparql.class);
     private static final Set<String> validOutputFormats = Set.of("json", "csv", "xml", "tsv", "memory");
