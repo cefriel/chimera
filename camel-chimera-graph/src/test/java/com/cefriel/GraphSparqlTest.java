@@ -149,16 +149,16 @@ public class GraphSparqlTest extends CamelTestSupport {
 
                 from("direct:sparqlQuery")
                         .setVariable("sparqlQuery", constant(sparqlQuery))
-                        .toD("graph://sparql?dumpFormat=memory&query=${variable.sparqlQuery}")
+                        .toD("graph://sparql?query=${variable.sparqlQuery}")
                         .to("mock:sparqlQuery");
 
                 from("direct:sparqlAskQuery")
                         .setVariable("sparqlAskQuery", constant(sparqlAskQuery))
-                        .toD("graph://sparql?dumpFormat=memory&query=${variable.sparqlAskQuery}")
+                        .toD("graph://sparql?query=${variable.sparqlAskQuery}")
                         .to("mock:sparqlAskQuery");
 
                 from("direct:sparqlResourceQuery")
-                        .toD("graph://sparql?dumpFormat=memory&chimeraResource=#bean:resourceQuery")
+                        .toD("graph://sparql?chimeraResource=#bean:resourceQuery")
                         .to("mock:sparqlResourceQuery");
 
                 from("direct:sparqlQueryUnsupportedFormat")

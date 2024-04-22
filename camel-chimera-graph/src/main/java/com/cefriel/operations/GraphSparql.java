@@ -34,14 +34,16 @@ import java.util.Set;
  *
  * At least one of these queries must be not null. If both are specified then the 'query' String parameter has priority.
  *
- * Results from the query can be obtained in the outgoing exchange body in the following formats:
+ * Results from the query can be obtained by specifying a serialization format using the 'dumpFormat' endpoint parameter. The available serialization formats are:
  * <ul>
  *   <li>json, a json formatted string</li>
  *   <li>csv, a csv formatted string</li>
  *   <li>xml, a xml formatted string</li>
  *   <li>tsv, a tsv formatted string</li>
- *   <li>memory, an RDF4J specific List&lt;BindingSet&gt;. This result can then, for example, be further processed by a custom Camel Processor.</li>
+ *
  * </ul>
+ * If no serialization format is specified then the result is returned as an in memory, RDF4J specific List&lt;BindingSet&gt; data structure.
+ * The result of this operation is always returned as the body of the outgoing Exchange.
  * *
  */
 public class GraphSparql {
@@ -54,12 +56,14 @@ public class GraphSparql {
                     operationConfig.getDumpFormat());
         }
         EndpointParams {
-            Objects.requireNonNull(outputFormat, "format for sparql query result must be specified using dumpFormat endpoint option");
+            // if outputFormat
+            if(outputFormat == null)
+                outputFormat = "memory";
 
             if (!validOutputFormats.contains(outputFormat))
                 throw new IllegalArgumentException("unsupported format " + outputFormat + ", must be one of: " + validOutputFormats);
 
-            if (literalQuery == null&& resourceQuery == null)
+            if (literalQuery == null && resourceQuery == null)
                 throw new NullPointerException("both sparql queries query cannot be null");
         }
     }
