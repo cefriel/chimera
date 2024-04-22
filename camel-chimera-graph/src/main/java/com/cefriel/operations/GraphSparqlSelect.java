@@ -46,8 +46,8 @@ import java.util.Set;
  * The result of this operation is always returned as the body of the outgoing Exchange.
  * *
  */
-public class GraphSparql {
-    private static final Logger LOG = LoggerFactory.getLogger(GraphSparql.class);
+public class GraphSparqlSelect {
+    private static final Logger LOG = LoggerFactory.getLogger(GraphSparqlSelect.class);
     private static final Set<String> validOutputFormats = Set.of("json", "csv", "xml", "tsv", "memory");
     private record EndpointParams (String literalQuery, ChimeraResourceBean resourceQuery, String outputFormat) {
         EndpointParams(GraphBean operationConfig) {

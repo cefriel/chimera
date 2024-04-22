@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class GraphSparqlTest extends CamelTestSupport {
+public class GraphSparqlSelectTest extends CamelTestSupport {
     @Produce("direct:start")
     ProducerTemplate start;
     private static ChimeraResourceBean triples;
@@ -149,26 +149,26 @@ public class GraphSparqlTest extends CamelTestSupport {
 
                 from("direct:sparqlQuery")
                         .setVariable("sparqlQuery", constant(sparqlQuery))
-                        .toD("graph://sparql?query=${variable.sparqlQuery}")
+                        .toD("graph://select?query=${variable.sparqlQuery}")
                         .to("mock:sparqlQuery");
 
                 from("direct:sparqlAskQuery")
                         .setVariable("sparqlAskQuery", constant(sparqlAskQuery))
-                        .toD("graph://sparql?query=${variable.sparqlAskQuery}")
+                        .toD("graph://select?query=${variable.sparqlAskQuery}")
                         .to("mock:sparqlAskQuery");
 
                 from("direct:sparqlResourceQuery")
-                        .toD("graph://sparql?chimeraResource=#bean:resourceQuery")
+                        .toD("graph://select?chimeraResource=#bean:resourceQuery")
                         .to("mock:sparqlResourceQuery");
 
                 from("direct:sparqlQueryUnsupportedFormat")
                         .setVariable("sparqlQuery", constant(sparqlQuery))
-                        .toD("graph://sparql?dumpFormat=parquet&query=${variable.sparqlQuery}")
+                        .toD("graph://select?dumpFormat=parquet&query=${variable.sparqlQuery}")
                         .to("mock:sparqlQueryUnsupportedFormat");
 
                 from("direct:sparqlQueryNoQueries")
                         .setVariable("sparqlQuery", constant(""))
-                        .toD("graph://sparql?dumpFormat=parquet&query=${variable.sparqlQuery}")
+                        .toD("graph://select?dumpFormat=parquet&query=${variable.sparqlQuery}")
                         .to("mock:sparqlQueryUnsupportedFormat");
             }
         };
