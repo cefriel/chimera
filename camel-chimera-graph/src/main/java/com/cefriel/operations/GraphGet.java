@@ -118,7 +118,8 @@ public class GraphGet {
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws Exception {
         RDFGraph graph = obtainGraph(params, exchange);
-        Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().rdfFormat());
+        if(inputStream != null)
+            Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().rdfFormat());
         return graph;
     }
 

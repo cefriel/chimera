@@ -36,7 +36,6 @@ public class GraphGetTest extends CamelTestSupport {
     private static final Logger log = LoggerFactory.getLogger(GraphGetTest.class);
     @Produce("direct:start")
     ProducerTemplate start;
-
     @Produce("direct:start2")
     ProducerTemplate start2;
 
@@ -61,32 +60,6 @@ public class GraphGetTest extends CamelTestSupport {
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
         assert(graph.getRepository().getConnection().size() == 0);
     }
-
-    /*
-    @Test
-    public void testNamedGraph() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:namedGraph");
-        mock.expectedMessageCount(1);
-        mock.assertIsSatisfied();
-
-        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getNamedGraph().toString().equals("http://example.org/testName"));
-    }
-
-     */
-    /*
-    @Test
-    public void testBaseIRI() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:baseIRI");
-        mock.expectedMessageCount(1);
-        mock.assertIsSatisfied();
-
-        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getBaseIRI().toString().equals("http://example.org/"));
-        assert(graph.getNamedGraph().toString().equals("http://example.org/" + mock.getExchanges().get(0).getExchangeId()));
-    }
-
-     */
 
     @Test
     public void testDefaultGraph() throws Exception {
