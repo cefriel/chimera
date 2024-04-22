@@ -67,7 +67,7 @@ public class GraphProducer extends DefaultProducer {
             case "add" -> GraphAdd.graphAdd(exchange, operationConfig);
             case "construct" -> GraphConstruct.graphConstruct(exchange, operationConfig);
             case "sparql" -> GraphSparql.graphSparql(exchange, operationConfig);
-            case "ask" -> GraphAsk.graphAsk(exchange, operationConfig);
+            case "ask" -> GraphSparqlAsk.graphAsk(exchange, operationConfig);
             case "detach" -> GraphDetach.graphDetach(exchange, operationConfig);
             case "dump" -> GraphDump.graphDump(exchange, operationConfig);
             case "inference" -> GraphInference.graphInference(exchange, operationConfig);

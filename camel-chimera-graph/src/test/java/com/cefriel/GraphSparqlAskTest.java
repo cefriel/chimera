@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class GraphAskTest extends CamelTestSupport {
+public class GraphSparqlAskTest extends CamelTestSupport {
     @Produce("direct:start")
     ProducerTemplate start;
     private static ChimeraResourceBean triples;

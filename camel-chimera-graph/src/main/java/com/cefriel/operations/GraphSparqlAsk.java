@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-public class GraphAsk {
-    private static final Logger LOG = LoggerFactory.getLogger(GraphAsk.class);
+public class GraphSparqlAsk {
+    private static final Logger LOG = LoggerFactory.getLogger(GraphSparqlAsk.class);
     private record EndpointParams (String literalQuery, ChimeraResourceBean resourceQuery) {
         EndpointParams(GraphBean operationConfig) {
             this(operationConfig.getQuery(),
