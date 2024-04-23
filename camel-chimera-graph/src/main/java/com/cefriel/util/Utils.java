@@ -32,6 +32,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +43,7 @@ import java.nio.file.StandardCopyOption;
 
 public class Utils {
 
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     public static IRI stringToIRI(String sIRI) {
         return SimpleValueFactory.getInstance().createIRI(sIRI);
@@ -139,6 +140,25 @@ public class Utils {
         // write to file
         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         return filePath.toString();
+    }
+
+    public static String resolveQuery(String literalQuery, ChimeraResourceBean resourceQuery, Exchange exchange) throws Exception {
+        if(literalQuery != null) {
+            if(resourceQuery != null)
+                LOG.info("Two queries have been supplied to the operation. Using the 'query' endpoint parameter supplied query.");
+            return literalQuery;
+        } else if (resourceQuery != null)
+        {
+            ByteArrayOutputStream o;
+            try (InputStream inputstream = ResourceAccessor.open(resourceQuery, exchange)) {
+                o = new ByteArrayOutputStream();
+                inputstream.transferTo(o);
+            }
+            return o.toString();
+        }
+        else {
+            throw new NullPointerException("both queries query cannot be null");
+        }
     }
 
     public static String writeModelToDestination(Exchange exchange, Model model, String defaultName) throws IOException {
