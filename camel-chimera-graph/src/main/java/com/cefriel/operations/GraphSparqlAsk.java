@@ -12,6 +12,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+
+/**
+ * Operation to perform SPARQL ASK queries.
+ *
+ * A query can be supplied in the following ways:
+ * <ul>
+ *   <li>Using the 'query' endpoint parameter and passing the query as a String</li>
+ *   <li>Using the 'chimeraResource' endpoint parameter and passing it in as a ChimeraResourceBean</li>
+ * </ul>
+ *
+ * At least one of these queries must be not null. If both are specified then the 'query' String parameter has priority.
+ *
+ * The result of this operation is a Boolean, returned as the body of the outgoing Exchange.
+ * *
+ */
 public class GraphSparqlAsk {
     private static final Logger LOG = LoggerFactory.getLogger(GraphSparqlAsk.class);
     private record EndpointParams (String literalQuery, ChimeraResourceBean resourceQuery) {
