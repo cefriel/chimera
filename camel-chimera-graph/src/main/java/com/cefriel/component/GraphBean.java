@@ -33,7 +33,7 @@ public class GraphBean {
     private String ontologyFormat;
     private String namedGraph;
     private String baseIri;
-    private boolean defaultGraph = false;
+    private boolean defaultGraph;
     private String serverUrl;
     private String repositoryID;
     private String sparqlEndpoint;
