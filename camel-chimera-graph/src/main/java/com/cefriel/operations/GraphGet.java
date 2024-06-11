@@ -117,7 +117,7 @@ public class GraphGet {
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws Exception {
 
         String namedGraph;
-        String baseIRI = params.endpointParams().baseIri != null ? params.endpointParams().baseIri() : ChimeraConstants.DEFAULT_BASE_IRI; // does not matter? set to namedGraph just to make tests pass, baseIri does not seem to be actually used
+        String baseIRI = params.endpointParams().baseIri != null ? params.endpointParams().baseIri() : ChimeraConstants.DEFAULT_BASE_IRI;
         if(params.endpointParams().defaultGraph()) {
             namedGraph = null;
         }
