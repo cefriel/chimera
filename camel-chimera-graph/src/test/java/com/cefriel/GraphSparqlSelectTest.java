@@ -9,6 +9,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,6 +39,7 @@ public class GraphSparqlSelectTest extends CamelTestSupport {
     @Test
     public void testSparqlQuery() throws Exception {
         var graph = new MemoryRDFGraph();
+
         Utils.populateRepository(graph.getRepository(), triples, null);
         start.sendBody("direct:sparqlQuery", graph);
 

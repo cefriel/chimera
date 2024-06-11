@@ -63,7 +63,7 @@ public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("template", template);
                 getCamelContext().getRegistry().bind("query", query);
 
-                from("graph://get")
+                from("graph://get?defaultGraph=false")
                         .to("graph://add?chimeraResource=#bean:triples")
                         .to("mapt://rdf?template=#bean:template&query=#bean:query&basePath=./src/test/resources/file/result&fileName=agencyParametric.csv")
                         .to("mock:rdfParamAgency");

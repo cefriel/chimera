@@ -42,6 +42,7 @@ public class MemoryRDFGraph extends RDFGraph {
         this.repo = cRepo;
     }
     public MemoryRDFGraph(IRI baseIRI) {
+        this();
         this.baseIRI = baseIRI;
     }
 

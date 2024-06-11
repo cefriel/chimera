@@ -91,6 +91,7 @@ public class GraphSparqlSelect {
     private static void graphSparql (Exchange exchange, RDFGraph graph, String query, String outputFormat) {
         Repository repo = graph.getRepository();
         RepositoryConnection connection = repo.getConnection();
+
         TupleQuery tupleQuery = connection.prepareTupleQuery(query);
         LOG.info("Executing sparql query...");
 

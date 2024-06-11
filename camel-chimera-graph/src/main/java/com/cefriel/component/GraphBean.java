@@ -34,7 +34,7 @@ public class GraphBean {
     private String ontologyFormat;
     private String namedGraph;
     private String baseIri;
-    private boolean defaultGraph = true;
+    private boolean defaultGraph = false;
     private String serverUrl;
     private String repositoryID;
     private String sparqlEndpoint;
@@ -268,9 +268,8 @@ public class GraphBean {
         if(endpoint.getBaseIri()!=null){
             this.setBaseIri(endpoint.getBaseIri());
         }
-        if(!endpoint.isDefaultGraph()){
-            this.setDefaultGraph(endpoint.isDefaultGraph());
-        }
+        this.setDefaultGraph(endpoint.isDefaultGraph());
+
         if(endpoint.getServerUrl()!=null){
             this.setServerUrl(endpoint.getServerUrl());
         }
@@ -286,27 +285,23 @@ public class GraphBean {
         if(endpoint.getPathDataDir()!=null){
             this.setPathDataDir(endpoint.getPathDataDir());
         }
-        if(endpoint.isAllRules()){
-            this.setAllRules(endpoint.isAllRules());
-        }
+
+        this.setAllRules(endpoint.isAllRules());
+
         if(endpoint.getRdfFormat()!=null){
             this.setRdfFormat(endpoint.getRdfFormat());
         }
         if(endpoint.getQuery()!=null){
             this.setQuery(endpoint.getQuery());
         }
-        if(endpoint.isNewGraph()){
-            this.setNewGraph(endpoint.isNewGraph());
-        }
-        if(endpoint.isClear()){
-            this.setClear(endpoint.isClear());
-        }
-        if(!endpoint.isRepoOff()){
-            this.setRepoOff(endpoint.isRepoOff());
-        }
-        if(endpoint.isRouteOff()){
-            this.setRouteOff(endpoint.isRouteOff());
-        }
+        this.setNewGraph(endpoint.isNewGraph());
+
+        this.setClear(endpoint.isClear());
+
+        this.setRepoOff(endpoint.isRepoOff());
+
+        this.setRouteOff(endpoint.isRouteOff());
+
         if (endpoint.getDumpFormat()!=null){
             this.setDumpFormat(endpoint.getDumpFormat());
         }

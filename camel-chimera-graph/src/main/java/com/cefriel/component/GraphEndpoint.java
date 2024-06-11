@@ -47,15 +47,15 @@ public class GraphEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String pathDataDir;
     @UriParam(defaultValue = "true")
-    private boolean allRules;
+    private boolean allRules = true;
     @UriParam(defaultValue = "null")
     private String ontologyFormat;
     @UriParam(defaultValue = "null")
     private String namedGraph;
     @UriParam(defaultValue = "http://www.cefriel.com/data/")
     private String baseIri;
-    @UriParam(defaultValue = "true")
-    private boolean defaultGraph = true;
+    @UriParam(defaultValue = "false")
+    private boolean defaultGraph = false;
     @UriParam(defaultValue = "null")
     private String query;
     @UriParam(defaultValue = "null")
