@@ -56,7 +56,6 @@ public class GraphGetTest extends CamelTestSupport {
         assert(mock.getExchanges().get(0).getMessage().getBody().getClass().equals(MemoryRDFGraph.class));
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
         assert(graph.getRepository().isInitialized());
-        // assert(graph.getRepository().getClass().equals(SailRepository.class));
     }
     @Test
     public void testEmptyInput() throws Exception {
@@ -68,40 +67,12 @@ public class GraphGetTest extends CamelTestSupport {
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
         assert(graph.getRepository().getConnection().size() == 0);
     }
-
-    /*
-    @Test
-    public void testNamedGraph() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:namedGraph");
-        mock.expectedMessageCount(1);
-        mock.assertIsSatisfied();
-
-        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getNamedGraph().toString().equals("http://example.org/testName"));
-    }
-
-     */
-    /*
-    @Test
-    public void testBaseIRI() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:baseIRI");
-        mock.expectedMessageCount(1);
-        mock.assertIsSatisfied();
-
-        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getBaseIRI().toString().equals("http://example.org/"));
-        assert(graph.getNamedGraph().toString().equals("http://example.org/" + mock.getExchanges().get(0).getExchangeId()));
-    }
-
-     */
-
     @Test
     public void testDefaultGraph() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:defaultGraph");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
 
-        // test that a graph is returned, that it is a context aware repo, that the context is RDF4J.NIL and that the graph query returns nothing
         assert(mock.getExchanges().get(0).getMessage().getBody().getClass().equals(MemoryRDFGraph.class));
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
         assert (graph.getNamedGraph() == null);
