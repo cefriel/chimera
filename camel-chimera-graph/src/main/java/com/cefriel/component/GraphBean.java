@@ -19,7 +19,6 @@ package com.cefriel.component;
 import com.cefriel.util.ChimeraResourceBean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GraphBean {

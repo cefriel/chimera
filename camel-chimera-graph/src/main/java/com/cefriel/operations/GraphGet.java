@@ -6,7 +6,6 @@ import com.cefriel.util.ChimeraConstants;
 import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
-import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.repository.Repository;
 
 import java.io.InputStream;

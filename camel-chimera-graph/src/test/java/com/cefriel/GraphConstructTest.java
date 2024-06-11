@@ -28,7 +28,6 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.Values;
-import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
