@@ -92,6 +92,7 @@ public class GraphGetTest extends CamelTestSupport {
             String queryTriples = "SELECT * WHERE { ?s ?p ?o }";
             TupleQuery tupleQuery = conn.prepareTupleQuery(queryTriples);
             try (TupleQueryResult result = tupleQuery.evaluate()) {
+                // RDF4J returns triples for all the graphs (default + named graphs)
                 assert (result.stream().count() == 2);
             }
 
