@@ -38,6 +38,7 @@ public class GraphSparqlSelectTest extends CamelTestSupport {
     @Test
     public void testSparqlQuery() throws Exception {
         var graph = new MemoryRDFGraph();
+
         Utils.populateRepository(graph.getRepository(), triples, null);
         start.sendBody("direct:sparqlQuery", graph);
 

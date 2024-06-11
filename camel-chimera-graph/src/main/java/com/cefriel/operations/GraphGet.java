@@ -84,26 +84,7 @@ public class GraphGet {
     }
 
     private static boolean validateParams(OperationParams params) {
-        if (!params.endpointParams().defaultGraph())
-            if (params.endpointParams().baseIri() == null)
-                throw new IllegalArgumentException("No baseIri a non default RDFGraph. Check the defaultGraph option.");
-
         return true;
-    }
-
-    private record NamedGraphAndBaseIRI(String namedGraph, String baseIri) {}
-    private static NamedGraphAndBaseIRI handleNamedGraphAndBaseIRI(boolean wantDefaultGraph, String namedGraph, String baseIri, String graphID) {
-        String returnNamedGraph, returnBaseIRI;
-        if (wantDefaultGraph) {
-            returnBaseIRI = baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri;
-            returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
-            return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
-        }
-        else {
-            returnBaseIRI = baseIri;
-            returnNamedGraph = namedGraph == null ? returnBaseIRI + graphID : namedGraph;
-            return new NamedGraphAndBaseIRI(returnNamedGraph, returnBaseIRI);
-        }
     }
     // called by the producer
     public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws Exception {
@@ -130,17 +111,26 @@ public class GraphGet {
             exchange.getMessage().setBody(graph, RDFGraph.class);
         }
         else {
-            throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
+            throw new IllegalArgumentException("Invalid parameters supplied to GraphGet operation");
         }
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws Exception {
 
-        String namedGraph, baseIRI;
-        NamedGraphAndBaseIRI x = handleNamedGraphAndBaseIRI(params.endpointParams().defaultGraph(),
-                params.endpointParams().namedGraph(), params.endpointParams().baseIri(), params.graphID());
-        namedGraph = x.namedGraph();
-        baseIRI = x.baseIri();
+        String namedGraph;
+        String baseIRI = params.endpointParams().baseIri != null ? params.endpointParams().baseIri() : ChimeraConstants.DEFAULT_BASE_IRI;
+        if(params.endpointParams().defaultGraph()) {
+            namedGraph = null;
+        }
 
+        else {
+            if (params.endpointParams().namedGraph() != null) {
+                namedGraph = params.endpointParams().namedGraph();
+            }
+
+            else {
+                namedGraph = ChimeraConstants.DEFAULT_BASE_IRI + params.graphID();
+            }
+        }
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {
             Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), exchange);
