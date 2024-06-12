@@ -51,7 +51,7 @@ public class GraphEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String ontologyFormat;
     @UriParam(defaultValue = "null")
-    private String namedGraph;
+    private String namedGraphs;
     @UriParam(defaultValue = "http://www.cefriel.com/data/")
     private String baseIri;
     @UriParam(defaultValue = "false")
@@ -183,12 +183,12 @@ public class GraphEndpoint extends DefaultEndpoint {
     /**
      * Parameter used if you want to set the context name of a graph
      */
-    public String getNamedGraph() {
-        return namedGraph;
+    public String getNamedGraphs() {
+        return namedGraphs;
     }
 
-    public void setNamedGraph(String context) {
-        this.namedGraph = context;
+    public void setNamedGraphs(String context) {
+        this.namedGraphs = context;
     }
 
     /**

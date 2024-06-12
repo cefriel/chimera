@@ -71,7 +71,7 @@ public class GraphAddTest extends CamelTestSupport {
                         .to("graph://add?chimeraResource=#bean:triples")
                         .to("mock:add");
 
-                from("graph://get?namedGraph=http://example.org/Picasso")
+                from("graph://get?namedGraphs=http://example.org/Picasso")
                         .to("graph://add?chimeraResource=#bean:triples")
                         .to("mock:add2");
             }

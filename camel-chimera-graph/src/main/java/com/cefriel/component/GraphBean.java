@@ -25,13 +25,11 @@ public class GraphBean {
 
     private String basePath = "./";
     private List<String> resources = new ArrayList<>();
-
     private ChimeraResourceBean chimeraResource;
-
     private String rdfFormat;
     private boolean allRules;
     private String ontologyFormat;
-    private String namedGraph;
+    private String namedGraphs;
     private String baseIri;
     private boolean defaultGraph;
     private String serverUrl;
@@ -50,7 +48,7 @@ public class GraphBean {
     }
 
     public GraphBean(String basePath, List<String> resources, String rdfFormat, boolean allRules,
-                     String ontologyFormat, String namedGraph, String baseIri, boolean defaultGraph, String serverUrl,
+                     String ontologyFormat, String namedGraphs, String baseIri, boolean defaultGraph, String serverUrl,
                      String repositoryID, String sparqlEndpoint, String pathDataDir, String query,
                      boolean newGraph, boolean clear, boolean repoOff, boolean routeOff,
                      String dumpFormat, String filename) {
@@ -59,7 +57,7 @@ public class GraphBean {
         this.rdfFormat = rdfFormat;
         this.allRules = allRules;
         this.ontologyFormat = ontologyFormat;
-        this.namedGraph = namedGraph;
+        this.namedGraphs = namedGraphs;
         this.baseIri = baseIri;
         this.defaultGraph = defaultGraph;
         this.serverUrl = serverUrl;
@@ -81,7 +79,7 @@ public class GraphBean {
         this.rdfFormat = configuration.getRdfFormat();
         this.allRules = configuration.isAllRules();
         this.ontologyFormat = configuration.getOntologyFormat();
-        this.namedGraph = configuration.getNamedGraph();
+        this.namedGraphs = configuration.getNamedGraphs();
         this.baseIri = configuration.getBaseIri();
         this.defaultGraph = configuration.isDefaultGraph();
         this.serverUrl = configuration.getServerUrl();
@@ -137,12 +135,12 @@ public class GraphBean {
         this.ontologyFormat = ontologyFormat;
     }
 
-    public String getNamedGraph() {
-        return namedGraph;
+    public String getNamedGraphs() {
+        return namedGraphs;
     }
 
-    public void setNamedGraph(String namedGraph) {
-        this.namedGraph = namedGraph;
+    public void setNamedGraphs(String namedGraphs) {
+        this.namedGraphs = namedGraphs;
     }
 
     public String getBaseIri() {
@@ -261,8 +259,8 @@ public class GraphBean {
         if(endpoint.getChimeraResource()!=null){
             this.setChimeraResource(endpoint.getChimeraResource());
         }
-        if(endpoint.getNamedGraph()!=null){
-            this.setNamedGraph(endpoint.getNamedGraph());
+        if(endpoint.getNamedGraphs()!=null){
+            this.setNamedGraphs(endpoint.getNamedGraphs());
         }
         if(endpoint.getBaseIri()!=null){
             this.setBaseIri(endpoint.getBaseIri());

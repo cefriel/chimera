@@ -11,8 +11,8 @@ import org.eclipse.rdf4j.repository.Repository;
 import java.io.InputStream;
 
 public class GraphGet {
-    private record HeaderParams(String namedGraph, String baseIRI, String rdfFormat) {}
-    private record EndpointParams(String namedGraph, String baseIri, Boolean defaultGraph,
+    private record HeaderParams(String namedGraphs, String baseIRI, String rdfFormat) {}
+    private record EndpointParams(String namedGraphs, String baseIri, Boolean defaultGraph,
                                   String rdfFormat,
                                   ChimeraResourceBean triples,
                                   // HTTPRDF specific parameters
@@ -37,7 +37,7 @@ public class GraphGet {
     // these params come from the endpoint
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
-                operationConfig.getNamedGraph(),
+                operationConfig.getNamedGraphs(),
                 operationConfig.getBaseIri(),
                 operationConfig.isDefaultGraph(),
                 operationConfig.getRdfFormat(),
@@ -58,7 +58,7 @@ public class GraphGet {
     }
     private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams endpointParams) {
         return new EndpointParams(
-                headerParams.namedGraph() != null ? headerParams.namedGraph() : endpointParams.namedGraph(),
+                headerParams.namedGraphs() != null ? headerParams.namedGraphs() : endpointParams.namedGraphs(),
                 headerParams.baseIRI() != null ? headerParams.baseIRI() : endpointParams.baseIri(),
                 endpointParams.defaultGraph(),
                 headerParams.rdfFormat() != null ? headerParams.rdfFormat() : endpointParams.rdfFormat(),
@@ -116,56 +116,41 @@ public class GraphGet {
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws Exception {
 
-        String namedGraph;
+        String namedGraphs;
         String baseIRI = params.endpointParams().baseIri != null ? params.endpointParams().baseIri() : ChimeraConstants.DEFAULT_BASE_IRI;
         if(params.endpointParams().defaultGraph()) {
-            namedGraph = null;
+            namedGraphs = null;
         }
 
         else {
-            if (params.endpointParams().namedGraph() != null) {
-                namedGraph = params.endpointParams().namedGraph();
+            if (params.endpointParams().namedGraphs() != null) {
+                namedGraphs = params.endpointParams().namedGraphs();
             }
 
             else {
-                namedGraph = ChimeraConstants.DEFAULT_BASE_IRI + params.graphID();
+                namedGraphs = ChimeraConstants.DEFAULT_BASE_IRI + params.graphID();
             }
         }
         RDFGraph graph;
         if (isInferenceRDFGraph(params)) {
             Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), exchange);
-            if (namedGraph != null)
-                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraph, baseIRI);
-            else
-                graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), baseIRI);
+            graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraphs, baseIRI);
         }
 
         else if (isHTTPRDFGraph(params)) {
-            if (namedGraph != null)
-                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), namedGraph, baseIRI);
-            else
-                graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), baseIRI);
+            graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), namedGraphs, baseIRI);
         }
 
         else if (isSPARQLEndpointGraph(params)) {
-            if (namedGraph != null)
-                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), namedGraph, baseIRI);
-            else
-                graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), baseIRI);
+            graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), namedGraphs, baseIRI);
         }
 
         else if (isNativeRDFGraph(params)) {
-            if (namedGraph != null)
-                graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), namedGraph, baseIRI);
-            else
-                graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), baseIRI);
+            graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), namedGraphs, baseIRI);
         }
 
         else {
-            if (namedGraph != null)
-                graph = new MemoryRDFGraph(namedGraph, baseIRI);
-            else
-                graph = new MemoryRDFGraph(baseIRI);
+            graph = new MemoryRDFGraph(namedGraphs, baseIRI);
         }
 
         return graph;

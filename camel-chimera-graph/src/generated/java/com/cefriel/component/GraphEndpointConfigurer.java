@@ -45,8 +45,8 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "filename": target.setFilename(property(camelContext, java.lang.String.class, value)); return true;
         case "lazystartproducer":
         case "lazyStartProducer": target.setLazyStartProducer(property(camelContext, boolean.class, value)); return true;
-        case "namedgraph":
-        case "namedGraph": target.setNamedGraph(property(camelContext, java.lang.String.class, value)); return true;
+        case "namedgraphs":
+        case "namedGraphs": target.setNamedGraphs(property(camelContext, java.lang.String.class, value)); return true;
         case "newgraph":
         case "newGraph": target.setNewGraph(property(camelContext, boolean.class, value)); return true;
         case "ontologyformat":
@@ -97,8 +97,8 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "filename": return java.lang.String.class;
         case "lazystartproducer":
         case "lazyStartProducer": return boolean.class;
-        case "namedgraph":
-        case "namedGraph": return java.lang.String.class;
+        case "namedgraphs":
+        case "namedGraphs": return java.lang.String.class;
         case "newgraph":
         case "newGraph": return boolean.class;
         case "ontologyformat":
@@ -150,8 +150,8 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "filename": return target.getFilename();
         case "lazystartproducer":
         case "lazyStartProducer": return target.isLazyStartProducer();
-        case "namedgraph":
-        case "namedGraph": return target.getNamedGraph();
+        case "namedgraphs":
+        case "namedGraphs": return target.getNamedGraphs();
         case "newgraph":
         case "newGraph": return target.isNewGraph();
         case "ontologyformat":

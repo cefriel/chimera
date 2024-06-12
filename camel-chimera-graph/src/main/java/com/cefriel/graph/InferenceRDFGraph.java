@@ -39,32 +39,18 @@ public class InferenceRDFGraph extends RDFGraph {
         this.repo = new SailRepository(inferencer);
         this.repo.init();
     }
-    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI namedGraph, IRI baseIRI) {
-        SchemaCachingRDFSInferencer inferencer;
-        if (pathDataDir == null)
-            inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, allRules);
-        else
-            inferencer = new SchemaCachingRDFSInferencer(new NativeStore(new File(pathDataDir)),
-                    schema, allRules);
-
-        this.baseIRI = baseIRI;
-        this.namedGraph = namedGraph;
-        ContextAwareRepository cRepo = new ContextAwareRepository(new SailRepository(inferencer));
-        cRepo.setReadContexts(namedGraph);
-        cRepo.setInsertContext(namedGraph);
-        cRepo.init();
-        this.repo = cRepo;
-    }
-
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, IRI baseIRI) {
         this(schema, pathDataDir, allRules);
         this.baseIRI = baseIRI;
     }
 
-    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String namedGraph, String baseIRI) {
-        this(schema, pathDataDir, allRules, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
-    }
     public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String baseIRI) {
         this(schema, pathDataDir, allRules, Utils.stringToIRI(baseIRI));
     }
+
+    public InferenceRDFGraph(Repository schema, String pathDataDir, boolean allRules, String namedGraphs, String baseIRI) {
+        this(schema, pathDataDir, allRules, baseIRI);
+        this.setNamedGraphs(namedGraphs);
+    }
+
 }

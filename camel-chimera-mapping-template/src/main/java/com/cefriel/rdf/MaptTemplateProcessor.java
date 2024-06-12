@@ -199,16 +199,18 @@ public class MaptTemplateProcessor {
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
 
         if(graph != null) {
-            String graphName = graph.getNamedGraph() != null ? graph.getNamedGraph().toString() : null;
-            String baseIri = graph.getBaseIRI().toString();
+            // String graphName = graph.getNamedGraph() != null ? graph.getNamedGraph().toString() : null;
+            // String baseIri = graph.getBaseIRI().toString();
             RDFReader rdfReader = new RDFReader(graph.getRepository());
-            rdfReader.setContext(graphName);
-            rdfReader.setBaseIRI(baseIri);
+            rdfReader.setVerbose(verbose);
+            // rdfReader.setContext(graphName);
+            // rdfReader.setBaseIRI(baseIri);
             return rdfReader;
         }
 
         else {
             RDFReader reader = new RDFReader();
+            reader.setVerbose(verbose);
             RDFFormat format = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
             reader.addString(exchange.getMessage().getBody(String.class), format);
             return reader;
