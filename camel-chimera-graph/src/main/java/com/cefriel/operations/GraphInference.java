@@ -53,30 +53,32 @@ public class GraphInference {
         graphInference(operationParams, exchange);
     }
     public static void graphInference(OperationParams params, Exchange exchange) throws Exception {
-        Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), params.exchange());
-        SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
-        Repository inferenceRepo = new SailRepository(inferencer);
+        Repository inferenceRepo;
+        if (params.endpointParams.triples() != null) {
+            Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), params.exchange());
+            SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
+            inferenceRepo = new SailRepository(inferencer);
+        } else
+            inferenceRepo = new SailRepository( new SchemaCachingRDFSInferencer(new MemoryStore()));
         inferenceRepo.init();
 
         Repository sourceRepo = params.graph().getRepository();
         Repository targetRepo = inferenceRepo;
-        //Enable inference
-        // all statements from source graph to graph with inference enabled
 
+        // Enable inference
+        // all statements from source graph to graph with inference enabled
         Model sourceModel = new TreeModel();
-        for (var st: sourceRepo.getConnection().getStatements(null, null, null, true))
-        {
-            sourceModel.add(st);
-        }
+        sourceRepo.getConnection()
+                .getStatements(null, null, null, true)
+                .forEach(sourceModel::add);
 
         Utils.populateRepository(targetRepo, sourceModel);
 
-        //Copy back
+        // Copy back
         Model targetModel = new TreeModel();
-        for (var st: targetRepo.getConnection().getStatements(null, null, null, true))
-        {
-            targetModel.add(st);
-        }
+        targetRepo.getConnection()
+                .getStatements(null, null, null, true)
+                .forEach(targetModel::add);
 
         Utils.populateRepository(sourceRepo, targetModel);
 
