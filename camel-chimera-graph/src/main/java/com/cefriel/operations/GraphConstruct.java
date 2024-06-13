@@ -41,7 +41,7 @@ public class GraphConstruct {
         return new EndpointParams(
                 operationConfig.getQuery(),
                 operationConfig.getChimeraResource(),
-                operationConfig.getNamedGraphs());
+                operationConfig.getNamedGraph());
     }
     private static OperationParams getOperationParams (Exchange e, GraphBean operationConfig) {
         return new OperationParams(

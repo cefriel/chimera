@@ -268,7 +268,7 @@ public class GraphGetTest extends CamelTestSupport {
                 from("graph://get")
                         .to("mock:memory");
 
-                from("graph://get?namedGraphs=http://example.org/testName2;http://example.org/testName2")
+                from("graph://get?namedGraph=http://example.org/testName2;http://example.org/testName2")
                         .to("mock:multipleNamedGraphs");
 
                 from("graph://get?defaultGraph=true&serverUrl=MY_SERVER_URL&repositoryId=MY_REPOSITORY_ID")
@@ -285,7 +285,7 @@ public class GraphGetTest extends CamelTestSupport {
                         to("graph://get").
                         to("mock:emptyInput");
 
-                from("graph://get?defaultGraph=false&baseIRI=http://example.org/&namedGraphs=http://example.org/testName")
+                from("graph://get?defaultGraph=false&baseIRI=http://example.org/&namedGraph=http://example.org/testName")
                         .to("mock:nonDefaultGraph");
 
                 from("graph://get?defaultGraph=true")

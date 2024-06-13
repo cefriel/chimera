@@ -37,7 +37,7 @@ public class GraphGet {
     // these params come from the endpoint
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
-                operationConfig.getNamedGraphs(),
+                operationConfig.getNamedGraph(),
                 operationConfig.getBaseIri(),
                 operationConfig.isDefaultGraph(),
                 operationConfig.getRdfFormat(),

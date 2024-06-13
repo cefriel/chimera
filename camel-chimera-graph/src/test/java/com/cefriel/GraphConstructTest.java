@@ -119,7 +119,7 @@ public class GraphConstructTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("constructQuery", constructQuery);
 
                 from("direct:constructNew")
-                        .to("graph://construct?namedGraphs=" + namedGraph + "&chimeraResource=#bean:constructQuery")
+                        .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResource=#bean:constructQuery")
                         .to("mock:constructNew");
 
                 from("direct:constructOld")

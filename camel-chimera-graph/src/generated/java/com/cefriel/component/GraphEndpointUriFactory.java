@@ -36,7 +36,7 @@ public class GraphEndpointUriFactory extends org.apache.camel.support.component.
         props.add("filename");
         props.add("lazyStartProducer");
         props.add("name");
-        props.add("namedGraphs");
+        props.add("namedGraph");
         props.add("newGraph");
         props.add("ontologyFormat");
         props.add("pathDataDir");
