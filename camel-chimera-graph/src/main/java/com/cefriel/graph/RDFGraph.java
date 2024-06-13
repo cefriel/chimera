@@ -55,7 +55,10 @@ public abstract class RDFGraph {
         if (!namedGraphs.isEmpty() && this.repo != null) {
             ContextAwareRepository cRep = new ContextAwareRepository(this.repo);
             cRep.setReadContexts(namedGraphs.toArray(new IRI[0]));
-            cRep.setInsertContext(namedGraphs.get(0));
+
+            // when the user passes just one named graph or does NOT use the default graph and the context is the one we generate
+            if (namedGraphs.size() == 1)
+                cRep.setInsertContext(namedGraphs.get(0));
             this.repo = cRep;
             this.namedGraphs = namedGraphs;
         }
