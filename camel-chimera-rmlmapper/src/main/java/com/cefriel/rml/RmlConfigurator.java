@@ -168,12 +168,11 @@ public class RmlConfigurator {
                 initializer = getInitializer(exchange, options);
 
             RDF4JRepository outputStore;
-            IRI namedGraph = graph.getNamedGraphs() != null ? graph.getNamedGraphs().get(0) : null;
             if (options.isConcurrentWrites()) {
-                outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), namedGraph,
+                outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), null,
                         options.getBatchSize(), options.isIncrementalUpdate());
             } else {
-                outputStore = new RDF4JRepository(graph.getRepository(), namedGraph, options.getBatchSize(), options.isIncrementalUpdate());
+                outputStore = new RDF4JRepository(graph.getRepository(), null, options.getBatchSize(), options.isIncrementalUpdate());
             }
 
             String baseIRI;
