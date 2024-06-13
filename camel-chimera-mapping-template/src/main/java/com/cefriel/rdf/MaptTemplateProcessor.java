@@ -199,12 +199,8 @@ public class MaptTemplateProcessor {
         RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
 
         if(graph != null) {
-            // String graphName = graph.getNamedGraph() != null ? graph.getNamedGraph().toString() : null;
-            // String baseIri = graph.getBaseIRI().toString();
             RDFReader rdfReader = new RDFReader(graph.getRepository());
             rdfReader.setVerbose(verbose);
-            // rdfReader.setContext(graphName);
-            // rdfReader.setBaseIRI(baseIri);
             return rdfReader;
         }
 
