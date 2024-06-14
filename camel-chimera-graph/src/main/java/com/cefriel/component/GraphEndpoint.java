@@ -50,7 +50,7 @@ public class GraphEndpoint extends DefaultEndpoint {
     private boolean allRules = true;
     @UriParam(defaultValue = "null")
     private String ontologyFormat;
-    @UriParam(defaultValue = "null")
+    @UriParam(name = "namedGraph", defaultValue = "null", description = "Can be used to pass multiple named graphs separated by ';'")
     private String namedGraph;
     @UriParam(defaultValue = "http://www.cefriel.com/data/")
     private String baseIri;

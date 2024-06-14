@@ -32,6 +32,7 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class GraphGetTest extends CamelTestSupport {
 
         assert(mock.getExchanges().get(0).getMessage().getBody().getClass().equals(MemoryRDFGraph.class));
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert (graph.getNamedGraph() == null);
+        assert (graph.getNamedGraphs() == null);
         var repo = graph.getRepository();
         try (var conn = repo.getConnection()) {
             SimpleValueFactory vf = SimpleValueFactory.getInstance();
@@ -192,7 +193,11 @@ public class GraphGetTest extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert(graph.getNamedGraph().toString().equals("http://example.org/testName"));
+        ContextAwareRepository cRepo = (ContextAwareRepository) graph.getRepository();
+
+        assert(graph.getNamedGraphs().get(0).toString().equals("http://example.org/testName"));
+        assert (cRepo.getReadContexts().length == 1);
+        assert (cRepo.getReadContexts()[0].toString().equals("http://example.org/testName"));
         assert(graph.getBaseIRI().toString().equals("http://example.org/"));
     }
 
@@ -209,7 +214,21 @@ public class GraphGetTest extends CamelTestSupport {
 
         String baseIri = ChimeraConstants.DEFAULT_BASE_IRI;
         assert(graph.getBaseIRI().toString().equals(baseIri));
-        assert(graph.getNamedGraph() == null);
+        assert(graph.getNamedGraphs() == null);
+    }
+
+    @Test
+    public void testMultipleNamedGraphs() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:multipleNamedGraphs");
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+
+        assert(mock.getExchanges().get(0).getMessage().getBody().getClass().equals(MemoryRDFGraph.class));
+        MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+
+        ContextAwareRepository cRepo = (ContextAwareRepository) graph.getRepository();
+        assert (cRepo.getReadContexts().length == 2);
+
     }
 
     @Test
@@ -249,6 +268,9 @@ public class GraphGetTest extends CamelTestSupport {
                 from("graph://get")
                         .to("mock:memory");
 
+                from("graph://get?namedGraph=http://example.org/testName2;http://example.org/testName2")
+                        .to("mock:multipleNamedGraphs");
+
                 from("graph://get?defaultGraph=true&serverUrl=MY_SERVER_URL&repositoryId=MY_REPOSITORY_ID")
                         .to("mock:http");
 
@@ -262,13 +284,6 @@ public class GraphGetTest extends CamelTestSupport {
                 from("direct:start2").
                         to("graph://get").
                         to("mock:emptyInput");
-
-
-                // from("graph://get?defaultGraph=false&namedGraph=http://example.org/testName")
-                   //     .to("mock:namedGraph");
-
-                //from("graph://get?defaultGraph=false&baseIRI=http://example.org/")
-                //        .to("mock:baseIRI");
 
                 from("graph://get?defaultGraph=false&baseIRI=http://example.org/&namedGraph=http://example.org/testName")
                         .to("mock:nonDefaultGraph");

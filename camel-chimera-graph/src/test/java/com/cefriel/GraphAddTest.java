@@ -21,6 +21,7 @@ import com.cefriel.util.ChimeraResourceBean;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -55,8 +56,10 @@ public class GraphAddTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
         MemoryRDFGraph graph = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
-        assert (graph.getRepository().isInitialized());
-        assert (graph.getRepository().getConnection().size() > 0);
+        ContextAwareRepository cRepo = (ContextAwareRepository) graph.getRepository();
+        assert (cRepo.getReadContexts()[0].toString().equals("http://example.org/Picasso"));
+        // no triple should have been added as the specific named graph is not specified in the triples file
+        assert (cRepo.getConnection().size() > 0);
     }
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {

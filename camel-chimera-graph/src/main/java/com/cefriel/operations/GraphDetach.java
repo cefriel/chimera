@@ -64,11 +64,13 @@ public class GraphDetach {
         if (validParams(params)) {
             if (params.endpointParams.clearGraph())
             {
-                IRI contextIRI = params.graph.getNamedGraph();
+                List<IRI> namedGraphs = params.graph.getNamedGraphs();
                 try (RepositoryConnection con = params.graph().getRepository().getConnection()) {
-                    if (contextIRI != null) {
-                        con.clear(contextIRI);
-                        LOG.info("Cleared named graph " + contextIRI.stringValue());
+                    for(IRI namedGraph : namedGraphs) {
+                        if (namedGraph != null) {
+                            con.clear(namedGraph);
+                            LOG.info("Cleared named graph " + namedGraph.stringValue());
+                        }
                     }
                     if (params.endpointParams().triples() != null)
                         for (ChimeraResourceBean ontologyUrl : List.of(params.endpointParams().triples())) {

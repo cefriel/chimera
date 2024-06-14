@@ -32,25 +32,13 @@ public class HTTPRDFGraph extends RDFGraph {
         repo = new HTTPRepository(rrAddress, repositoryId);
         repo.init();
     }
-    public HTTPRDFGraph(String rrAddress, String repositoryId, IRI namedGraph, IRI baseIRI) {
-        this.rrAddress = rrAddress;
-        this.repositoryId = repositoryId;
-        this.baseIRI = baseIRI;
-        this.namedGraph = namedGraph;
-
-        ContextAwareRepository cRepo = new ContextAwareRepository(new HTTPRepository(rrAddress, repositoryId));
-        cRepo.setReadContexts(namedGraph);
-        cRepo.setInsertContext(namedGraph);
-        cRepo.init();
-        this.repo = cRepo;
-    }
-
     public HTTPRDFGraph(String rrAddress, String repositoryId, IRI baseIRI) {
         this(rrAddress, repositoryId);
         this.baseIRI = baseIRI;
     }
-    public HTTPRDFGraph(String rrAddress, String repositoryId, String namedGraph, String baseIRI) {
-        this(rrAddress, repositoryId, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    public HTTPRDFGraph(String rrAddress, String repositoryId, String namedGraphs, String baseIRI) {
+        this(rrAddress, repositoryId, baseIRI);
+        this.setNamedGraphs(namedGraphs);
     }
 
     public HTTPRDFGraph(String rrAddress, String repositoryId, String baseIRI) {

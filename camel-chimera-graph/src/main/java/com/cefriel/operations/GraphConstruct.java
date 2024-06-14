@@ -22,6 +22,7 @@ import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ResourceAccessor;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -30,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class GraphConstruct {
@@ -75,13 +78,19 @@ public class GraphConstruct {
     }
     private static void executeQueryOnGraph(RDFGraph graph, String query, String newNamedGraph) {
         Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
-        RepositoryConnection con = graph.getRepository().getConnection();
-        LOG.info("Added " + m.size() + " triples");
-        if(newNamedGraph != null)
-            con.add(m, Utils.stringToIRI(newNamedGraph));
-        else
-            Utils.populateRepository(graph.getRepository(), m);
-        con.close();
+        try (RepositoryConnection con = graph.getRepository().getConnection()) {
+
+            if (newNamedGraph != null) {
+                List<IRI> newNamedGraphs = Arrays.stream(newNamedGraph.split(";")).map(Utils::stringToIRI).toList();
+                for (IRI namedGraph : newNamedGraphs) {
+                    con.add(m, namedGraph);
+                    LOG.info("Added " + m.size() + " triples to " + namedGraph);
+                }
+            } else {
+                Utils.populateRepository(graph.getRepository(), m);
+                LOG.info("Added " + m.size() + " triples");
+            }
+        }
     }
 
     public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws Exception {

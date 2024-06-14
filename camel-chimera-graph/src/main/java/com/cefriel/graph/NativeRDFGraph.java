@@ -34,24 +34,14 @@ public class NativeRDFGraph extends RDFGraph {
         this.repo = new SailRepository(data);
         this.repo.init();
     }
-    public NativeRDFGraph(String pathDataDir, IRI namedGraph, IRI baseIRI) {
-        this.baseIRI = baseIRI;
-        this.namedGraph = namedGraph;
-        SailRepository r = new SailRepository(new NativeStore(new File(pathDataDir)));
-        ContextAwareRepository cRepo = new ContextAwareRepository(r);
-        cRepo.setReadContexts(namedGraph);
-        cRepo.setInsertContext(namedGraph);
-        cRepo.init();
-        this.repo = cRepo;
-    }
-
     public NativeRDFGraph(String pathDataDir, IRI baseIRI) {
         this(pathDataDir);
         this.baseIRI = baseIRI;
     }
 
-    public NativeRDFGraph(String pathDataDir, String namedGraph, String baseIRI) {
-        this(pathDataDir, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    public NativeRDFGraph(String pathDataDir, String namedGraphs, String baseIRI) {
+        this(pathDataDir,baseIRI);
+        this.setNamedGraphs(namedGraphs);
     }
 
     public NativeRDFGraph(String pathDataDir, String baseIRI) {

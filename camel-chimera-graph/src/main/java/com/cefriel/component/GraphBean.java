@@ -25,9 +25,7 @@ public class GraphBean {
 
     private String basePath = "./";
     private List<String> resources = new ArrayList<>();
-
     private ChimeraResourceBean chimeraResource;
-
     private String rdfFormat;
     private boolean allRules;
     private String ontologyFormat;

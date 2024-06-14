@@ -29,24 +29,14 @@ public class SPARQLEndpointGraph extends RDFGraph {
         repo.init();
         // TODO Federation with FedX, requires rdf4j 3.1.0
     }
-
-    public SPARQLEndpointGraph(String endpoint, IRI namedGraph, IRI baseIRI) {
-        this.baseIRI = baseIRI;
-        this.namedGraph = namedGraph;
-        ContextAwareRepository cRepo = new ContextAwareRepository(new SPARQLRepository(endpoint));
-        cRepo.setReadContexts(namedGraph);
-        cRepo.setInsertContext(namedGraph);
-        cRepo.init();
-        this.repo = cRepo;
-    }
-
     public SPARQLEndpointGraph(String endpoint, IRI baseIRI) {
         this(endpoint);
         this.baseIRI = baseIRI;
     }
 
-    public SPARQLEndpointGraph(String endpoint, String namedGraph, String baseIRI) {
-        this(endpoint, Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    public SPARQLEndpointGraph(String endpoint, String namedGraphs, String baseIRI) {
+        this(endpoint, baseIRI);
+        this.setNamedGraphs(namedGraphs);
     }
 
     public SPARQLEndpointGraph(String endpoint, String baseIRI) {

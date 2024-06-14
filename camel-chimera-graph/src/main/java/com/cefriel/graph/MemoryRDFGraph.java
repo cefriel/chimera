@@ -18,6 +18,7 @@ package com.cefriel.graph;
 
 import com.cefriel.util.Utils;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.Sail;
@@ -32,22 +33,14 @@ public class MemoryRDFGraph extends RDFGraph {
         this.repo = new SailRepository(data);
         this.repo.init();
     }
-    public MemoryRDFGraph(IRI namedGraph, IRI baseIRI) {
-        this.baseIRI = baseIRI;
-        this.namedGraph = namedGraph;
-        ContextAwareRepository cRepo = new ContextAwareRepository(new SailRepository(new MemoryStore()));
-        cRepo.setReadContexts(namedGraph);
-        cRepo.setInsertContext(namedGraph);
-        cRepo.init();
-        this.repo = cRepo;
-    }
     public MemoryRDFGraph(IRI baseIRI) {
         this();
         this.baseIRI = baseIRI;
     }
 
-    public MemoryRDFGraph(String namedGraph, String baseIRI) {
-        this(Utils.stringToIRI(namedGraph), Utils.stringToIRI(baseIRI));
+    public MemoryRDFGraph(String namedGraphs, String baseIRI) {
+        this(baseIRI);
+        this.setNamedGraphs(namedGraphs);
     }
     public MemoryRDFGraph( String baseIRI) {
         this(Utils.stringToIRI(baseIRI));

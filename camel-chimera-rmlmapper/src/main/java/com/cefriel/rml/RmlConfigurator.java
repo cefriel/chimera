@@ -32,6 +32,7 @@ import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.*;
 import org.apache.camel.Exchange;
 import org.apache.commons.cli.ParseException;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,10 +169,10 @@ public class RmlConfigurator {
 
             RDF4JRepository outputStore;
             if (options.isConcurrentWrites()) {
-                outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), graph.getNamedGraph(),
+                outputStore = new ConcurrentRDF4JRepository(graph.getRepository(), null,
                         options.getBatchSize(), options.isIncrementalUpdate());
             } else {
-                outputStore = new RDF4JRepository(graph.getRepository(), graph.getNamedGraph(), options.getBatchSize(), options.isIncrementalUpdate());
+                outputStore = new RDF4JRepository(graph.getRepository(), null, options.getBatchSize(), options.isIncrementalUpdate());
             }
 
             String baseIRI;

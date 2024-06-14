@@ -38,6 +38,8 @@ public class GraphConstructTest extends CamelTestSupport {
     private static ChimeraResourceBean constructQuery;
     private static final String baseIri = "http://example.org/";
     private static final String namedGraph = baseIri + "newContext";
+
+    private static final String multipleNamedGraphs = baseIri + "newContext1" + ";" + baseIri + "newContext2";
     private static final String sparqlSelectQuery = "SELECT ?s ?p ?o WHERE { ?s ?p ?o}";
     @Produce("direct:start")
     ProducerTemplate start;
@@ -66,6 +68,30 @@ public class GraphConstructTest extends CamelTestSupport {
                 null, Values.iri(namedGraph));
         assert (statements.stream().count() == 9);
     }
+
+    @Test
+    public void testConstructNewMultiple() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:constructNewMultiple");
+
+        MemoryRDFGraph graph = new MemoryRDFGraph();
+        Utils.populateRepository(graph.getRepository(), triples, null);
+        start.sendBody("direct:constructNewMultiple", graph);
+
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+        RDFGraph result = mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class);
+        RepositoryResult<Statement> statements = result.getRepository().getConnection().getStatements(null,
+                null,
+                null,
+                Values.iri(namedGraph + "1"));
+        assert (statements.stream().count() == 9);
+        statements = result.getRepository().getConnection().getStatements(null,
+                null,
+                null,
+                Values.iri(namedGraph + "2"));
+        assert (statements.stream().count() == 9);
+    }
+
     @Test
     public void testConstructOld() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:constructOld");
@@ -121,6 +147,10 @@ public class GraphConstructTest extends CamelTestSupport {
                 from("direct:constructNew")
                         .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResource=#bean:constructQuery")
                         .to("mock:constructNew");
+
+                from("direct:constructNewMultiple")
+                        .to("graph://construct?namedGraph=" + multipleNamedGraphs + "&chimeraResource=#bean:constructQuery")
+                        .to("mock:constructNewMultiple");
 
                 from("direct:constructOld")
                         .to("graph://construct?chimeraResource=#bean:constructQuery")

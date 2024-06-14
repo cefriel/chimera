@@ -21,16 +21,19 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.contextaware.ContextAwareRepository;
 
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class RDFGraph {
     Repository repo;
-    IRI namedGraph;
+    List<IRI> namedGraphs;
     IRI baseIRI;
     public Repository getRepository() {
         return repo;
     }
 
-    public IRI getNamedGraph() {
-        return namedGraph;
+    public List<IRI> getNamedGraphs() {
+        return namedGraphs;
     }
 
     public IRI getBaseIRI() {
@@ -41,19 +44,27 @@ public abstract class RDFGraph {
         this.baseIRI = baseIRI;
     }
 
-    public void setNamedGraph(String namedGraph) {
-        if (namedGraph != null && !namedGraph.equals("")) {
-            setNamedGraph(Utils.stringToIRI(namedGraph));
+    public void setNamedGraphs(String namedGraphs) {
+        if (namedGraphs != null && !namedGraphs.equals("")) {
+            List<IRI> graphs = Arrays.stream(namedGraphs.split(";")).map(Utils::stringToIRI).toList();
+            setNamedGraphs(graphs);
         }
     }
 
-    public void setNamedGraph(IRI namedGraph) {
-        this.namedGraph = namedGraph;
-        if (this.repo != null) {
+    public void setNamedGraphs(List<IRI> namedGraphs) {
+        if (!namedGraphs.isEmpty() && this.repo != null) {
             ContextAwareRepository cRep = new ContextAwareRepository(this.repo);
-            cRep.setReadContexts(namedGraph);
-            cRep.setInsertContext(namedGraph);
+            cRep.setReadContexts(namedGraphs.toArray(new IRI[0]));
+
+            // when the user passes just one named graph or does NOT use the default graph and the context is the one we generate
+            if (namedGraphs.size() == 1)
+                cRep.setInsertContext(namedGraphs.get(0));
             this.repo = cRep;
+            this.namedGraphs = namedGraphs;
         }
+    }
+
+    public void setNamedGraphs(IRI namedGraph) {
+        this.setNamedGraphs(List.of(namedGraph));
     }
 }

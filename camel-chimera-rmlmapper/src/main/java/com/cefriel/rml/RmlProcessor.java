@@ -46,8 +46,6 @@ public class RmlProcessor {
 
         RmlBean configuration = exchange.getMessage().getHeader(ChimeraRmlConstants.RML_CONFIG, RmlBean.class);
 
-        IRI context =  graph.getNamedGraph();
-
         Initializer rmlInitializer = exchange.getContext().getRegistry().lookupByNameAndType(RmlConfigurator.getInitializerId(configuration), Initializer.class);
         if (rmlInitializer != null)
                 initializer = rmlInitializer;
