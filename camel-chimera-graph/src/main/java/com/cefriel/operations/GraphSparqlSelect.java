@@ -90,30 +90,32 @@ public class GraphSparqlSelect {
     }
     private static void graphSparql (Exchange exchange, RDFGraph graph, String query, String outputFormat) {
         Repository repo = graph.getRepository();
-        RepositoryConnection connection = repo.getConnection();
+        TupleQuery tupleQuery;
+        try (RepositoryConnection connection = repo.getConnection()) {
+            tupleQuery = connection.prepareTupleQuery(query);
+            LOG.info("Executing sparql query...");
 
-        TupleQuery tupleQuery = connection.prepareTupleQuery(query);
-        LOG.info("Executing sparql query...");
-
-        if (outputFormat.equals("memory")) {
-            try (TupleQueryResult result = tupleQuery.evaluate()) {
-                // this is needed because TupleQueryResult is lazy and keeps a connection open to the repository.
-                // we want to get the results and then not care about the repository.
-                List<BindingSet> resultList = QueryResults.asList(result);
-                exchange.getMessage().setBody(resultList, List.class);
+            if (outputFormat.equals("memory")) {
+                try (TupleQueryResult result = tupleQuery.evaluate()) {
+                    // this is needed because TupleQueryResult is lazy and keeps a connection open to the repository.
+                    // we want to get the results and then not care about the repository.
+                    List<BindingSet> resultList = QueryResults.asList(result);
+                    exchange.getMessage().setBody(resultList, List.class);
+                }
             }
-        }
-        else {
-            StringWriter stringWriter = new StringWriter();
-            switch (outputFormat) {
-                case "json" -> tupleQuery.evaluate(new SPARQLResultsJSONWriter(stringWriter));
-                case "csv" -> tupleQuery.evaluate(new SPARQLResultsCSVWriter(stringWriter));
-                case "xml" -> tupleQuery.evaluate(new SPARQLResultsXMLWriter(stringWriter));
-                case "tsv" -> tupleQuery.evaluate(new SPARQLResultsTSVWriter(stringWriter));
-                default -> throw new UnsupportedOperationException("cannot return SPARQL query result in format: " + outputFormat);
+            else {
+                StringWriter stringWriter = new StringWriter();
+                switch (outputFormat) {
+                    case "json" -> tupleQuery.evaluate(new SPARQLResultsJSONWriter(stringWriter));
+                    case "csv" -> tupleQuery.evaluate(new SPARQLResultsCSVWriter(stringWriter));
+                    case "xml" -> tupleQuery.evaluate(new SPARQLResultsXMLWriter(stringWriter));
+                    case "tsv" -> tupleQuery.evaluate(new SPARQLResultsTSVWriter(stringWriter));
+                    default -> throw new UnsupportedOperationException("cannot return SPARQL query result in format: " + outputFormat);
+                }
+                String result = stringWriter.toString();
+                exchange.getMessage().setBody(result, String.class);
             }
-            String result = stringWriter.toString();
-            exchange.getMessage().setBody(result, String.class);
         }
     }
+
 }

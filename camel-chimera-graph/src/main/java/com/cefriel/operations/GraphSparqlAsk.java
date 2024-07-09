@@ -63,11 +63,14 @@ public class GraphSparqlAsk {
 
     private static void graphAsk(Exchange exchange, RDFGraph graph, String query) {
         Repository repo = graph.getRepository();
-        RepositoryConnection connection = repo.getConnection();
-        BooleanQuery booleanQuery = connection.prepareBooleanQuery(query);
-        LOG.info("Executing sparql query...");
+        BooleanQuery booleanQuery;
 
-        boolean queryResult = booleanQuery.evaluate();
-        exchange.getMessage().setBody(queryResult, Boolean.class);
+        try (RepositoryConnection connection = repo.getConnection()) {
+            booleanQuery = connection.prepareBooleanQuery(query);
+            LOG.info("Executing sparql query...");
+            boolean queryResult = booleanQuery.evaluate();
+            exchange.getMessage().setBody(queryResult, Boolean.class);
+        }
+
     }
 }
