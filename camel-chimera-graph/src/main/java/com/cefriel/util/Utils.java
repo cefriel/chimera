@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -154,7 +155,7 @@ public class Utils {
                 o = new ByteArrayOutputStream();
                 inputstream.transferTo(o);
             }
-            return o.toString();
+            return o.toString(StandardCharsets.UTF_8);
         }
         else {
             throw new NullPointerException("both queries query cannot be null");
