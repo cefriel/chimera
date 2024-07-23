@@ -100,9 +100,6 @@ public class MaptTemplateProcessor {
     private static void execute(OperationParams params, Exchange exchange, String inputFormat) throws Exception {
 
         if (validateParams(params)) {
-            TemplateExecutor templateExecutor = new TemplateExecutor();
-	    
-	    Reader reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
 
             // which custom template functions to use ???
             // the one that is defined, what if both are defined?
@@ -132,7 +129,6 @@ public class MaptTemplateProcessor {
                 usedTemplateFunctions.setPrefix(params.baseIRI());
             }
 
-
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
                 templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange),
@@ -148,36 +144,46 @@ public class MaptTemplateProcessor {
                 formatter = Util.createFormatter(params.formatterFormat());
             }
 
+            TemplateExecutor templateExecutor;
+            if (inputFormat != null && inputFormat.equals("readers")) {
+                Map<String, Reader> readers = exchange.getMessage().getBody(Map.class);
+                templateExecutor = new TemplateExecutor(readers, usedTemplateFunctions, true, params.trimTemplate(), false, templateMap, formatter);
+            }
+            else {
+                Reader reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
+                templateExecutor = new TemplateExecutor(reader, usedTemplateFunctions, true, params.trimTemplate(), false, templateMap, formatter);
+            }
+
             // if filename is specified then save to file
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
                 Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
                 if(params.query() != null) {
                     List<Path> resultFilesPaths =
-                            templateExecutor.executeMappingParametric(reader, ResourceAccessor.open(params.template(), exchange),
-                                    ResourceAccessor.open(params.query(), exchange), outputFilePath, templateMap, formatter, usedTemplateFunctions);
+                            templateExecutor.executeMappingParametric(ResourceAccessor.open(params.template(), exchange),
+                                    ResourceAccessor.open(params.query(), exchange), outputFilePath);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
                     Path resultFilePath =
-                            templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), outputFilePath, templateMap, formatter, usedTemplateFunctions);
+                            templateExecutor.executeMapping(ResourceAccessor.open(params.template(), exchange), outputFilePath);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
             // if filename is not specified then the result of applying template is stored in the exchange body as string
             else {
                 if (params.query() != null) {
-                    Map<String,String> result = templateExecutor.executeMappingParametric(reader, ResourceAccessor.open(params.template(), exchange), ResourceAccessor.open(params.query(), exchange), templateMap, formatter, usedTemplateFunctions);
+                    Map<String,String> result = templateExecutor.executeMappingParametric(ResourceAccessor.open(params.template(), exchange), ResourceAccessor.open(params.query(), exchange));
                     exchange.getMessage().setBody(result, Map.class);
 
                 } else {
-                    String result = templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), templateMap, formatter, usedTemplateFunctions);
+                    String result = templateExecutor.executeMapping(ResourceAccessor.open(params.template(), exchange));
                     exchange.getMessage().setBody(result, String.class);
                 }
             }
         }
     }
-    private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, String outputFormat, boolean verbose) throws Exception {
 
+    private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, String outputFormat, boolean verbose) throws Exception {
         if (inputFormat == null) {
             // case when no reader is specified as input but are declared directly in the template file
             return null;

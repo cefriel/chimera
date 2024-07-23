@@ -23,7 +23,7 @@ import org.apache.camel.support.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MaptTemplateProducer extends DefaultProducer {
+public class  MaptTemplateProducer extends DefaultProducer {
     private static final Logger LOG = LoggerFactory.getLogger(MaptTemplateProducer.class);
     private final MaptTemplateEndpoint endpoint;
 
@@ -48,6 +48,7 @@ public class MaptTemplateProducer extends DefaultProducer {
             case "xml" -> MaptTemplateProcessor.execute(exchange, operationConfig, "xml");
             case "json" -> MaptTemplateProcessor.execute(exchange, operationConfig, "json");
             case "csv" -> MaptTemplateProcessor.execute(exchange, operationConfig, "csv");
+            case "readers" -> MaptTemplateProcessor.execute(exchange, operationConfig, "readers");
             case "" -> MaptTemplateProcessor.execute(exchange, operationConfig, null);
             default -> throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
         }
