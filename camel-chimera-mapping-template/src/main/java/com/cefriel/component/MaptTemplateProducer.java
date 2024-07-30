@@ -17,15 +17,19 @@
 package com.cefriel.component;
 
 import com.cefriel.rdf.MaptTemplateProcessor;
+import com.cefriel.template.TemplateExecutor;
 import com.cefriel.util.MaptTemplateConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 public class  MaptTemplateProducer extends DefaultProducer {
     private static final Logger LOG = LoggerFactory.getLogger(MaptTemplateProducer.class);
     private final MaptTemplateEndpoint endpoint;
+    private TemplateExecutor templateExecutor;
 
     public MaptTemplateProducer(MaptTemplateEndpoint endpoint) {
         super(endpoint);
@@ -43,14 +47,15 @@ public class  MaptTemplateProducer extends DefaultProducer {
             operationConfig = new MaptTemplateBean();
         }
         operationConfig.setConfig(endpoint);
-        switch (endpoint.getName()){
-            case "rdf" -> MaptTemplateProcessor.execute(exchange, operationConfig, "rdf");
-            case "xml" -> MaptTemplateProcessor.execute(exchange, operationConfig, "xml");
-            case "json" -> MaptTemplateProcessor.execute(exchange, operationConfig, "json");
-            case "csv" -> MaptTemplateProcessor.execute(exchange, operationConfig, "csv");
-            case "readers" -> MaptTemplateProcessor.execute(exchange, operationConfig, "readers");
-            case "" -> MaptTemplateProcessor.execute(exchange, operationConfig, null);
-            default -> throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
+
+        if (this.templateExecutor == null) {
+            // check if the input format for the readers is supported
+            if (Set.of("rdf", "xml", "json", "csv", "readers", "").contains(endpoint.getName())) {
+                this.templateExecutor = MaptTemplateProcessor.templateExecutor(exchange, operationConfig, endpoint.getName());
+                MaptTemplateProcessor.execute(exchange, operationConfig, endpoint.getName(), this.templateExecutor);
+            }
+            else
+                throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
         }
     }
 }

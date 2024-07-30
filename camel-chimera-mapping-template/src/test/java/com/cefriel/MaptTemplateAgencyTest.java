@@ -52,7 +52,6 @@ public class MaptTemplateAgencyTest extends CamelTestSupport {
 
     @Test
     public void testRdfTemplateAgency() throws Exception {
-
         MockEndpoint mock = getMockEndpoint("mock:rdfAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
@@ -60,7 +59,6 @@ public class MaptTemplateAgencyTest extends CamelTestSupport {
 
     @Test
     public void testRdfMultipleTemplateAgency() throws Exception {
-
         MockEndpoint mock = getMockEndpoint("mock:rdfMultipleAgency");
         mock.expectedMessageCount(1);
         ChimeraResourceBean file = new ChimeraResourceBean(
@@ -75,7 +73,6 @@ public class MaptTemplateAgencyTest extends CamelTestSupport {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-
                 getCamelContext().getRegistry().bind("triples", triples);
                 getCamelContext().getRegistry().bind("template", template);
                 getCamelContext().getRegistry().bind("triples2", triples2);
