@@ -148,8 +148,7 @@ public class Utils {
             if(resourceQuery != null)
                 LOG.info("Two queries have been supplied to the operation. Using the 'query' endpoint parameter supplied query.");
             return literalQuery;
-        } else if (resourceQuery != null)
-        {
+        } else if (resourceQuery != null) {
             ByteArrayOutputStream o;
             try (InputStream inputstream = ResourceAccessor.open(resourceQuery, exchange)) {
                 o = new ByteArrayOutputStream();
@@ -161,7 +160,6 @@ public class Utils {
             throw new NullPointerException("both queries query cannot be null");
         }
     }
-
     public static String writeModelToDestination(Exchange exchange, Model model, String defaultName) throws IOException {
         GraphBean configuration = exchange.getMessage().getHeader(ChimeraConstants.CONFIGURATION, GraphBean.class);
         InputStream inputStream = RDFSerializer.serialize(model, exchange);
