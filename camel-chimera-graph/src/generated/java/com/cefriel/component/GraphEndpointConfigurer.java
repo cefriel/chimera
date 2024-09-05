@@ -51,6 +51,7 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "newGraph": target.setNewGraph(property(camelContext, boolean.class, value)); return true;
         case "ontologyformat":
         case "ontologyFormat": target.setOntologyFormat(property(camelContext, java.lang.String.class, value)); return true;
+        case "operation": target.setOperation(property(camelContext, java.lang.String.class, value)); return true;
         case "pathdatadir":
         case "pathDataDir": target.setPathDataDir(property(camelContext, java.lang.String.class, value)); return true;
         case "query": target.setQuery(property(camelContext, java.lang.String.class, value)); return true;
@@ -103,6 +104,7 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "newGraph": return boolean.class;
         case "ontologyformat":
         case "ontologyFormat": return java.lang.String.class;
+        case "operation": return java.lang.String.class;
         case "pathdatadir":
         case "pathDataDir": return java.lang.String.class;
         case "query": return java.lang.String.class;
@@ -156,6 +158,7 @@ public class GraphEndpointConfigurer extends PropertyConfigurerSupport implement
         case "newGraph": return target.isNewGraph();
         case "ontologyformat":
         case "ontologyFormat": return target.getOntologyFormat();
+        case "operation": return target.getOperation();
         case "pathdatadir":
         case "pathDataDir": return target.getPathDataDir();
         case "query": return target.getQuery();

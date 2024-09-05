@@ -32,8 +32,14 @@ import org.apache.camel.support.DefaultEndpoint;
  */
 @UriEndpoint(firstVersion = "1.0.0", scheme = "graph", title = "graph", syntax="graph:name", category = {Category.TRANSFORMATION})
 public class GraphEndpoint extends DefaultEndpoint {
-    @UriPath @Metadata(required = true)
-    private String name;
+    @UriPath
+    private String name = null;
+
+    @UriParam(defaultValue = "null",
+            description = "Name of the operation to be executed. The name of the operations is not case sensitive.",
+            enums = "GET, ADD, CONSTRUCT, ASK, SELECT, INFERENCE, DETACH, DUMP, SHACL")
+    private String operation;
+
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null")
@@ -50,7 +56,9 @@ public class GraphEndpoint extends DefaultEndpoint {
     private boolean allRules = true;
     @UriParam(defaultValue = "null")
     private String ontologyFormat;
-    @UriParam(name = "namedGraph", defaultValue = "null", description = "Can be used to pass multiple named graphs separated by ';'")
+    @UriParam(name = "namedGraph",
+            defaultValue = "null",
+            description = "Can be used to pass multiple named graphs separated by ';'")
     private String namedGraph;
     @UriParam(defaultValue = "http://www.cefriel.com/data/")
     private String baseIri;
@@ -101,6 +109,14 @@ public class GraphEndpoint extends DefaultEndpoint {
 
     public String getName() {
         return name;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     /**

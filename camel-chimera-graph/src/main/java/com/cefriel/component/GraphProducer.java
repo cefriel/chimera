@@ -52,12 +52,22 @@ public class GraphProducer extends DefaultProducer {
             LOG.info("No GraphBean detected");
         }
         operationConfig.setEndpointParameters(endpoint);
+        String operation;
+        if (endpoint.getName() == null && endpoint.getOperation() != null)
+            operation = endpoint.getOperation();
+        else if (endpoint.getName() != null && endpoint.getOperation() == null)
+            operation = endpoint.getName();
+        else
+            throw new IllegalArgumentException("The operation name must be specified either by the 'name' or 'operation' parameter.");
+
+        operation = operation.toLowerCase();
 
         // todo see if this can be avoided and only have operationLocalConfig
         // this is done to propagate the configuration from one producer operation to the other
         exchange.getMessage().setHeader(ChimeraConstants.CONFIGURATION, operationConfig);
 
-        switch (endpoint.getName()){
+
+        switch (operation){
             case "config" -> exchange.getMessage().setHeader(ChimeraConstants.BASE_CONFIGURATION, endpoint.getBaseConfig());
             case "get" -> {
                 inputStream = exchange.getMessage().getBody(InputStream.class);

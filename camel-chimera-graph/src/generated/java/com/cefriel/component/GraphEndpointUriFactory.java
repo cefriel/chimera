@@ -21,7 +21,7 @@ public class GraphEndpointUriFactory extends org.apache.camel.support.component.
     private static final Set<String> SECRET_PROPERTY_NAMES;
     private static final Set<String> MULTI_VALUE_PREFIXES;
     static {
-        Set<String> props = new HashSet<>(25);
+        Set<String> props = new HashSet<>(26);
         props.add("allRules");
         props.add("baseConfig");
         props.add("baseIri");
@@ -39,6 +39,7 @@ public class GraphEndpointUriFactory extends org.apache.camel.support.component.
         props.add("namedGraph");
         props.add("newGraph");
         props.add("ontologyFormat");
+        props.add("operation");
         props.add("pathDataDir");
         props.add("query");
         props.add("rdfFormat");
@@ -64,7 +65,7 @@ public class GraphEndpointUriFactory extends org.apache.camel.support.component.
 
         Map<String, Object> copy = new HashMap<>(properties);
 
-        uri = buildPathParameter(syntax, uri, "name", null, true, copy);
+        uri = buildPathParameter(syntax, uri, "name", null, false, copy);
         uri = buildQueryParameters(uri, copy, encode);
         return uri;
     }
