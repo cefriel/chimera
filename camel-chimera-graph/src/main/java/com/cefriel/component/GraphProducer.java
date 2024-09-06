@@ -53,7 +53,7 @@ public class GraphProducer extends DefaultProducer {
         }
         operationConfig.setEndpointParameters(endpoint);
         String operation;
-        if (endpoint.getName() == null && endpoint.getOperation() != null)
+        if (endpoint.getName().equals("") && endpoint.getOperation() != null)
             operation = endpoint.getOperation();
         else if (endpoint.getName() != null && endpoint.getOperation() == null)
             operation = endpoint.getName();
