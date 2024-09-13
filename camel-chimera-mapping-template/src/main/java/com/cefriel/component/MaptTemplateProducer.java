@@ -43,7 +43,16 @@ public class MaptTemplateProducer extends DefaultProducer {
             operationConfig = new MaptTemplateBean();
         }
         operationConfig.setConfig(endpoint);
-        switch (endpoint.getName()){
+        String inputFormat;
+        if (endpoint.getName() != null)
+            inputFormat = endpoint.getName();
+        else if (endpoint.getInputFormat() != null)
+            inputFormat = endpoint.getInputFormat();
+        else
+            throw new IllegalArgumentException("The input format name must be specified as a uri path parameter or with the 'inputFormat' parameter.");
+        inputFormat = inputFormat.toLowerCase();
+
+        switch (inputFormat){
             case "rdf" -> MaptTemplateProcessor.execute(exchange, operationConfig, "rdf");
             case "xml" -> MaptTemplateProcessor.execute(exchange, operationConfig, "xml");
             case "json" -> MaptTemplateProcessor.execute(exchange, operationConfig, "json");

@@ -33,6 +33,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "exchangePattern": target.setExchangePattern(property(camelContext, org.apache.camel.ExchangePattern.class, value)); return true;
         case "filename": target.setFilename(property(camelContext, java.lang.String.class, value)); return true;
         case "format": target.setFormat(property(camelContext, java.lang.String.class, value)); return true;
+        case "inputformat":
+        case "inputFormat": target.setInputFormat(property(camelContext, java.lang.String.class, value)); return true;
         case "keyvaluepairs":
         case "keyValuePairs": target.setKeyValuePairs(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
         case "keyvaluepairscsv":
@@ -69,6 +71,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "exchangePattern": return org.apache.camel.ExchangePattern.class;
         case "filename": return java.lang.String.class;
         case "format": return java.lang.String.class;
+        case "inputformat":
+        case "inputFormat": return java.lang.String.class;
         case "keyvaluepairs":
         case "keyValuePairs": return com.cefriel.util.ChimeraResourceBean.class;
         case "keyvaluepairscsv":
@@ -106,6 +110,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "exchangePattern": return target.getExchangePattern();
         case "filename": return target.getFilename();
         case "format": return target.getFormat();
+        case "inputformat":
+        case "inputFormat": return target.getInputFormat();
         case "keyvaluepairs":
         case "keyValuePairs": return target.getKeyValuePairs();
         case "keyvaluepairscsv":

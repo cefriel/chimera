@@ -37,7 +37,6 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
 
     @Produce("direct:foo")
     ProducerTemplate foo;
-
     private static ChimeraResourceBean template;
     private static ChimeraResourceBean templateNoInput;
 
@@ -61,7 +60,6 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
         boolean correctOutput = filesEqual == -1;
         assert (correctOutput);
     }
-
     @Test
     public void testRdfTemplateCsvNoInput() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:rdfCsvNoInput");
@@ -76,7 +74,6 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
         boolean correctOutput = filesEqual == -1;
         assert (correctOutput);
     }
-
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
@@ -92,6 +89,7 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
                 from("direct:foo")
                         .to("mapt://?template=#bean:templateNoInput&basePath=./src/test/resources/file/result&fileName=output-csv-no-input.ttl")
                         .to("mock:rdfCsvNoInput");
+
             }
         };
     }

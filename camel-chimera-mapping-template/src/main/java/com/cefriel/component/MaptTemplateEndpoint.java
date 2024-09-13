@@ -33,11 +33,15 @@ import org.apache.camel.support.DefaultEndpoint;
  *
  * TODO: Update one line description above what the component does.
  */
-@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "mapt", syntax="mapt:name", category = {Category.TRANSFORMATION})
+@UriEndpoint(firstVersion = "1.0-SNAPSHOT", scheme = "mapt", title = "Mapping Template", syntax="mapt:name", category = {Category.TRANSFORMATION})
 
 public class MaptTemplateEndpoint extends DefaultEndpoint {
-    @UriPath @Metadata(required = true)
+    @UriPath
     private String name;
+    @UriParam(defaultValue = "null",
+            description = "Specify the format of the body if it should be parsed as input for the mapping process.",
+            enums = "RDF,XML,JSON,CSV")
+    private String inputFormat;
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null", description = "Template resource used in the mapping process")
@@ -88,6 +92,14 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
 	Consumer consumer = new MaptTemplateConsumer(this, processor);
 	configureConsumer(consumer);
 	return consumer;
+    }
+
+    public String getInputFormat() {
+        return inputFormat;
+    }
+
+    public void setInputFormat(String inputFormat) {
+        this.inputFormat = inputFormat;
     }
 
     /**

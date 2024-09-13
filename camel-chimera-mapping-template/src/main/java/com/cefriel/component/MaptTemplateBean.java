@@ -20,6 +20,8 @@ import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 
 public class MaptTemplateBean {
+
+    private String inputFormat;
     private String basePath = "./";
     private ChimeraResourceBean template;
     private String filename;
@@ -49,6 +51,7 @@ public class MaptTemplateBean {
         this.verboseQueries = options.isVerboseQueries();
         this.isStream = options.isStream();
         this.resourceCustomFunctions = options.getResourceCustomFunctions();
+        this.inputFormat = options.getInputFormat();
     }
 
     public String getBasePath() {
@@ -139,6 +142,14 @@ public class MaptTemplateBean {
         this.resourceCustomFunctions = resourceCustomFunctions;
     }
 
+    public String getInputFormat() {
+        return inputFormat;
+    }
+
+    public void setInputFormat(String inputFormat) {
+        this.inputFormat = inputFormat;
+    }
+
     public TemplateFunctions getCustomFunctions() {
         return customFunctions;
     }
@@ -148,6 +159,10 @@ public class MaptTemplateBean {
     }
 
     public void setConfig(MaptTemplateEndpoint endpoint){
+
+        if (endpoint.getInputFormat() != null) {
+            this.setInputFormat(endpoint.getInputFormat());
+        }
 
         if (endpoint.getBasePath()!=null){
             this.setBasePath(endpoint.getBasePath());

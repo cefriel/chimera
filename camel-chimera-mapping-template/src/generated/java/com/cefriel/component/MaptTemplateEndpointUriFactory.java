@@ -21,7 +21,7 @@ public class MaptTemplateEndpointUriFactory extends org.apache.camel.support.com
     private static final Set<String> SECRET_PROPERTY_NAMES;
     private static final Set<String> MULTI_VALUE_PREFIXES;
     static {
-        Set<String> props = new HashSet<>(18);
+        Set<String> props = new HashSet<>(19);
         props.add("basePath");
         props.add("bridgeErrorHandler");
         props.add("customFunctions");
@@ -29,6 +29,7 @@ public class MaptTemplateEndpointUriFactory extends org.apache.camel.support.com
         props.add("exchangePattern");
         props.add("filename");
         props.add("format");
+        props.add("inputFormat");
         props.add("keyValuePairs");
         props.add("keyValuePairsCSV");
         props.add("lazyStartProducer");
@@ -57,7 +58,7 @@ public class MaptTemplateEndpointUriFactory extends org.apache.camel.support.com
 
         Map<String, Object> copy = new HashMap<>(properties);
 
-        uri = buildPathParameter(syntax, uri, "name", null, true, copy);
+        uri = buildPathParameter(syntax, uri, "name", null, false, copy);
         uri = buildQueryParameters(uri, copy, encode);
         return uri;
     }
