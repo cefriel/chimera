@@ -54,12 +54,11 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
 
         ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/csv/example.csv", "csv");
         start.sendBody(ResourceAccessor.open(r, null));
-
         mock.assertIsSatisfied();
-        long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/csv/output-correct.ttl"),
-                Paths.get(("./src/test/resources/file/result/output-csv.ttl")));
-        boolean correctOutput = filesEqual == -1;
-        assert (correctOutput);
+
+        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/csv/output-correct.ttl"));
+        String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-csv.ttl"));
+        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
     }
 
     @Test
@@ -67,14 +66,12 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rdfCsvNoInput");
         mock.expectedMessageCount(1);
 
-        // ChimeraResourceBean r = new ChimeraResourceBean("file://./src/test/resources/file/csv/example.csv", "csv");
-        // foo.sendBody(ResourceAccessor.open(r, camelTestSupportExtension.context()));
         foo.send(ExchangeBuilder.anExchange(context()).build());
         mock.assertIsSatisfied();
-        long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/csv/output-correct.ttl"),
-                Paths.get(("./src/test/resources/file/result/output-csv-no-input.ttl")));
-        boolean correctOutput = filesEqual == -1;
-        assert (correctOutput);
+
+        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/csv/output-correct.ttl"));
+        String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-csv-no-input.ttl"));
+        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
     }
 
     @Override

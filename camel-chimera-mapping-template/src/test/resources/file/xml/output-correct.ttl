@@ -6,8 +6,8 @@
 
 
 ex:25 rdf:type transit:stop ;
-  transit:stop "645"^^xsd:int ;
-  rdfs:label "International Airport" .
-ex:25 rdf:type transit:stop ;
   transit:stop "651"^^xsd:int ;
   rdfs:label "Conference center" .
+ex:25 rdf:type transit:stop ;
+  transit:stop "645"^^xsd:int ;
+  rdfs:label "International Airport" .

@@ -48,10 +48,11 @@ public class MaptTemplateXmlTest extends CamelTestSupport {
         start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
-        long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/xml/output-correct.ttl"),
-                Paths.get(("./src/test/resources/file/result/output-xml.ttl")));
-        boolean correctOutput = filesEqual == -1;
-        assert (correctOutput);
+
+        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/xml/output-correct.ttl"));
+        String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-xml.ttl"));
+
+        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
     }
 
     @Override

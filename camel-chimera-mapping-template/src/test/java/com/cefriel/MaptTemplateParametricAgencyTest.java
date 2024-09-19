@@ -45,13 +45,14 @@ public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
         List<Path> resultsFilesPaths = mock.getExchanges().get(0).getMessage().getBody(List.class);
-        String correctOutput1 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv")).replaceAll("\\r\\n", "\n");
-        String obtainedOutput1 = Files.readString(resultsFilesPaths.get(0)).replaceAll("\\r\\n", "\n");
-        assert (correctOutput1.equals(obtainedOutput1));
 
-        String correctOutput2 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv")).replaceAll("\\r\\n", "\n");
-        String obtainedOutput2 = Files.readString(resultsFilesPaths.get(1)).replaceAll("\\r\\n", "\n");
-        assert (correctOutput2.equals(obtainedOutput2));
+        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv"));
+        String mappedOutput = Files.readString(resultsFilesPaths.get(0));
+        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
+
+        String correctOutput1 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv"));
+        String mappedOutput1 = Files.readString(resultsFilesPaths.get(1));
+        assert(TestUtils.isIsomorphicGraph(correctOutput1, "turtle", mappedOutput1, "turtle"));
     }
 
     @Override
