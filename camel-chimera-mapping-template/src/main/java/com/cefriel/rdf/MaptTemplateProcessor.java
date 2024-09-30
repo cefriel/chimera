@@ -170,7 +170,7 @@ public class MaptTemplateProcessor {
                 if(params.query() != null) {
                     List<Path> resultFilesPaths;
                     if (reader != null) {
-                        resultFilesPaths = templateExecutor.executeMappingParametric(reader,
+                        resultFilesPaths = templateExecutor.executeMappingParametric(Map.of("reader", reader),
                                 ResourceAccessor.open(params.template(), exchange),
                                 ResourceAccessor.open(params.query(), exchange),
                                 outputFilePath);
@@ -186,7 +186,7 @@ public class MaptTemplateProcessor {
                 } else {
                     Path resultFilePath;
                     if (reader != null) {
-                        resultFilePath = templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange), outputFilePath);
+                        resultFilePath = templateExecutor.executeMapping(Map.of("reader", reader), ResourceAccessor.open(params.template(), exchange), outputFilePath);
                     }
                     else {
                         resultFilePath = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), outputFilePath);
@@ -200,7 +200,7 @@ public class MaptTemplateProcessor {
                 if (params.query() != null) {
                     Map<String,String> result;
                     if (reader != null) {
-                        result = templateExecutor.executeMappingParametric(reader,
+                        result = templateExecutor.executeMappingParametric(Map.of("reader", reader),
                                 ResourceAccessor.open(params.template(), exchange),
                                 ResourceAccessor.open(params.query(), exchange));
                     }
@@ -214,7 +214,7 @@ public class MaptTemplateProcessor {
                 } else {
                     String result;
                     if (reader != null) {
-                        result = templateExecutor.executeMapping(reader, ResourceAccessor.open(params.template(), exchange));
+                        result = templateExecutor.executeMapping(Map.of("reader", reader), ResourceAccessor.open(params.template(), exchange));
                     }
                     else {
                         result = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange));

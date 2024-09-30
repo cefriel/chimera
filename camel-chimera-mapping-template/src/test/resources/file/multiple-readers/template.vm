@@ -1,3 +1,3 @@
-#set ($df1 = $readers.reader1.getDataframe())
-#set ($df2 = $readers["reader2"].getDataframe())
+#set ($df1 = $reader1.getDataframe())
+#set ($df2 = $reader2.getDataframe())
 $df1[0].a,$df1[0].b,$df1[0].c,$df2[0].d,$df2[0].e,$df2[0].f
