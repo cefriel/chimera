@@ -51,10 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class MaptTemplateProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MaptTemplateProcessor.class);
@@ -155,13 +152,20 @@ public class MaptTemplateProcessor {
 
         if (validateParams(params)) {
 
-            Map<String, Reader> readers = null;
-            Reader reader = null;
-
+            Map<String, Reader> readers = new HashMap<>();
             if (inputFormat != null && inputFormat.equals("readers"))
                 readers = exchange.getMessage().getBody(Map.class);
-            else
-                reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
+            else {
+                Reader reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
+                if (reader == null) {
+                    readers.put("reader", null);
+                }
+                else
+                    readers = Map.of("reader", reader);
+
+            }
+
+
 
             // if filename is specified then save to file
             if(params.outputFileName() != null) {
@@ -169,29 +173,15 @@ public class MaptTemplateProcessor {
                 Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
                 if(params.query() != null) {
                     List<Path> resultFilesPaths;
-                    if (reader != null) {
-                        resultFilesPaths = templateExecutor.executeMappingParametric(Map.of("reader", reader),
+                    resultFilesPaths = templateExecutor.executeMappingParametric(readers,
                                 ResourceAccessor.open(params.template(), exchange),
                                 ResourceAccessor.open(params.query(), exchange),
                                 outputFilePath);
-                    }
-                    else {
-                        resultFilesPaths = templateExecutor.executeMappingParametric(readers,
-                                ResourceAccessor.open(params.template(), exchange),
-                                ResourceAccessor.open(params.query(), exchange),
-                                outputFilePath);
-                    }
                     exchange.getMessage().setBody(resultFilesPaths, List.class);
 
                 } else {
                     Path resultFilePath;
-                    if (reader != null) {
-                        resultFilePath = templateExecutor.executeMapping(Map.of("reader", reader), ResourceAccessor.open(params.template(), exchange), outputFilePath);
-                    }
-                    else {
-                        resultFilePath = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), outputFilePath);
-                    }
-
+                    resultFilePath = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), outputFilePath);
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
@@ -199,26 +189,12 @@ public class MaptTemplateProcessor {
             else {
                 if (params.query() != null) {
                     Map<String,String> result;
-                    if (reader != null) {
-                        result = templateExecutor.executeMappingParametric(Map.of("reader", reader),
-                                ResourceAccessor.open(params.template(), exchange),
-                                ResourceAccessor.open(params.query(), exchange));
-                    }
-                    else {
-                        result = templateExecutor.executeMappingParametric(readers,
-                                ResourceAccessor.open(params.template(), exchange),
-                                ResourceAccessor.open(params.query(), exchange));
-                    }
+                    result = templateExecutor.executeMappingParametric(readers,
+                            ResourceAccessor.open(params.template(), exchange),
+                            ResourceAccessor.open(params.query(), exchange));
                     exchange.getMessage().setBody(result, Map.class);
-
                 } else {
-                    String result;
-                    if (reader != null) {
-                        result = templateExecutor.executeMapping(Map.of("reader", reader), ResourceAccessor.open(params.template(), exchange));
-                    }
-                    else {
-                        result = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange));
-                    }
+                    String result = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange));
                     exchange.getMessage().setBody(result, String.class);
                 }
             }
@@ -226,7 +202,7 @@ public class MaptTemplateProcessor {
     }
 
     private static Reader getReaderFromExchange(Exchange exchange, String inputFormat, String outputFormat, boolean verbose) throws Exception {
-        if (inputFormat == null || inputFormat.equals("")) {
+        if (inputFormat == null || inputFormat.isEmpty()) {
             // case when no reader is specified as input but are declared directly in the template file
             return null;
         }
