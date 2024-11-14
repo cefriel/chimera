@@ -5,7 +5,7 @@
 1. Install Visual Studio Code.
 2. Install the Karavan extension for Visual Studio Code.
 3. Navigate to the Karavan directory within the Visual Studio Code installation directory and locate the _components.json_ file.
-4. Copy the contents of the [graph.json](./camel-chimera-graph/src/generated/resources/com/cefriel/component/graph.json), [mapt.json](./camel-chimera-mapping-template/src/generated/resources/com/cefriel/component/mapt.json) and [rml.json](./camel-chimera-rmlmapper/src/generated/resources/com/cefriel/component/rml.json) files to the _components.json_ file. An example [components.json](./karavan/components.json) is provided, note however that this file has been only been tested with Karavan v4.4.0.
+4. Copy the contents of the [graph.json](../camel-chimera-graph/src/generated/resources/com/cefriel/component/graph.json), [mapt.json](../camel-chimera-mapping-template/src/generated/resources/com/cefriel/component/mapt.json) and [rml.json](../camel-chimera-rmlmapper/src/generated/resources/com/cefriel/component/rml.json) files to the _components.json_ file. An example [components.json](./karavan/components.json) is provided, note however that this file has been only been tested with Karavan v4.4.0.
 5. Chimera components are now selectable in the Karavan Visual Studio Code UI.
 
 An example YAML route built using this tool is available
