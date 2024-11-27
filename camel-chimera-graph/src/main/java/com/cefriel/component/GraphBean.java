@@ -24,6 +24,9 @@ import java.util.List;
 public class GraphBean {
 
     private String basePath = "./";
+
+    private String operation;
+
     private List<String> resources = new ArrayList<>();
     private ChimeraResourceBean chimeraResource;
     private String rdfFormat;
@@ -51,7 +54,7 @@ public class GraphBean {
                      String ontologyFormat, String namedGraph, String baseIri, boolean defaultGraph, String serverUrl,
                      String repositoryID, String sparqlEndpoint, String pathDataDir, String query,
                      boolean newGraph, boolean clear, boolean repoOff, boolean routeOff,
-                     String dumpFormat, String filename) {
+                     String dumpFormat, String filename, String operation) {
         this.basePath = basePath;
         this.resources = resources;
         this.rdfFormat = rdfFormat;
@@ -71,6 +74,7 @@ public class GraphBean {
         this.routeOff = routeOff;
         this.dumpFormat = dumpFormat;
         this.filename = filename;
+        this.operation = operation;
     }
 
     public GraphBean(GraphBean configuration){
@@ -93,6 +97,7 @@ public class GraphBean {
         this.routeOff = configuration.isRouteOff();
         this.dumpFormat = configuration.getDumpFormat();
         this.filename = configuration.getFilename();
+        this.operation = configuration.getOperation();
     }
 
     public String getBasePath() {
@@ -255,6 +260,14 @@ public class GraphBean {
         this.chimeraResource = chimeraResources;
     }
 
+    public String getOperation() {
+        return operation;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
     public void setEndpointParameters(GraphEndpoint endpoint){
         if(endpoint.getChimeraResource()!=null){
             this.setChimeraResource(endpoint.getChimeraResource());
@@ -307,6 +320,10 @@ public class GraphBean {
         }
         if(endpoint.getBasePath()!=null){
             this.setBasePath(endpoint.getBasePath());
+        }
+
+        if(endpoint.getOperation() != null) {
+            this.setOperation(endpoint.getOperation());
         }
     }
 }

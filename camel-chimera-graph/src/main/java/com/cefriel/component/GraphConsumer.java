@@ -44,8 +44,21 @@ public class GraphConsumer extends DefaultConsumer {
         } else {
             operationConfig = new GraphBean();
         }
+
+        // todo name of operation can either come from endpoint.getName() or endpoint.getOperationName()
         operationConfig.setEndpointParameters(endpoint);
-        if ("get".equals(endpoint.getName())) {
+
+        String operation;
+        if (endpoint.getName().equals("") && endpoint.getOperation() != null)
+            operation = endpoint.getOperation();
+        else if (endpoint.getName() != null && endpoint.getOperation() == null)
+            operation = endpoint.getName();
+        else
+            throw new IllegalArgumentException("The operation name must be specified either by the 'name' or 'operation' parameter.");
+
+        operation = operation.toLowerCase();
+
+        if ("get".equals(operation)) {
             GraphGet.obtainGraph(exchange, operationConfig);
             try {
                 // send message to next processor in the route
