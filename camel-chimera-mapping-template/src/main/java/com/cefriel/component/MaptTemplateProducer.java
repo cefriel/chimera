@@ -51,7 +51,7 @@ public class  MaptTemplateProducer extends DefaultProducer {
         if (this.templateExecutor == null) {
             // check if the input format for the readers is supported
             if (Set.of("rdf", "xml", "json", "csv", "readers", "").contains(endpoint.getName())) {
-                this.templateExecutor = MaptTemplateProcessor.templateExecutor(exchange, operationConfig, endpoint.getName());
+                this.templateExecutor = MaptTemplateProcessor.templateExecutor(exchange, operationConfig);
                 MaptTemplateProcessor.execute(exchange, operationConfig, endpoint.getName(), this.templateExecutor);
             }
             else

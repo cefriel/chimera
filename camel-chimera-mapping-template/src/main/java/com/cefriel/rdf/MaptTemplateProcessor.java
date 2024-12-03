@@ -91,13 +91,13 @@ public class MaptTemplateProcessor {
         return true;
     }
 
-    public static TemplateExecutor templateExecutor(Exchange exchange, MaptTemplateBean operationConfig, String inputFormat) throws Exception {
+    public static TemplateExecutor templateExecutor(Exchange exchange, MaptTemplateBean operationConfig) throws Exception {
         OperationParams params = getOperationParams(exchange, operationConfig);
-        return templateExecutor(params, exchange, inputFormat);
+        return templateExecutor(params, exchange);
 
     }
 
-    private static TemplateExecutor templateExecutor(OperationParams params, Exchange exchange, String inputFormat) throws Exception {
+    private static TemplateExecutor templateExecutor(OperationParams params, Exchange exchange) throws Exception {
         // which custom template functions to use ???
         // the one that is defined, what if both are defined?
         // throw a warning
