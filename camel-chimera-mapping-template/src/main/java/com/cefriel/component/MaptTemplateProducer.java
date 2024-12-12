@@ -48,14 +48,16 @@ public class  MaptTemplateProducer extends DefaultProducer {
         }
         operationConfig.setConfig(endpoint);
 
-        if (this.templateExecutor == null) {
-            // check if the input format for the readers is supported
-            if (Set.of("rdf", "xml", "json", "csv", "readers", "").contains(endpoint.getName())) {
+        if (Set.of("rdf", "xml", "json", "csv", "readers", "").contains(endpoint.getName())) {
+            if (this.templateExecutor == null) {
+                //set templateExecutor if first invocation
                 this.templateExecutor = MaptTemplateProcessor.templateExecutor(exchange, operationConfig);
-                MaptTemplateProcessor.execute(exchange, operationConfig, endpoint.getName(), this.templateExecutor);
             }
-            else
-                throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
+            MaptTemplateProcessor.execute(exchange, operationConfig, endpoint.getName(), this.templateExecutor);
         }
+        else
+            throw new IllegalArgumentException("Invalid INPUT FORMAT: " + endpoint.getName());
+
+
     }
 }
