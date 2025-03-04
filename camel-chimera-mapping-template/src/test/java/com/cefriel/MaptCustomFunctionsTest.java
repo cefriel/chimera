@@ -8,6 +8,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 public class MaptCustomFunctionsTest extends CamelTestSupport {
@@ -50,7 +51,7 @@ public class MaptCustomFunctionsTest extends CamelTestSupport {
         assert(result.equals("test"));
     }
 
-    @Test
+    @RepeatedTest(2)
     public void testCustomFunctionsBean() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:customFunctionsTest");
         mock.expectedMessageCount(1);
