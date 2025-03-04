@@ -71,7 +71,6 @@ public class MaptCustomFunctionsTest extends CamelTestSupport {
 
                 getCamelContext().getRegistry().bind("template", template);
                 getCamelContext().getRegistry().bind("resourceCustomFunctions", resourceCustomFunctions);
-                getCamelContext().getRegistry().bind("customFunctionsBean", customFunctionsBean);
 
 
                 from("direct:start")
@@ -79,7 +78,7 @@ public class MaptCustomFunctionsTest extends CamelTestSupport {
                         .to("mock:resourceCustomFunctionsTest");
 
                 from("direct:start2")
-                        .to("mapt://?template=#bean:template&customFunctions=#bean:customFunctionsBean")
+                        .to("mapt://?template=#bean:template&customFunctions=#class:com.cefriel.MaptCustomFunctionsTest$CustomFunctionsBean")
                         .to("mock:customFunctionsTest");
             }
         };
