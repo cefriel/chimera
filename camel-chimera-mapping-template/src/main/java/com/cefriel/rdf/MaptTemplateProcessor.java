@@ -155,8 +155,6 @@ public class MaptTemplateProcessor {
                 usedTemplateFunctions.setPrefix(params.baseIRI());
             }
 
-            usedTemplateFunctions = usedTemplateFunctions.getClass().getDeclaredConstructor().newInstance();
-
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
                 templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange),
