@@ -154,6 +154,9 @@ public class MaptTemplateProcessor {
                 usedTemplateFunctions = new TemplateFunctions();
                 usedTemplateFunctions.setPrefix(params.baseIRI());
             }
+            
+            // Re-init instance of TemplateFunctions to avoid errors between different executions of the same pipeline
+            usedTemplateFunctions = usedTemplateFunctions.getClass().getDeclaredConstructor().newInstance();
 
             TemplateMap templateMap = null;
             if(params.templateMapKV() != null) {
