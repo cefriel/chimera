@@ -32,8 +32,13 @@ public class ChimeraResourcesTest extends CamelTestSupport {
         assert(x.equals("ciao"));
     }
 
-
-
-
-
+    @Test
+    public void testVariableResource() throws Exception {
+        ChimeraResourceBean r1 = new ChimeraResourceBean("variable://test", null);
+        Exchange exchange = new DefaultExchange(context());
+        exchange.setVariable("test", "ciao");
+        InputStream result = ResourceAccessor.open(r1, exchange);
+        String x = new String(result.readAllBytes(), StandardCharsets.UTF_8);
+        assert(x.equals("ciao"));
+    }
 }

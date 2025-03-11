@@ -28,6 +28,8 @@ public class ResourceAccessor {
             return open(headerResource, exchange);
         else if (chimeraResource instanceof ChimeraResource.PropertyResource propertyResource)
             return open(propertyResource, exchange);
+        else if (chimeraResource instanceof ChimeraResource.VariableResource variableResource)
+            return open(variableResource, exchange);
         else
             throw new InvalidParameterException("Resource: " + chimeraResource + " is not of a supported type.");
     }
@@ -84,6 +86,14 @@ public class ResourceAccessor {
             return exchange.getProperty(propertyName, InputStream.class);
         else
             throw new NoSuchPropertyException(exchange, propertyName, String.class);
+    }
+
+    private static InputStream open(ChimeraResource.VariableResource resource, Exchange exchange) throws NoSuchVariableException {
+        String variableName = resource.url().replace(ChimeraResourceConstants.VARIABLE_PREFIX, "");
+        if (exchange.getVariable(variableName) != null)
+            return exchange.getVariable(variableName, InputStream.class);
+        else
+            throw new NoSuchVariableException(exchange, variableName, String.class);
     }
 
     private static InputStream open(ChimeraResource.ClassPathResource resource) {

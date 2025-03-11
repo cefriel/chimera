@@ -8,4 +8,5 @@ public class ChimeraResourceConstants {
     public final static String CLASSPATH_PREFIX = "classpath://";
     public final static String HEADER_PREFIX = "header://";
     public final static String PROPERTY_PREFIX = "property://";
+    public final static String VARIABLE_PREFIX = "variable://";
 }
