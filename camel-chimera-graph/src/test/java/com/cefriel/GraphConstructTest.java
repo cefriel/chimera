@@ -41,8 +41,10 @@ public class GraphConstructTest extends CamelTestSupport {
 
     private static final String multipleNamedGraphs = baseIri + "newContext1" + ";" + baseIri + "newContext2";
     private static final String sparqlSelectQuery = "SELECT ?s ?p ?o WHERE { ?s ?p ?o}";
+
     @Produce("direct:start")
     ProducerTemplate start;
+
     @BeforeAll
     static void fillBean(){
         triples = new ChimeraResourceBean(
@@ -54,12 +56,12 @@ public class GraphConstructTest extends CamelTestSupport {
                 "txt");
     }
     @Test
-    public void testConstructNew() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:constructNew");
+    public void testConstructNamedGraph() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:constructNamedGraph");
 
         MemoryRDFGraph graph = new MemoryRDFGraph();
         Utils.populateRepository(graph.getRepository(), triples, null);
-        start.sendBody("direct:constructNew", graph);
+        start.sendBody("direct:constructNamedGraph", graph);
 
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
@@ -70,12 +72,53 @@ public class GraphConstructTest extends CamelTestSupport {
     }
 
     @Test
-    public void testConstructNewMultiple() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:constructNewMultiple");
+    public void testConstructNamedGraphMultiple() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:constructNamedGraphMultiple");
 
         MemoryRDFGraph graph = new MemoryRDFGraph();
         Utils.populateRepository(graph.getRepository(), triples, null);
-        start.sendBody("direct:constructNewMultiple", graph);
+        start.sendBody("direct:constructNamedGraphMultiple", graph);
+
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+        RDFGraph result = mock.getExchanges().get(0).getMessage().getBody(RDFGraph.class);
+        RepositoryResult<Statement> statements = result.getRepository().getConnection().getStatements(null,
+                null,
+                null,
+                Values.iri(namedGraph + "1"));
+        assert (statements.stream().count() == 9);
+        statements = result.getRepository().getConnection().getStatements(null,
+                null,
+                null,
+                Values.iri(namedGraph + "2"));
+        assert (statements.stream().count() == 9);
+    }
+
+    @Test
+    public void testConstructNew() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:constructNew");
+
+        MemoryRDFGraph graph = new MemoryRDFGraph();
+        Utils.populateRepository(graph.getRepository(), triples, null);
+        start.sendBody("direct:constructNew", graph);
+
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
+        RDFGraph result = mock.getExchanges().get(0).getMessage().getBody(MemoryRDFGraph.class);
+
+        RepositoryResult<Statement> statements = result.getRepository().getConnection().getStatements(
+                null,null,null);
+
+        assert (statements.stream().count() == 9);
+    }
+
+    @Test
+    public void testConstructNamedGraphMultipleNew() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:constructNamedGraphMultipleNew");
+
+        MemoryRDFGraph graph = new MemoryRDFGraph();
+        Utils.populateRepository(graph.getRepository(), triples, null);
+        start.sendBody("direct:constructNamedGraphMultipleNew", graph);
 
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
@@ -109,9 +152,9 @@ public class GraphConstructTest extends CamelTestSupport {
                 Values.iri("https://schema.org/name"),
                 null);
 
-
         assert (statements.stream().count() == 9);
     }
+
     @Test
     public void testConstructSparqlSelectQuery() throws Exception {
         var graph = new MemoryRDFGraph();
@@ -144,17 +187,25 @@ public class GraphConstructTest extends CamelTestSupport {
                 getCamelContext().getRegistry().bind("triples", triples);
                 getCamelContext().getRegistry().bind("constructQuery", constructQuery);
 
-                from("direct:constructNew")
+                from("direct:constructNamedGraph")
                         .to("graph://construct?namedGraph=" + namedGraph + "&chimeraResource=#bean:constructQuery")
-                        .to("mock:constructNew");
+                        .to("mock:constructNamedGraph");
 
-                from("direct:constructNewMultiple")
+                from("direct:constructNamedGraphMultiple")
                         .to("graph://construct?namedGraph=" + multipleNamedGraphs + "&chimeraResource=#bean:constructQuery")
-                        .to("mock:constructNewMultiple");
+                        .to("mock:constructNamedGraphMultiple");
 
                 from("direct:constructOld")
                         .to("graph://construct?chimeraResource=#bean:constructQuery")
                         .to("mock:constructOld");
+
+                from("direct:constructNew")
+                        .to("graph://construct?newGraph=true&chimeraResource=#bean:constructQuery")
+                        .to("mock:constructNew");
+
+                from("direct:constructNamedGraphMultipleNew")
+                        .to("graph://construct?newGraph=true&namedGraph=" + multipleNamedGraphs + "&chimeraResource=#bean:constructQuery")
+                        .to("mock:constructNamedGraphMultipleNew");
 
                 from("direct:sparqlSelectQuery")
                         .setVariable("sparqlSelectQuery", constant(sparqlSelectQuery))
