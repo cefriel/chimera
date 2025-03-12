@@ -111,6 +111,8 @@ public class ChimeraResourceBean {
             return new ChimeraResource.PropertyResource(this.getUrl(), this.getSerializationFormat());
         else if (this.getUrl().startsWith(ChimeraResourceConstants.CLASSPATH_PREFIX))
             return new ChimeraResource.ClassPathResource(this.getUrl(), this.getSerializationFormat());
+        else if (this.getUrl().startsWith(ChimeraResourceConstants.VARIABLE_PREFIX))
+            return new ChimeraResource.VariableResource(this.getUrl(), this.getSerializationFormat());
         else
             throw new InvalidParameterException("Resource: " + this + " with url " + this.getUrl() + " is not supported.");
     }
