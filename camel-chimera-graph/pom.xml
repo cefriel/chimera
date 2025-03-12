@@ -6,12 +6,12 @@
   <parent>
     <groupId>com.cefriel</groupId>
     <artifactId>chimera</artifactId>
-    <version>4.3.0</version>
+    <version>4.3.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>camel-chimera-graph</artifactId>
   <packaging>jar</packaging>
-  <version>4.3.0</version>
+  <version>4.3.1-SNAPSHOT</version>
 
   <name>com.cefriel:camel-chimera-graph</name>
   <description>Chimera Component for the Apache Camel framework supporting Graph Operations through the RDF4J library</description>
