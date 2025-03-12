@@ -54,6 +54,7 @@ Camel Karavan, as detailed in the approach outlined
 
 Projects using Chimera:
 
+- SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
 - SmartEdge: Semantic Low-code Programming Tools for Edge Intelligence https://www.smart-edge.eu/
 - TANGENT: Enhanced Data Processing Techniques for Dynamic Management of Multimodal Traffic https://tangent-h2020.eu/
 - SNAP: Seamless exchange of multi-modal transport data for transition to National Access Points https://snap-project.eu/
@@ -69,7 +70,7 @@ If you need commercial support for Chimera contact us at [chimera-dev@cefriel.co
 
 ### License
 
-_Copyright (c) 2019-2024 Cefriel._
+_Copyright (c) 2019-2025 Cefriel._
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
