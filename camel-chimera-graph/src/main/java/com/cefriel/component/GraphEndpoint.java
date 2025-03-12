@@ -58,8 +58,8 @@ public class GraphEndpoint extends DefaultEndpoint {
     private boolean defaultGraph = false;
     @UriParam(defaultValue = "null")
     private String query;
-    @UriParam(defaultValue = "null")
-    private boolean newGraph;
+    @UriParam(defaultValue = "false")
+    private boolean newGraph = false;
     @UriParam(defaultValue = "null")
     private boolean clear;
     @UriParam(defaultValue = "true")

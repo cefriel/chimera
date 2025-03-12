@@ -17,6 +17,7 @@
 package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
+import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
 import com.cefriel.util.ResourceAccessor;
@@ -38,13 +39,14 @@ import java.util.Scanner;
 public class GraphConstruct {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConstruct.class);
-    private record EndpointParams(String literalQuery, ChimeraResourceBean queryResource, String namedGraph) {}
+    private record EndpointParams(String literalQuery, ChimeraResourceBean queryResource, String namedGraph, boolean newGraph) {}
     private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
     private static EndpointParams getEndpointParams(GraphBean operationConfig) {
         return new EndpointParams(
                 operationConfig.getQuery(),
                 operationConfig.getChimeraResource(),
-                operationConfig.getNamedGraph());
+                operationConfig.getNamedGraph(),
+                operationConfig.isNewGraph());
     }
     private static OperationParams getOperationParams (Exchange e, GraphBean operationConfig) {
         return new OperationParams(
@@ -76,21 +78,24 @@ public class GraphConstruct {
 
         return result;
     }
-    private static void executeQueryOnGraph(RDFGraph graph, String query, String newNamedGraph) {
-        Model m = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
-        try (RepositoryConnection con = graph.getRepository().getConnection()) {
+    private static RDFGraph executeQueryOnGraph(RDFGraph graph, String query, String namedGraphs, boolean newGraph) {
+        Model constructResult = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
+        RDFGraph resultGraph = newGraph ? new MemoryRDFGraph() : graph;
 
-            if (newNamedGraph != null) {
-                List<IRI> newNamedGraphs = Arrays.stream(newNamedGraph.split(";")).map(Utils::stringToIRI).toList();
-                for (IRI namedGraph : newNamedGraphs) {
-                    con.add(m, namedGraph);
-                    LOG.info("Added " + m.size() + " triples to " + namedGraph);
+        try (RepositoryConnection con = resultGraph.getRepository().getConnection()) {
+            if (namedGraphs != null) {
+                List<IRI> namedGraphsList = Arrays.stream(namedGraphs.split(";")).map(Utils::stringToIRI).toList();
+                for (IRI namedGraph : namedGraphsList) {
+                    con.add(constructResult, namedGraph);
+                    LOG.info("Added {} triples to {}", constructResult.size(), namedGraph);
                 }
             } else {
-                Utils.populateRepository(graph.getRepository(), m);
-                LOG.info("Added " + m.size() + " triples");
+                Utils.populateRepository(resultGraph.getRepository(), constructResult);
+                LOG.info("Added {} triples", constructResult.size());
             }
         }
+
+        return resultGraph;
     }
 
     public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws Exception {
@@ -98,18 +103,17 @@ public class GraphConstruct {
 
         if (validParams(operationParams)) {
             RDFGraph graph = operationParams.graph();
-            graphConstruct(graph, operationParams, exchange);
-            exchange.getMessage().setBody(graph, RDFGraph.class);
+            RDFGraph result = graphConstruct(graph, operationParams, exchange);
+            exchange.getMessage().setBody(result, RDFGraph.class);
         }
     }
-    private static void graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws Exception {
+    private static RDFGraph graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws Exception {
 
         if (params.endpointParams().literalQuery() != null) {
-            executeQueryOnGraph(graph, params.endpointParams().literalQuery(), params.endpointParams().namedGraph());
+            return executeQueryOnGraph(graph, params.endpointParams().literalQuery(), params.endpointParams().namedGraph(), params.endpointParams().newGraph());
         } else if (params.endpointParams().queryResource() != null) {
-            executeQueryOnGraph(graph,
-                    readSparqlQuery(params.endpointParams().queryResource(), exchange),
-                    params.endpointParams().namedGraph());
+            return executeQueryOnGraph(graph, readSparqlQuery(params.endpointParams().queryResource(), exchange),
+                    params.endpointParams().namedGraph(), params.endpointParams().newGraph());
         }
         else {
             throw new IllegalArgumentException("No query and no queryResource specified");
