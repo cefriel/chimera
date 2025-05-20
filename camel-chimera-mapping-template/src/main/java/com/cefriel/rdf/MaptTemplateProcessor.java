@@ -66,8 +66,10 @@ public class MaptTemplateProcessor {
                                     ChimeraResourceBean templateMapKVCsv,
                                     String baseIRI,
                                     boolean isStream,
+                                    boolean fir,
                                     ChimeraResourceBean resourceCustomFunctions,
                                     TemplateFunctions customFunctions) {}
+
     private static OperationParams getOperationParams(Exchange exchange, MaptTemplateBean operationConfig) {
         String baseIri = exchange.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class);
         return new OperationParams(
@@ -82,12 +84,12 @@ public class MaptTemplateProcessor {
                 operationConfig.getKeyValuePairsCSV(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
                 operationConfig.isStream(),
+                operationConfig.isFir(),
                 operationConfig.getResourceCustomFunctions(),
                 operationConfig.getCustomFunctions());
     }
 
     private static boolean validateParams(OperationParams params) {
-        // only allow file resources (why this comment????)
         return true;
     }
 
@@ -98,14 +100,12 @@ public class MaptTemplateProcessor {
     }
 
     private static TemplateExecutor templateExecutor(OperationParams params, Exchange exchange) throws Exception {
-
-
         Formatter formatter = null;
         if(params.formatterFormat() != null){
             formatter = Util.createFormatter(params.formatterFormat());
         }
 
-        return new TemplateExecutor(true, params.trimTemplate(), false, formatter);
+        return new TemplateExecutor(params.fir(), params.trimTemplate(), false, formatter);
     }
 
     public static void execute(Exchange exchange, MaptTemplateBean operationConfig, String inputFormat, TemplateExecutor templateExecutor) throws Exception {
@@ -241,10 +241,6 @@ public class MaptTemplateProcessor {
             reader.addString(exchange.getMessage().getBody(String.class), format);
             return reader;
         }
-    }
-
-    private static String handleOutputFileName(String outputFileName) {
-        return Objects.requireNonNullElseGet(outputFileName, () -> "mapt-" + UUID.randomUUID() + ".txt");
     }
 
     private static TemplateFunctions getCustomTemplateFunctions(String functionsPath) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, FileNotFoundException {
