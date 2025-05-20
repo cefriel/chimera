@@ -31,6 +31,7 @@ public class MaptTemplateBean {
     private boolean verboseQueries;
     private boolean isStream;
     private ChimeraResourceBean resourceCustomFunctions;
+    private boolean fir;
 
     private TemplateFunctions customFunctions;
 
@@ -48,6 +49,7 @@ public class MaptTemplateBean {
         this.trimTemplate = options.isTrimTemplate();
         this.verboseQueries = options.isVerboseQueries();
         this.isStream = options.isStream();
+        this.fir = options.isFir();
         this.resourceCustomFunctions = options.getResourceCustomFunctions();
     }
 
@@ -61,6 +63,14 @@ public class MaptTemplateBean {
 
     public ChimeraResourceBean getTemplate() {
         return template;
+    }
+
+    public boolean isFir() {
+        return fir;
+    }
+
+    public void setFir(boolean fir) {
+        this.fir = fir;
     }
 
     public void setTemplate(ChimeraResourceBean template) {
@@ -178,6 +188,9 @@ public class MaptTemplateBean {
         }
         if (endpoint.isStream()) {
             this.setStream(endpoint.isStream());
+        }
+        if (endpoint.isFir()) {
+            this.setFir(endpoint.isFir());
         }
         if(endpoint.getResourceCustomFunctions() != null) {
             this.setResourceCustomFunctions(endpoint.getResourceCustomFunctions());
