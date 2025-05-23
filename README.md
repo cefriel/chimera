@@ -50,19 +50,20 @@ utilizing the YAML DSL, routes can be configured graphically through
 Camel Karavan, as detailed in the approach outlined
 [here](./karavan/).
 
-### References
-
-Projects using Chimera:
+### Projects
 
 - SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
 - SmartEdge: Semantic Low-code Programming Tools for Edge Intelligence https://www.smart-edge.eu/
 - TANGENT: Enhanced Data Processing Techniques for Dynamic Management of Multimodal Traffic https://tangent-h2020.eu/
-- SNAP: Seamless exchange of multi-modal transport data for transition to National Access Points https://snap-project.eu/
 - SPRINT: Semantics for PerfoRmant and scalable INteroperability of multimodal Transport http://sprint-transport.eu/
+- SNAP: Seamless exchange of multi-modal transport data for transition to National Access Points https://snap-project.eu/
 
-Publications:
-- `Grassi M., Scrocca M., Comerio M., Carenini A., Celino I. (2023) Composable Semantic Data Transformation Pipelines with Chimera. In: 4th International Workshop On Knowledge Graph Construction co-located with the ESWC 2023. CEUR-WS. https://ceur-ws.org/Vol-3471/paper9.pdf`
-- `Scrocca M., Comerio M., Carenini A., Celino I. (2020) Turning Transport Data to Comply with EU Standards While Enabling a Multimodal Transport Knowledge Graph. In: The Semantic Web – ISWC 2020. Springer. https://doi.org/10.1007/978-3-030-62466-8_26`
+### Publications
+
+- Scrocca M., Grassi M., et al. (2024) _Intelligent Urban Traffic Management via Semantic Interoperability Across Multiple Heterogeneous Mobility Data Sources_. In: The Semantic Web – ISWC 2024. Springer. https://doi.org/10.1007/978-3-030-62466-8_26
+- Scrocca M., Carenini A., et al. (2024) _Not Everybody Speaks RDF: Knowledge Conversion between Different Data Representations_. In: 5th International Workshop on Knowledge Graph Construction co-located with the ESWC 2024. CEUR-WS. https://ceur-ws.org/Vol-3718/paper3.pdf
+- Grassi M., Scrocca M., Comerio M., Carenini A., Celino I. (2023) _Composable Semantic Data Transformation Pipelines with Chimera_. In: 4th International Workshop on Knowledge Graph Construction co-located with the ESWC 2023. CEUR-WS. https://ceur-ws.org/Vol-3471/paper9.pdf
+- Scrocca M., Comerio M., Carenini A., Celino I. (2020) _Turning Transport Data to Comply with EU Standards While Enabling a Multimodal Transport Knowledge Graph_. In: The Semantic Web – ISWC 2020. Springer. https://doi.org/10.1007/978-3-030-62466-8_26
 
 ### Commercial Support
 
