@@ -67,7 +67,6 @@ public class GraphMulticastTest extends CamelTestSupport {
                         .to("graph://dump?filename=beforeEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
                         .to("graph://add?chimeraResource=#bean:triples2")
                         .to("graph://dump?filename=afterEnrich&basePath=src/test/resources/file/result&dumpFormat=turtle")
-                        .to("graph://detach?clear=true&routeOff=true")
                         .end()
                         .to("mock:multicast");
             }
