@@ -22,52 +22,40 @@ public class ReadersAggregation implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-        if (oldExchange == null) {
-            try {
-                newExchange.getMessage().setBody(getReaders(newExchange));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return newExchange;
-        }
-
-        Map<String, Reader> oldReaders = (Map<String, Reader>) oldExchange.getMessage().getBody();
-        Map<String, Reader> newReaders = null;
         try {
-            newReaders = getReaders(newExchange);
-        } catch (IOException e) {
+            Map<String, Reader> readers = new HashMap<>();
+            if (oldExchange != null) {
+                Object body = oldExchange.getMessage().getBody();
+                if (body instanceof Map<?, ?> map) {
+                    map.forEach((k, v) -> {
+                        if (k instanceof String key && v instanceof Reader value) {
+                            readers.put(key, value);
+                        }
+                    });
+                }
+            }
+            readers.putAll(getReaders(newExchange));
+            Exchange result = (oldExchange != null) ? oldExchange : newExchange;
+            result.getMessage().setBody(readers);
+            return result;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        HashMap<String, Reader> readers = new HashMap<>();
-        readers.putAll(oldReaders);
-        readers.putAll(newReaders);
-
-        oldExchange.getMessage().setBody(readers);
-        return oldExchange;
     }
 
-    public Map<String, Reader> getReaders(Exchange exchange) throws IOException {
+    public Map<String, Reader> getReaders(Exchange exchange) throws Exception {
         String readerContent = exchange.getMessage().getBody(String.class);
-        // the exchange variable names are defined in the router.vm file from typhon-rml
         String readerFormat = exchange.getVariable("readerFormat", String.class);
         String readerName = exchange.getVariable("readerName", String.class);
 
         Reader reader = switch (readerFormat) {
             case "json" -> new JSONReader(readerContent);
-            case "sql" -> {
-                String jdbcDSN = exchange.getVariable("jdbcDSN", String.class);
-                String username = exchange.getVariable("username", String.class);
-                String password = exchange.getVariable("password", String.class);
-                yield new SQLReader(jdbcDSN, username, password);
-            }
-            case "xml" -> {
-                try {
-                    yield new XMLReader(readerContent);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            case "sql" -> new SQLReader(
+                    exchange.getVariable("jdbcDSN", String.class),
+                    exchange.getVariable("username", String.class),
+                    exchange.getVariable("password", String.class)
+            );
+            case "xml" -> new XMLReader(readerContent);
             case "csv" -> new CSVReader(readerContent);
             case "rdf" -> {
                 String sparqlEndpoint = exchange.getVariable("sparqlEndpoint", String.class);
@@ -77,11 +65,8 @@ public class ReadersAggregation implements AggregationStrategy {
                 RDFReader rdfReader = new RDFReader();
                 String rmlPath = exchange.getVariable("readerInputFile", String.class);
                 Optional<RDFFormat> rdfFormat = Rio.getParserFormatForFileName(rmlPath);
-                try {
-                    if (rdfFormat.isPresent())
-                        rdfReader.addString(readerContent, rdfFormat.get());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (rdfFormat.isPresent()) {
+                    rdfReader.addString(readerContent, rdfFormat.get());
                 }
                 yield rdfReader;
             }
