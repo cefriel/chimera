@@ -20,21 +20,21 @@ import com.cefriel.operations.GraphGet;
 import com.cefriel.util.ChimeraConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.support.DefaultConsumer;
+import org.apache.camel.support.ScheduledPollConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GraphConsumer extends DefaultConsumer {
+public class GraphConsumer extends ScheduledPollConsumer {
     private final GraphEndpoint endpoint;
     private static final Logger LOG = LoggerFactory.getLogger(GraphConsumer.class);
+
     public GraphConsumer(GraphEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
     }
-    @Override
-    protected void doStart() throws Exception {
 
-        super.doStart();
+    @Override
+    protected int poll() throws Exception {
         final Exchange exchange = createExchange(false);
         GraphBean operationConfig;
         if (endpoint.getBaseConfig() != null) {
@@ -45,10 +45,10 @@ public class GraphConsumer extends DefaultConsumer {
             operationConfig = new GraphBean();
         }
         operationConfig.setEndpointParameters(endpoint);
+
         if ("get".equals(endpoint.getName())) {
             GraphGet.obtainGraph(exchange, operationConfig);
             try {
-                // send message to next processor in the route
                 getProcessor().process(exchange);
             } catch (Exception e) {
                 exchange.setException(e);
@@ -58,14 +58,9 @@ public class GraphConsumer extends DefaultConsumer {
                 }
                 releaseExchange(exchange, false);
             }
-            doStop();
+            return 1; // number of polled exchanges
         } else {
             throw new UnsupportedOperationException("Graph Consumer only allows GET operations");
         }
-    }
-
-    @Override
-    protected void doStop() throws Exception {
-        super.doStop();
     }
 }
