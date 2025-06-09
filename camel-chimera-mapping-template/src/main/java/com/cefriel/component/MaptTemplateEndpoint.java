@@ -67,10 +67,11 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null", description = "User defined class that extends the TemplateFunctions class. Use this parameter when the user defined class is included in the Java project. Used to define java functions that can be called in a template file. ")
     private TemplateFunctions customFunctions;
 
+    @UriParam(defaultValue = "true", description = "True if mapping should fail on an invalid reference")
+    private boolean fir = true;
+
     @UriParam(defaultValue = "null")
     private MaptTemplateBean rdfBaseConfig;
-
-    // todo add resource option if template file in resource folder
 
     public MaptTemplateEndpoint() {
     }
@@ -224,6 +225,14 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
 
     public void setRdfBaseConfig(MaptTemplateBean rdfBaseConfig) {
 	this.rdfBaseConfig = rdfBaseConfig;
+    }
+
+    public boolean isFir() {
+        return fir;
+    }
+
+    public void setFir(boolean fir) {
+        this.fir = fir;
     }
 
 }
