@@ -5,6 +5,8 @@ _Chimera_: Composable Semantic Transformation Pipelines
 
 Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) offering components to define schema and data transformation pipelines based on Semantic Web solutions.
 
+:toolbox: The [`chimera-deployment-templates`](https://github.com/cefriel/chimera-deployment-templates) repository offers ready-to-use templates to deploy a Chimera conversion pipeline in different environments.
+
 :arrow_forward: The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) repository provides a complete example of a Chimera conversion pipeline.
 
 ### Goals
