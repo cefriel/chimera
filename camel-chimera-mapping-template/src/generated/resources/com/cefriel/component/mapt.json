@@ -11,7 +11,7 @@
     "supportLevel": "Stable",
     "groupId": "com.cefriel",
     "artifactId": "camel-chimera-mapping-template",
-    "version": "4.3.1-SNAPSHOT",
+    "version": "4.4.0",
     "scheme": "mapt",
     "extendsScheme": "",
     "syntax": "mapt:name",
