@@ -54,6 +54,7 @@ Camel Karavan, as detailed in the approach outlined
 
 ### Projects
 
+- Mouseworld Lab for Network Digital Twin (NDT): https://github.com/Mouseworld-Lab/mouseworld-kg
 - SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
 - SmartEdge: Semantic Low-code Programming Tools for Edge Intelligence https://www.smart-edge.eu/
 - TANGENT: Enhanced Data Processing Techniques for Dynamic Management of Multimodal Traffic https://tangent-h2020.eu/
