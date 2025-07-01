@@ -64,6 +64,7 @@ public class MaptTemplateProcessor {
                                     boolean verboseReader,
                                     ChimeraResourceBean templateMapKV,
                                     ChimeraResourceBean templateMapKVCsv,
+                                    TemplateMap templateMap,
                                     String baseIRI,
                                     boolean isStream,
                                     boolean fir,
@@ -82,6 +83,7 @@ public class MaptTemplateProcessor {
                 operationConfig.isVerboseQueries(),
                 operationConfig.getKeyValuePairs(),
                 operationConfig.getKeyValuePairsCSV(),
+                operationConfig.getTemplateMap(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
                 operationConfig.isStream(),
                 operationConfig.isFir(),
@@ -144,41 +146,36 @@ public class MaptTemplateProcessor {
                 usedTemplateFunctions = getCustomTemplateFunctions(tempFile.toAbsolutePath().toString());
                 Files.deleteIfExists(tempFile);
             }
-
             else if ((params.resourceCustomFunctions() == null) && (params.customFunctions != null)) {
                 usedTemplateFunctions = params.customFunctions();
                 usedTemplateFunctions.setPrefix(params.baseIRI());
             }
-
             else {
                 usedTemplateFunctions = new TemplateFunctions();
                 usedTemplateFunctions.setPrefix(params.baseIRI());
             }
-            
             // Re-init instance of TemplateFunctions to avoid errors between different executions of the same pipeline
             usedTemplateFunctions = usedTemplateFunctions.getClass().getDeclaredConstructor().newInstance();
 
             TemplateMap templateMap = null;
-            if(params.templateMapKV() != null) {
-                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange),
-                        false);
+            if (params.templateMap() != null) {
+                templateMap = params.templateMap();
+            } else if (params.templateMapKVCsv() != null) {
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange), true);
+            } else if (params.templateMapKV() != null) {
+                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange), false);
             }
-            if(params.templateMapKVCsv() != null) {
-                templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange),
-                        true);
-            }
-
 
             // if filename is specified then save to file
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
-                Path outputFilePath = Paths.get(params.basePath() + params.outputFileName());
+                Path outputFilePath = Paths.get(params.basePath(), params.outputFileName());
                 if(params.query() != null) {
                     List<Path> resultFilesPaths;
                     resultFilesPaths = templateExecutor.executeMappingParametric(readers,
-                                ResourceAccessor.open(params.template(), exchange),
-                                ResourceAccessor.open(params.query(), exchange),
-                                outputFilePath,
+                            ResourceAccessor.open(params.template(), exchange),
+                            ResourceAccessor.open(params.query(), exchange),
+                            outputFilePath,
                             usedTemplateFunctions,
                             templateMap);
                     exchange.getMessage().setBody(resultFilesPaths, List.class);

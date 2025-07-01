@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.template.TemplateMap;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 
@@ -25,6 +26,7 @@ public class MaptTemplateBean {
     private String filename;
     private ChimeraResourceBean keyValuePairs;
     private ChimeraResourceBean keyValuePairsCSV;
+    private TemplateMap templateMap;
     private String format;
     private ChimeraResourceBean query;
     private boolean trimTemplate;
@@ -44,6 +46,7 @@ public class MaptTemplateBean {
         this.filename = options.getFilename();
         this.keyValuePairs = options.getKeyValuePairs();
         this.keyValuePairsCSV = options.getKeyValuePairsCSV();
+        this.templateMap = options.getTemplateMap();
         this.format = options.getFormat();
         this.query = options.getQuery();
         this.trimTemplate = options.isTrimTemplate();
@@ -157,6 +160,14 @@ public class MaptTemplateBean {
         this.customFunctions = customFunctions;
     }
 
+    public TemplateMap getTemplateMap() {
+        return templateMap;
+    }
+
+    public void setTemplateMap(TemplateMap templateMap) {
+        this.templateMap = templateMap;
+    }
+
     public void setConfig(MaptTemplateEndpoint endpoint){
 
         if (endpoint.getBasePath()!=null){
@@ -195,9 +206,11 @@ public class MaptTemplateBean {
         if(endpoint.getResourceCustomFunctions() != null) {
             this.setResourceCustomFunctions(endpoint.getResourceCustomFunctions());
         }
-
         if(endpoint.getCustomFunctions() != null) {
             this.setCustomFunctions(endpoint.getCustomFunctions());
+        }
+        if(endpoint.getTemplateMap() != null) {
+            this.setTemplateMap(endpoint.getTemplateMap());
         }
     }
 }
