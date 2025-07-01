@@ -6,6 +6,7 @@ import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -21,7 +22,7 @@ public class MaptTemplateMapTest extends CamelTestSupport {
 
         template.send("direct:start", ExchangeBuilder.anExchange(context()).build());
         String result = mock.getExchanges().get(0).getMessage().getBody(String.class);
-        assert (result.equals("1,2"));
+        Assertions.assertEquals(result, "1,2");
         mock.assertIsSatisfied();
     }
 
