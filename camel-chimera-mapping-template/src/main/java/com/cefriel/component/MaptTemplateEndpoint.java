@@ -16,6 +16,7 @@
 
 package com.cefriel.component;
 
+import com.cefriel.template.TemplateMap;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.util.ChimeraResourceBean;
 import org.apache.camel.Category;
@@ -51,6 +52,8 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null", description = "CSV file resource used to build the templateMap used in the mapping process")
     // compilation error if no description is provided
     private ChimeraResourceBean keyValuePairsCSV;
+    @UriParam(defaultValue = "null", description = "TemplateMap to be used in the mapping process.")
+    private TemplateMap templateMap;
     @UriParam(defaultValue = "null")
     private String format;
     @UriParam(defaultValue = "null", description = "Query resource used in the mapping process")
@@ -235,4 +238,11 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
         this.fir = fir;
     }
 
+    public TemplateMap getTemplateMap() {
+        return templateMap;
+    }
+
+    public void setTemplateMap(TemplateMap templateMap) {
+        this.templateMap = templateMap;
+    }
 }

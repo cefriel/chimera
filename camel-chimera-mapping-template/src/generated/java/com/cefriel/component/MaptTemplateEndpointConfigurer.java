@@ -47,6 +47,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "resourceCustomFunctions": target.setResourceCustomFunctions(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
         case "stream": target.setStream(property(camelContext, boolean.class, value)); return true;
         case "template": target.setTemplate(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
+        case "templatemap":
+        case "templateMap": target.setTemplateMap(property(camelContext, com.cefriel.template.TemplateMap.class, value)); return true;
         case "trimtemplate":
         case "trimTemplate": target.setTrimTemplate(property(camelContext, boolean.class, value)); return true;
         case "verbosequeries":
@@ -84,6 +86,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "resourceCustomFunctions": return com.cefriel.util.ChimeraResourceBean.class;
         case "stream": return boolean.class;
         case "template": return com.cefriel.util.ChimeraResourceBean.class;
+        case "templatemap":
+        case "templateMap": return com.cefriel.template.TemplateMap.class;
         case "trimtemplate":
         case "trimTemplate": return boolean.class;
         case "verbosequeries":
@@ -122,6 +126,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "resourceCustomFunctions": return target.getResourceCustomFunctions();
         case "stream": return target.isStream();
         case "template": return target.getTemplate();
+        case "templatemap":
+        case "templateMap": return target.getTemplateMap();
         case "trimtemplate":
         case "trimTemplate": return target.isTrimTemplate();
         case "verbosequeries":
