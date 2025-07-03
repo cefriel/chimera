@@ -72,6 +72,12 @@ Camel Karavan, as detailed in the approach outlined
 
 If you need commercial support for Chimera contact us at [chimera-dev@cefriel.com](mailto:chimera-dev@cefriel.com).
 
+### Contributing
+
+Before contributing, please read carefully, complete and sign our [Contributor Licence Agreement](https://github.com/cefriel/contributing/blob/main/contributor-license-agreement.pdf). 
+
+When contributing to this repository, please first discuss the change you wish to make via issue or any other available method with the repository's owners.
+
 ### License
 
 _Copyright (c) 2019-2025 Cefriel._
