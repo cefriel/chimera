@@ -56,6 +56,7 @@ preferred-citation:
     affiliation: Cefriel
     orcid: 'https://orcid.org/0000-0001-9962-7193'
   url: "https://ceur-ws.org/Vol-3471/paper9.pdf"
-  booktitle: "Proceedings of the 4th International Workshop on Knowledge Graph Construction"
+  conference:
+    name: "Proceedings of the 4th International Workshop on Knowledge Graph Construction"
   title: "Composable Semantic Data Transformation Pipelines with Chimera"
   year: 2023
