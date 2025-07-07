@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class MaptTemplateXmlTest extends CamelTestSupport {
@@ -50,7 +51,9 @@ public class MaptTemplateXmlTest extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         String correctOutput = Files.readString(Paths.get("./src/test/resources/file/xml/output-correct.ttl"));
-        String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-xml.ttl"));
+        Path outputFile = Paths.get("./src/test/resources/file/result/output-xml.ttl");
+        String mappedOutput = Files.readString(outputFile);
+        Files.deleteIfExists(outputFile);
 
         assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
     }
