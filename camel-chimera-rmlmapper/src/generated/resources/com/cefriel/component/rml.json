@@ -11,7 +11,7 @@
     "supportLevel": "Stable",
     "groupId": "com.cefriel",
     "artifactId": "camel-chimera-rmlmapper",
-    "version": "4.4.2-SNAPSHOT",
+    "version": "4.5.0",
     "scheme": "rml",
     "extendsScheme": "",
     "syntax": "rml:name",
