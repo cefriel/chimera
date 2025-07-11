@@ -62,6 +62,11 @@
       <version>${camel.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.17.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.rdf4j</groupId>
       <artifactId>rdf4j-storage</artifactId>
       <type>pom</type>
