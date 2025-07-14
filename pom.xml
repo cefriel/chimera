@@ -19,15 +19,15 @@
         <module>camel-chimera-mapping-template</module>
     </modules>
 
-    <properties>
-        <camel.version>4.4.1</camel.version>
-        <rdf4j.version>4.3.10</rdf4j.version>
-        <mapping-template.version>2.6.1</mapping-template.version>
-        <rmlmapper.version>1.1.0</rmlmapper.version>
-        <camel-test-junit.version>${camel.version}</camel-test-junit.version>
-        <camel-bom.version>${camel.version}</camel-bom.version>
-        <slf4j.version>2.17.2</slf4j.version>
-    </properties>
+  <properties>
+    <camel.version>4.4.1</camel.version>
+    <rdf4j.version>4.3.10</rdf4j.version>
+    <mapping-template.version>2.6.2-SNAPSHOT</mapping-template.version>
+    <rmlmapper.version>1.1.0</rmlmapper.version>
+    <camel-test-junit.version>${camel.version}</camel-test-junit.version>
+    <camel-bom.version>${camel.version}</camel-bom.version>
+    <slf4j.version>2.17.2</slf4j.version>
+  </properties>
 
     <scm>
         <connection>scm:git:https://github.com/cefriel/chimera.git</connection>

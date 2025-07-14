@@ -28,10 +28,7 @@ import com.cefriel.template.io.rdf.RDFReader;
 import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
-import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ResourceAccessor;
-import com.cefriel.util.Utils;
+import com.cefriel.util.*;
 import org.apache.camel.Exchange;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -98,7 +95,6 @@ public class MaptTemplateProcessor {
     public static TemplateExecutor templateExecutor(Exchange exchange, MaptTemplateBean operationConfig) throws Exception {
         OperationParams params = getOperationParams(exchange, operationConfig);
         return templateExecutor(params, exchange);
-
     }
 
     private static TemplateExecutor templateExecutor(OperationParams params, Exchange exchange) throws Exception {
@@ -106,7 +102,6 @@ public class MaptTemplateProcessor {
         if(params.formatterFormat() != null){
             formatter = Util.createFormatter(params.formatterFormat());
         }
-
         return new TemplateExecutor(params.fir(), params.trimTemplate(), false, formatter);
     }
 
@@ -166,38 +161,78 @@ public class MaptTemplateProcessor {
                 templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange), false);
             }
 
+
+            ChimeraResource x = params.template().specialize();
+
+            Path templatePath = null;
+            if (x instanceof ChimeraResource.FileResource fileResource) {
+                templatePath = fileResource.getPath();
+            } else if (x instanceof ChimeraResource.ClassPathResource classPathResource) {
+                templatePath = classPathResource.getPath();
+            }
+
             // if filename is specified then save to file
             if(params.outputFileName() != null) {
                 new File(params.basePath()).mkdirs();
                 Path outputFilePath = Paths.get(params.basePath(), params.outputFileName());
                 if(params.query() != null) {
                     List<Path> resultFilesPaths;
-                    resultFilesPaths = templateExecutor.executeMappingParametric(readers,
-                            ResourceAccessor.open(params.template(), exchange),
-                            ResourceAccessor.open(params.query(), exchange),
-                            outputFilePath,
-                            usedTemplateFunctions,
-                            templateMap);
-                    exchange.getMessage().setBody(resultFilesPaths, List.class);
 
+                    if (templatePath != null) {
+                        resultFilesPaths = templateExecutor.executeMappingParametric(readers,
+                                templatePath,
+                                ResourceAccessor.open(params.query(), exchange),
+                                outputFilePath,
+                                usedTemplateFunctions,
+                                templateMap);
+                    }
+                    else {
+                        resultFilesPaths = templateExecutor.executeMappingParametric(readers,
+                                ResourceAccessor.open(params.template(), exchange),
+                                ResourceAccessor.open(params.query(), exchange),
+                                outputFilePath,
+                                usedTemplateFunctions,
+                                templateMap);
+                    }
+                    exchange.getMessage().setBody(resultFilesPaths, List.class);
                 } else {
                     Path resultFilePath;
-                    resultFilePath = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), outputFilePath, usedTemplateFunctions, templateMap);
+                    if (templatePath != null) {
+                        resultFilePath = templateExecutor.executeMapping(readers, templatePath, outputFilePath, usedTemplateFunctions, templateMap);
+                    }
+                    else {
+                        resultFilePath = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), outputFilePath, usedTemplateFunctions, templateMap);
+                    }
                     exchange.getMessage().setBody(resultFilePath, String.class);
                 }
             }
             // if filename is not specified then the result of applying template is stored in the exchange body as string
             else {
                 if (params.query() != null) {
-                    Map<String,String> result;
-                    result = templateExecutor.executeMappingParametric(readers,
-                            ResourceAccessor.open(params.template(), exchange),
-                            ResourceAccessor.open(params.query(), exchange),
-                            usedTemplateFunctions,
-                            templateMap);
+                    Map<String, String> result;
+                    if (templatePath != null) {
+                        result = templateExecutor.executeMappingParametric(readers,
+                                templatePath,
+                                ResourceAccessor.open(params.query(), exchange),
+                                usedTemplateFunctions,
+                                templateMap);
+                    }
+                    else {
+                        result = templateExecutor.executeMappingParametric(readers,
+                                ResourceAccessor.open(params.template(), exchange),
+                                ResourceAccessor.open(params.query(), exchange),
+                                usedTemplateFunctions,
+                                templateMap);
+                    }
                     exchange.getMessage().setBody(result, Map.class);
                 } else {
-                    String result = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), usedTemplateFunctions, templateMap);
+                    String result;
+                    if (templatePath != null) {
+                        result = templateExecutor.executeMapping(readers, templatePath, usedTemplateFunctions, templateMap);
+                    }
+                    else {
+                        result = templateExecutor.executeMapping(readers, ResourceAccessor.open(params.template(), exchange), usedTemplateFunctions, templateMap);
+                    }
                     exchange.getMessage().setBody(result, String.class);
                 }
             }
