@@ -54,6 +54,7 @@ Camel Karavan, as detailed in the approach outlined
 
 ### Projects
 
+- Mouseworld Lab for Network Digital Twin (NDT): https://github.com/Mouseworld-Lab/mouseworld-kg
 - SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
 - SmartEdge: Semantic Low-code Programming Tools for Edge Intelligence https://www.smart-edge.eu/
 - TANGENT: Enhanced Data Processing Techniques for Dynamic Management of Multimodal Traffic https://tangent-h2020.eu/
@@ -70,6 +71,12 @@ Camel Karavan, as detailed in the approach outlined
 ### Commercial Support
 
 If you need commercial support for Chimera contact us at [chimera-dev@cefriel.com](mailto:chimera-dev@cefriel.com).
+
+### Contributing
+
+Before contributing, please read carefully, complete and sign our [Contributor Licence Agreement](https://github.com/cefriel/contributing/blob/main/contributor-license-agreement.pdf). 
+
+When contributing to this repository, please first discuss the change you wish to make via issue or any other available method with the repository's owners.
 
 ### License
 

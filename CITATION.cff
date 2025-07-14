@@ -1,0 +1,62 @@
+cff-version: 1.2.0
+title: Chimera
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Marco
+    family-names: Grassi
+    email: marco.grassi@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0003-3139-3049'
+  - given-names: Mario
+    family-names: Scrocca
+    email: mario.scrocca@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0002-8235-7331'
+  - given-names: Alessio
+    family-names: Carenini
+    email: alessio.carenini@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0003-1948-807X'
+repository-code: 'https://github.com/cefriel/chimera'
+repository-artifact: 'https://search.maven.org/artifact/com.cefriel/chimera'
+abstract: >-
+  Chimera is a framework implemented on top of Apache Camel
+  offering components to define schema and data
+  transformation pipelines based on Semantic Web solutions.
+license: Apache-2.0
+preferred-citation:
+  type: conference-paper
+  authors:
+  - given-names: Marco
+    family-names: Grassi
+    email: marco.grassi@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0003-3139-3049'
+  - given-names: Mario
+    family-names: Scrocca
+    email: mario.scrocca@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0002-8235-7331'
+  - given-names: Alessio
+    family-names: Carenini
+    email: alessio.carenini@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0003-1948-807X'
+  - given-names: Marco
+    family-names: Comerio
+    email: marco.comerio@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0003-3494-9516'
+  - given-names: Irene
+    family-names: Celino
+    email: irene.celino@cefriel.com
+    affiliation: Cefriel
+    orcid: 'https://orcid.org/0000-0001-9962-7193'
+  url: "https://ceur-ws.org/Vol-3471/paper9.pdf"
+  conference:
+    name: "Proceedings of the 4th International Workshop on Knowledge Graph Construction"
+  title: "Composable Semantic Data Transformation Pipelines with Chimera"
+  year: 2023
