@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
     private static ChimeraResourceBean triples;
     private static ChimeraResourceBean template;
@@ -44,15 +46,23 @@ public class MaptTemplateParametricAgencyTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:rdfParamAgency");
         mock.expectedMessageCount(1);
         mock.assertIsSatisfied();
+
         List<Path> resultsFilesPaths = mock.getExchanges().get(0).getMessage().getBody(List.class);
+        assert resultsFilesPaths != null : "Result file paths should not be null";
+        assert resultsFilesPaths.size() == 2 : "Expected 2 result files, got " + resultsFilesPaths.size();
 
-        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv"));
-        String mappedOutput = Files.readString(resultsFilesPaths.get(0));
-        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
+        String[] expectedFiles = {
+                "./src/test/resources/file/agency-parametric/agency-BEST-AGENCY.csv",
+                "./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv"
+        };
 
-        String correctOutput1 = Files.readString(Paths.get("./src/test/resources/file/agency-parametric/agency-WOW-AGENCY.csv"));
-        String mappedOutput1 = Files.readString(resultsFilesPaths.get(1));
-        assert(TestUtils.isIsomorphicGraph(correctOutput1, "turtle", mappedOutput1, "turtle"));
+        for (int i = 0; i < expectedFiles.length; i++) {
+            String correctOutput = Files.readString(Paths.get(expectedFiles[i]));
+            String mappedOutput = Files.readString(resultsFilesPaths.get(i));
+            assertEquals(correctOutput.replaceAll("\\s+", ""),
+                    mappedOutput.replaceAll("\\s+", ""),
+                    "Output mismatch ignoring whitespace for file: " + expectedFiles[i]);
+        }
     }
 
     @Override
