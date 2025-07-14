@@ -53,12 +53,12 @@
   <dependencies>
     <dependency>
       <groupId>com.cefriel</groupId>
-      <artifactId>camel-chimera-graph</artifactId>
+      <artifactId>mapping-template</artifactId>
     </dependency>
     <dependency>
       <groupId>com.cefriel</groupId>
-      <artifactId>mapping-template</artifactId>
-    </dependency>
+      <artifactId>camel-chimera-graph</artifactId>
+    </dependency>    
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-test-junit5</artifactId>

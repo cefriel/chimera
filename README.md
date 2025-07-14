@@ -43,6 +43,8 @@ Chimera is currently composed of three Apache Camel Components, available as sub
 - `camel-chimera-rmlmapper` Camel component used to lifting using the [rmlmapper-cefriel](https://github.com/cefriel/rmlmapper-cefriel) library 
 - `camel-chimera-mapping-template` Camel component able to implement both lifting and lowering steps using the [mapping-template](https://github.com/cefriel/mapping-template) library
 
+**N.B.** The `camel-chimera-mapping-template` includes `camel-chimera-graph` as a dependency. Therefore, when using the `camel-chimera-mapping-template` component, you do **not** need to include the `camel-chimera-graph` dependency separately.
+
 ### Chimera Pipeline Configuration
 
 Apache Camel provides support for multiple domain-specific languages
