@@ -110,11 +110,15 @@ public class MaptTemplateProcessor {
         execute(params, exchange, inputFormat, templateExecutor);
     }
     private static void execute(OperationParams params, Exchange exchange, String inputFormat, TemplateExecutor templateExecutor) throws Exception {
-
         if (validateParams(params)) {
             Map<String, Reader> readers = new HashMap<>();
-            if (inputFormat != null && inputFormat.equals("readers"))
+            if (inputFormat != null && inputFormat.equals("readers")) {
                 readers = exchange.getMessage().getBody(Map.class);
+                for (Map.Entry<String, Reader> entry : readers.entrySet()) {
+                    entry.getValue().setOutputFormat(params.formatterFormat());
+                }
+            }
+
             else {
                 Reader reader = getReaderFromExchange(exchange, inputFormat, params.formatterFormat(), params.verboseReader());
                 if (reader == null) {
