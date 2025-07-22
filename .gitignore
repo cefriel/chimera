@@ -3,3 +3,4 @@
 **/src/test/resources/file/result
 **/target
 *.class
+release.properties
