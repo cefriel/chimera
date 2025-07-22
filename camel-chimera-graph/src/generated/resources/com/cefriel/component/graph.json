@@ -11,7 +11,7 @@
     "supportLevel": "Stable",
     "groupId": "com.cefriel",
     "artifactId": "camel-chimera-graph",
-    "version": "4.5.2",
+    "version": "4.5.3-SNAPSHOT",
     "scheme": "graph",
     "extendsScheme": "",
     "syntax": "graph:name",
