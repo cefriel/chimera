@@ -24,6 +24,8 @@ import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.util.Models;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +60,9 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
 
         String correctOutput = Files.readString(Paths.get("./src/test/resources/file/csv/output-correct.ttl"));
         String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-csv.ttl"));
-        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
+        Model result = TestUtils.rdfToModel(mappedOutput, "Turtle", null);
+        Model expected = TestUtils.rdfToModel(correctOutput, "Turtle", null);
+        assert (Models.isomorphic(result, expected));
     }
 
     @Test
@@ -71,7 +75,9 @@ public class MaptTemplateCsvTest extends CamelTestSupport {
 
         String correctOutput = Files.readString(Paths.get("./src/test/resources/file/csv/output-correct.ttl"));
         String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-csv-no-input.ttl"));
-        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
+        Model result = TestUtils.rdfToModel(mappedOutput, "Turtle", null);
+        Model expected = TestUtils.rdfToModel(correctOutput, "Turtle", null);
+        assert (Models.isomorphic(result, expected));
     }
 
     @Override

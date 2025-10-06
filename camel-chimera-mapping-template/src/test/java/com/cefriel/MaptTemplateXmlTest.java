@@ -23,6 +23,8 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.util.Models;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +57,9 @@ public class MaptTemplateXmlTest extends CamelTestSupport {
         String mappedOutput = Files.readString(outputFile);
         Files.deleteIfExists(outputFile);
 
-        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
+        Model result = TestUtils.rdfToModel(mappedOutput, "Turtle", null);
+        Model expected = TestUtils.rdfToModel(correctOutput, "Turtle", null);
+        assert (Models.isomorphic(result, expected));
     }
 
     @Override
@@ -64,7 +68,6 @@ public class MaptTemplateXmlTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
                 getCamelContext().getRegistry().bind("template", template);
-
                 from("direct:start")
                         .to("mapt://xml?template=#bean:template&basePath=./src/test/resources/file/result&fileName=output-xml.ttl")
                         .to("mock:rdfXml");

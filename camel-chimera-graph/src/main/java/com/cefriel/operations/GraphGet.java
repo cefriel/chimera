@@ -95,7 +95,6 @@ public class GraphGet {
         else {
             throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
         }
-
     }
     private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws Exception {
         RDFGraph graph = obtainGraph(params, exchange);

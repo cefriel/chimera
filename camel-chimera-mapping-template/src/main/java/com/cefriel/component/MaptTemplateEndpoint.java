@@ -42,22 +42,20 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     @UriParam(defaultValue = "null")
     private String basePath;
     @UriParam(defaultValue = "null", description = "Template resource used in the mapping process")
-    // compilation error if no description is provided
     private ChimeraResourceBean template;
+    @UriParam(defaultValue = "null", description = "RML mapping that is first converted and then run as an equivalent MTL mapping")
+    private ChimeraResourceBean rml;
     @UriParam(defaultValue = "null")
     private String filename;
     @UriParam(defaultValue = "null", description = "File resource containing kv pairs used to build the templateMap used in the mapping process")
-    // compilation error if no description is provided
     private ChimeraResourceBean keyValuePairs;
     @UriParam(defaultValue = "null", description = "CSV file resource used to build the templateMap used in the mapping process")
-    // compilation error if no description is provided
     private ChimeraResourceBean keyValuePairsCSV;
     @UriParam(defaultValue = "null", description = "TemplateMap to be used in the mapping process.")
     private TemplateMap templateMap;
     @UriParam(defaultValue = "null")
     private String format;
     @UriParam(defaultValue = "null", description = "Query resource used in the mapping process")
-    // compilation error if no description is provided
     private ChimeraResourceBean query;
     @UriParam(defaultValue = "false")
     private boolean trimTemplate;
@@ -244,5 +242,13 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
 
     public void setTemplateMap(TemplateMap templateMap) {
         this.templateMap = templateMap;
+    }
+
+    public ChimeraResourceBean getRml() {
+        return rml;
+    }
+
+    public void setRml(ChimeraResourceBean rml) {
+        this.rml = rml;
     }
 }

@@ -45,6 +45,7 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "rdfBaseConfig": target.setRdfBaseConfig(property(camelContext, com.cefriel.component.MaptTemplateBean.class, value)); return true;
         case "resourcecustomfunctions":
         case "resourceCustomFunctions": target.setResourceCustomFunctions(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
+        case "rml": target.setRml(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
         case "stream": target.setStream(property(camelContext, boolean.class, value)); return true;
         case "template": target.setTemplate(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
         case "templatemap":
@@ -84,6 +85,7 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "rdfBaseConfig": return com.cefriel.component.MaptTemplateBean.class;
         case "resourcecustomfunctions":
         case "resourceCustomFunctions": return com.cefriel.util.ChimeraResourceBean.class;
+        case "rml": return com.cefriel.util.ChimeraResourceBean.class;
         case "stream": return boolean.class;
         case "template": return com.cefriel.util.ChimeraResourceBean.class;
         case "templatemap":
@@ -124,6 +126,7 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "rdfBaseConfig": return target.getRdfBaseConfig();
         case "resourcecustomfunctions":
         case "resourceCustomFunctions": return target.getResourceCustomFunctions();
+        case "rml": return target.getRml();
         case "stream": return target.isStream();
         case "template": return target.getTemplate();
         case "templatemap":

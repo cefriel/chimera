@@ -1,0 +1,232 @@
+
+
+
+
+#set($foo = $functions.setBaseIRI("http://www.cefriel.com/data/"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+        #set($reader_ededfbaeh = $functions.getCSVReaderFromFile(".\src\test\resources\file\rml/student.csv"))
+        #set($foo = $reader_ededfbaeh.setHashVariable(true))
+        #set($foo = $reader_ededfbaeh.setOnlyDistinct(true))
+            #set($columns = "ID,Name,Sport")
+            #set($dataframe_ededfbaeh = $reader_ededfbaeh.getDataframe($columns))
+    
+
+
+
+    
+
+    
+
+        #set($reader_ededfbaaa = $functions.getCSVReaderFromFile(".\src\test\resources\file\rml/sport.csv"))
+        #set($foo = $reader_ededfbaaa.setHashVariable(true))
+        #set($foo = $reader_ededfbaaa.setOnlyDistinct(true))
+            #set($columns = "ID,Name")
+            #set($dataframe_ededfbaaa = $reader_ededfbaaa.getDataframe($columns))
+    
+
+
+
+
+
+
+            #if(!$dataframe_join_hjjeifgbj)
+                #set($dataframe_join_hjjeifgbj = $functions.getListMap($dataframe_ededfbaaa, "cddb"))
+            #end
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+        
+        
+        
+            
+
+
+        
+        #foreach($i in $dataframe_ededfbaeh)
+
+
+        
+
+            
+            
+            
+
+            
+
+            
+
+            
+
+                
+                
+                        
+
+
+
+
+                    #set($refs = [${i.cecadjf}, ${i.cddb}])
+
+                    
+                    #if($functions.checkStrings($refs))
+                        
+                        <$functions.resolveIRI("http://example.com/resource/student_${i.cddb}")> <http://xmlns.com/foaf/0.1/name> "${i.cecadjf}" .
+                    #end
+
+
+            
+            
+            
+
+            
+
+                
+
+            
+
+            
+
+                
+                        #if($functions.checkString($i.iaajjbfg))
+                        #foreach($j in $dataframe_join_hjjeifgbj.get($i.iaajjbfg))
+
+
+                            #set($refs = [${i.cddb}, ${j.cddb}])
+
+                            
+                            #if($functions.checkStrings($refs))
+                                <$functions.resolveIRI("http://example.com/resource/student_${i.cddb}")> <http://example.com/ontology/practises> <$functions.resolveIRI("http://example.com/resource/sport_${j.cddb}")> .
+                            #end
+
+                        #end
+                        #end
+
+        #end
+
+
+
+        
+
+
+        
+        
+        
+            
+
+
+        
+        #foreach($i in $dataframe_ededfbaaa)
+
+
+        
+
+            
+            
+            
+
+            
+
+            
+
+            
+
+                
+                
+                        
+
+
+
+
+                    #set($refs = [${i.cecadjf}, ${i.cddb}])
+
+                    
+                    #if($functions.checkStrings($refs))
+                        
+                        <$functions.resolveIRI("http://example.com/resource/sport_${i.cddb}")> <$functions.resolveIRI("http://www.w3.org/2000/01/rdf-schema${esc.h}label")> "${i.cecadjf}" .
+                    #end
+
+        #end
+
