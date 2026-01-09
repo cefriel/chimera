@@ -54,7 +54,7 @@ public class ReadersAggregation implements AggregationStrategy {
             case "sql" -> {
                 JdbcConnectionDetails jdbcDetails = exchange.getMessage().getBody(JdbcConnectionDetails.class);
                 if (jdbcDetails != null) {
-                    yield new SQLReader(jdbcDetails.getJdbcUrl(), jdbcDetails.getUsername(), jdbcDetails.getPassword());
+                    yield new SQLReader(jdbcDetails.jdbcUrl, jdbcDetails.username, jdbcDetails.password);
                 }
                 else
                     yield new SQLReader(exchange.getVariable("jdbcDSN", String.class),

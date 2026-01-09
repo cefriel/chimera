@@ -257,7 +257,7 @@ public class MaptTemplateProcessor {
             case "csv" -> new CSVReader(exchange.getMessage().getBody(String.class));
             case "sql" -> {
                 JdbcConnectionDetails jdbcDetails = exchange.getMessage().getBody(JdbcConnectionDetails.class);
-                yield new SQLReader(jdbcDetails.getJdbcUrl(), jdbcDetails.getUsername(), jdbcDetails.getPassword());
+                yield new SQLReader(jdbcDetails.jdbcUrl, jdbcDetails.username, jdbcDetails.password);
             }
             default -> throw new InvalidParameterException("Cannot create Reader for inputFormat: " + inputFormat);
         };
