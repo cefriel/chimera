@@ -1,0 +1,14 @@
+#set($patientsPostgres = $readers.readerPostgres.getDataframe('
+SELECT *
+FROM patient
+'))
+#set($patientsMySQL = $readers.readerMySQL.getDataframe('
+SELECT *
+FROM patient
+'))
+#foreach($p in $patientsPostgres)
+$p.id
+#end
+#foreach($m in $patientsMySQL)
+$m.id
+#end

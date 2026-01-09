@@ -48,7 +48,7 @@ public class  MaptTemplateProducer extends DefaultProducer {
         }
         operationConfig.setConfig(endpoint);
 
-        if (Set.of("rdf", "xml", "json", "csv", "readers", "").contains(endpoint.getName())) {
+        if (Set.of("rdf", "xml", "json", "csv", "readers", "sql", "").contains(endpoint.getName())) {
             if (this.templateExecutor == null) {
                 //set templateExecutor if first invocation
                 this.templateExecutor = MaptTemplateProcessor.templateExecutor(exchange, operationConfig);

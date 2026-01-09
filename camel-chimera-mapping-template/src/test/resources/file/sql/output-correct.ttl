@@ -1,0 +1,15 @@
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+ex:Patient10 a foaf:Person;
+  ex:birthdate "1981-10-10"^^xsd:date;
+  ex:entrancedate "2009-10-10 12:12:22"^^xsd:datetime .
+
+ex:Patient11 a foaf:Person;
+  ex:birthdate "1982-11-12"^^xsd:date;
+  ex:entrancedate "2008-11-12 09:45:44"^^xsd:datetime .
+
+ex:Patient12 a foaf:Person;
+  ex:birthdate "1978-04-06"^^xsd:date;
+  ex:entrancedate "2007-03-12 02:13:14"^^xsd:datetime .

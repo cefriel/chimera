@@ -6,6 +6,7 @@ import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
 import com.cefriel.template.io.sql.SQLReader;
 import com.cefriel.template.io.xml.XMLReader;
+import com.cefriel.util.JdbcConnectionDetails;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -50,11 +51,16 @@ public class ReadersAggregation implements AggregationStrategy {
 
         Reader reader = switch (readerFormat) {
             case "json" -> new JSONReader(readerContent);
-            case "sql" -> new SQLReader(
-                    exchange.getVariable("jdbcDSN", String.class),
-                    exchange.getVariable("username", String.class),
-                    exchange.getVariable("password", String.class)
-            );
+            case "sql" -> {
+                JdbcConnectionDetails jdbcDetails = exchange.getMessage().getBody(JdbcConnectionDetails.class);
+                if (jdbcDetails != null) {
+                    yield new SQLReader(jdbcDetails.getJdbcUrl(), jdbcDetails.getUsername(), jdbcDetails.getPassword());
+                }
+                else
+                    yield new SQLReader(exchange.getVariable("jdbcDSN", String.class),
+                            exchange.getVariable("username", String.class),
+                            exchange.getVariable("password", String.class));
+            }
             case "xml" -> new XMLReader(readerContent);
             case "csv" -> new CSVReader(readerContent);
             case "rdf" -> {

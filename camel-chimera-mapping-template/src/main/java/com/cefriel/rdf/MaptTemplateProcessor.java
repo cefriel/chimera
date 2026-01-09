@@ -25,6 +25,7 @@ import com.cefriel.template.io.Reader;
 import com.cefriel.template.io.csv.CSVReader;
 import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
+import com.cefriel.template.io.sql.SQLReader;
 import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
@@ -254,9 +255,12 @@ public class MaptTemplateProcessor {
             case "json" -> new JSONReader(exchange.getMessage().getBody(String.class));
             case "xml" -> new XMLReader(exchange.getMessage().getBody(String.class));
             case "csv" -> new CSVReader(exchange.getMessage().getBody(String.class));
+            case "sql" -> {
+                JdbcConnectionDetails jdbcDetails = exchange.getMessage().getBody(JdbcConnectionDetails.class);
+                yield new SQLReader(jdbcDetails.getJdbcUrl(), jdbcDetails.getUsername(), jdbcDetails.getPassword());
+            }
             default -> throw new InvalidParameterException("Cannot create Reader for inputFormat: " + inputFormat);
         };
-
         reader.setOutputFormat(outputFormat);
         return reader;
     }
@@ -269,7 +273,6 @@ public class MaptTemplateProcessor {
             rdfReader.setVerbose(verbose);
             return rdfReader;
         }
-
         else {
             RDFReader reader = new RDFReader();
             reader.setVerbose(verbose);
