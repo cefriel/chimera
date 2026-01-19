@@ -18,7 +18,7 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.Model;
@@ -30,58 +30,97 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides operations for performing RDFS inference on RDF graphs.
+ * <p>
+ * This class handles the materialization of inferred triples using RDFS (RDF Schema)
+ * inference rules. It creates a temporary inference-enabled repository, applies the
+ * inference rules to the source graph, and adds the inferred statements back to the
+ * original graph. Optionally, a custom schema can be provided to guide the inference
+ * process.
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ * @see SchemaCachingRDFSInferencer
+ */
 public class GraphInference {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphInference.class);
-    private record EndpointParams(ChimeraResourceBean triples, boolean allRules){}
-    private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams endpointParams){}
 
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(
-                operationConfig.getChimeraResource(),
-                operationConfig.isAllRules());
-    }
-    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
-        return new OperationParams(
-                e.getMessage().getBody(RDFGraph.class),
-                e,
-                getEndpointParams(operationConfig));
-    }
+    /**
+     * Performs RDFS inference on an RDF graph and adds inferred triples to the graph.
+     * <p>
+     * This method executes the following steps:
+     * </p>
+     * <ol>
+     *   <li>Creates a temporary inference-enabled repository with optional custom schema</li>
+     *   <li>Copies all statements from the source graph to the inference repository</li>
+     *   <li>Allows the inferencer to materialize all inferred triples</li>
+     *   <li>Copies both original and inferred statements back to the source graph</li>
+     *   <li>Sets the enriched graph as the exchange message body</li>
+     * </ol>
+     * <p>
+     * If a {@code chimeraResource} is specified in the configuration, it will be used
+     * as the schema for inference. The {@code allRules} flag controls whether to apply
+     * all RDFS rules or only a subset.
+     * </p>
+     *
+     * @param exchange the Camel exchange containing the RDF graph to enrich with inferences
+     * @param config the configuration bean specifying the inference schema and rules
+     * @throws Exception if graph retrieval, inference execution, or statement copying fails
+     */
+    public static void graphInference(Exchange exchange, GraphBean config) throws Exception {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
 
-    public static void graphInference(Exchange exchange, GraphBean operationConfig) throws Exception {
-        OperationParams operationParams = getOperationParams(exchange, operationConfig);
-        graphInference(operationParams, exchange);
-    }
-    public static void graphInference(OperationParams params, Exchange exchange) throws Exception {
-        Repository inferenceRepo;
-        if (params.endpointParams.triples() != null) {
-            Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), params.exchange());
-            SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(new MemoryStore(), schema, params.endpointParams().allRules());
-            inferenceRepo = new SailRepository(inferencer);
-        } else
-            inferenceRepo = new SailRepository( new SchemaCachingRDFSInferencer(new MemoryStore()));
-        inferenceRepo.init();
+        Repository inferenceRepo = createInferenceRepository(config, exchange);
+        Repository sourceRepo = graph.getRepository();
 
-        Repository sourceRepo = params.graph().getRepository();
-        Repository targetRepo = inferenceRepo;
-
-        // Enable inference
-        // all statements from source graph to graph with inference enabled
+        // Copy all statements from source to inference-enabled repository
         Model sourceModel = new TreeModel();
         sourceRepo.getConnection()
                 .getStatements(null, null, null, true)
                 .forEach(sourceModel::add);
 
-        Utils.populateRepository(targetRepo, sourceModel);
+        Utils.populateRepository(inferenceRepo, sourceModel);
 
-        // Copy back
+        // Copy inferred statements back to source
         Model targetModel = new TreeModel();
-        targetRepo.getConnection()
+        inferenceRepo.getConnection()
                 .getStatements(null, null, null, true)
                 .forEach(targetModel::add);
 
         Utils.populateRepository(sourceRepo, targetModel);
 
-        exchange.getMessage().setBody(params.graph(), RDFGraph.class);
+        exchange.getMessage().setBody(graph, RDFGraph.class);
+    }
+
+    /**
+     * Creates an inference-enabled repository with optional custom schema.
+     * <p>
+     * This method constructs a {@link SchemaCachingRDFSInferencer} backed by an in-memory
+     * store. If a {@code chimeraResource} is provided in the configuration, it loads
+     * the schema from that resource and uses it to guide the inference process. The
+     * {@code allRules} flag determines whether to apply all RDFS inference rules or
+     * only a subset (e.g., excluding axiomatic triples).
+     * </p>
+     *
+     * @param config the configuration bean containing optional schema resource and rules flag
+     * @param exchange the Camel exchange providing context for resource resolution
+     * @return an initialized inference-enabled repository
+     * @throws Exception if schema loading or repository initialization fails
+     */
+    private static Repository createInferenceRepository(GraphBean config, Exchange exchange) throws Exception {
+        Repository inferenceRepo;
+        if (config.getChimeraResource() != null) {
+            Repository schema = Utils.createSchemaRepository(config.getChimeraResource(), exchange);
+            SchemaCachingRDFSInferencer inferencer = new SchemaCachingRDFSInferencer(
+                    new MemoryStore(), schema, config.isAllRules());
+            inferenceRepo = new SailRepository(inferencer);
+        } else {
+            inferenceRepo = new SailRepository(new SchemaCachingRDFSInferencer(new MemoryStore()));
+        }
+        inferenceRepo.init();
+        return inferenceRepo;
     }
 }

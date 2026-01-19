@@ -19,6 +19,7 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.StreamParser;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -35,85 +36,139 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Provides operations for detaching and cleaning up RDF graph resources.
+ * <p>
+ * This class handles the cleanup and shutdown of RDF graph resources at the end of
+ * processing pipelines. It supports clearing named graphs, removing namespaces,
+ * shutting down repositories, and stopping Camel routes. These operations are typically
+ * used in route finalization or error handling scenarios.
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ */
 public class GraphDetach {
     private static final Logger LOG = LoggerFactory.getLogger(GraphDetach.class);
-    private record EndpointParams(ChimeraResourceBean triples, boolean clearGraph, boolean repoOff, boolean routeOff) {}
-    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(
-                operationConfig.getChimeraResource(),
-                operationConfig.isClear(),
-                operationConfig.isRepoOff(),
-                operationConfig.isRouteOff());
-    }
-    private static OperationParams getOperationParams(GraphBean operationConfig, Exchange e) {
-        return new OperationParams(
-                e.getMessage().getBody(RDFGraph.class),
-                getEndpointParams(operationConfig));
-    }
-    public static boolean validParams(OperationParams params) {
-        if (params.graph() == null)
-            throw new IllegalArgumentException("Graph in exchange body cannot be null");
-        return true;
-    }
-    public static void graphDetach(Exchange exchange, GraphBean operationConfig) throws IOException {
-        var params = getOperationParams(operationConfig, exchange);
-        graphDetach(params, exchange);
-    }
-    public static void graphDetach(OperationParams params, Exchange exchange) throws IOException {
-        if (validParams(params)) {
-            if (params.endpointParams.clearGraph())
-            {
-                List<IRI> namedGraphs = params.graph.getNamedGraphs();
-                try (RepositoryConnection con = params.graph().getRepository().getConnection()) {
-                    for(IRI namedGraph : namedGraphs) {
-                        if (namedGraph != null) {
-                            con.clear(namedGraph);
-                            LOG.info("Cleared named graph " + namedGraph.stringValue());
-                        }
-                    }
-                    if (params.endpointParams().triples() != null)
-                        for (ChimeraResourceBean ontologyUrl : List.of(params.endpointParams().triples())) {
-                            Model l = StreamParser.parseResource(ontologyUrl, exchange);
-                            Set<Namespace> namespaces = l.getNamespaces();
-                            for (Namespace n : namespaces)
-                                con.removeNamespace(n.getPrefix());
-                            LOG.info("Removed namespaces listed in file " + ontologyUrl.getUrl());
-                        }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            if (params.endpointParams().repoOff())
-            {
-                if (params.graph().getRepository() != null)
-                    params.graph().getRepository().shutDown();
-                LOG.info("Repo shot down");
-            }
-            if(params.endpointParams().routeOff()){
-                CamelContext camelContext = exchange.getContext();
-                // Remove myself from the in flight registry, so we can stop this route without trouble
-                Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
-                if (caused !=null)
-                    LOG.error(stackToString(caused));
-                camelContext.getInflightRepository().remove(exchange);
-                // Stop the route
-                Thread stop = new Thread(() -> {
-                    try {
-                    /*if (routeId != null)
-                        camelContext.getRouteController().stopRoute(routeId);
-                    else*/
-                        camelContext.stop();
-                    } catch (Exception e) {
-                        LOG.error(e.getMessage());
-                    }
-                });
-                LOG.info("Route stopped");
-                // Start the thread that stops this route
-                stop.start();
-            }
+
+    /**
+     * Detaches and cleans up RDF graph resources based on configuration flags.
+     * <p>
+     * This method performs cleanup operations in sequence based on the configuration:
+     * </p>
+     * <ul>
+     *   <li>If {@code clear} is true, clears all named graphs and optionally removes specified namespaces</li>
+     *   <li>If {@code repoOff} is true, shuts down the graph's repository</li>
+     *   <li>If {@code routeOff} is true, stops the current Camel route</li>
+     * </ul>
+     *
+     * @param exchange the Camel exchange containing the RDF graph to detach
+     * @param config the configuration bean specifying which cleanup operations to perform
+     * @throws IOException if an error occurs during namespace removal or route shutdown
+     */
+    public static void graphDetach(Exchange exchange, GraphBean config) throws IOException {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
+
+        if (config.isClear()) {
+            clearGraph(graph, config.getChimeraResource(), exchange);
+        }
+        if (config.isRepoOff()) {
+            shutdownRepository(graph);
+        }
+        if (config.isRouteOff()) {
+            stopRoute(exchange);
         }
     }
+
+    /**
+     * Clears all named graphs in the RDF graph and optionally removes specified namespaces.
+     * <p>
+     * This method iterates through all named graphs associated with the RDF graph and
+     * removes all triples from each one. If a {@code ChimeraResourceBean} is provided,
+     * it parses the resource to extract namespace declarations and removes those
+     * namespaces from the repository.
+     * </p>
+     *
+     * @param graph the RDF graph containing the named graphs to clear
+     * @param triples optional resource containing namespace declarations to remove; can be null
+     * @param exchange the Camel exchange providing context for resource resolution
+     * @throws RuntimeException if an error occurs during graph clearing or namespace removal
+     */
+    private static void clearGraph(RDFGraph graph, ChimeraResourceBean triples, Exchange exchange) {
+        List<IRI> namedGraphs = graph.getNamedGraphs();
+        try (RepositoryConnection con = graph.getRepository().getConnection()) {
+            for (IRI namedGraph : namedGraphs) {
+                if (namedGraph != null) {
+                    con.clear(namedGraph);
+                    LOG.info("Cleared named graph " + namedGraph.stringValue());
+                }
+            }
+            if (triples != null) {
+                Model model = StreamParser.parseResource(triples, exchange);
+                Set<Namespace> namespaces = model.getNamespaces();
+                for (Namespace n : namespaces) {
+                    con.removeNamespace(n.getPrefix());
+                }
+                LOG.info("Removed namespaces listed in file " + triples.getUrl());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Shuts down the RDF graph's repository, releasing all resources.
+     * <p>
+     * This method safely closes the repository connection and releases any system
+     * resources held by the repository. After shutdown, the repository cannot be
+     * used for further operations.
+     * </p>
+     *
+     * @param graph the RDF graph whose repository should be shut down
+     */
+    private static void shutdownRepository(RDFGraph graph) {
+        if (graph.getRepository() != null) {
+            graph.getRepository().shutDown();
+        }
+        LOG.info("Repo shut down");
+    }
+
+    /**
+     * Stops the current Camel route and removes the exchange from the inflight repository.
+     * <p>
+     * This method logs any exceptions caught during exchange processing, removes the
+     * exchange from the inflight repository to prevent memory leaks, and initiates
+     * an asynchronous shutdown of the Camel context. The shutdown is performed in a
+     * separate thread to avoid blocking the current execution.
+     * </p>
+     *
+     * @param exchange the Camel exchange containing the context to stop
+     */
+    private static void stopRoute(Exchange exchange) {
+        CamelContext camelContext = exchange.getContext();
+        Throwable caused = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
+        if (caused != null) {
+            LOG.error(stackToString(caused));
+        }
+        camelContext.getInflightRepository().remove(exchange);
+
+        Thread stop = new Thread(() -> {
+            try {
+                camelContext.stop();
+            } catch (Exception e) {
+                LOG.error(e.getMessage());
+            }
+        });
+        LOG.info("Route stopped");
+        stop.start();
+    }
+
+    /**
+     * Converts a throwable's stack trace to a string representation.
+     *
+     * @param e the throwable to convert
+     * @return the complete stack trace as a string
+     */
     private static String stackToString(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

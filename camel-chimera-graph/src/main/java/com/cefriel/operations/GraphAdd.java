@@ -18,47 +18,78 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides operations for adding RDF triples to an existing RDF graph.
+ * <p>
+ * This class handles the addition of RDF data from external resources (files, URLs, etc.)
+ * to an RDF graph repository. The data is loaded and parsed according to the RDF format
+ * specified in the configuration, then added to the graph's repository.
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ * @see Utils#populateRepository(org.eclipse.rdf4j.repository.Repository, com.cefriel.util.ChimeraResourceBean, Exchange)
+ */
 public class GraphAdd {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphAdd.class);
 
-    private record EndpointParams(ChimeraResourceBean triples) {}
-    private record OperationParams(RDFGraph graph, Exchange exchange, EndpointParams operationParams) {}
-    private static boolean validParams(OperationParams params) throws IllegalArgumentException {
-        if (params.graph() == null)
-            throw new RuntimeException("graph in Exchange body cannot be null");
-        return true;
+    /**
+     * Adds RDF triples from an external resource to the RDF graph in the exchange.
+     * <p>
+     * This method retrieves the RDF graph from the exchange, adds triples from the
+     * resource specified in the configuration, and sets the modified graph back as
+     * the exchange message body.
+     * </p>
+     *
+     * @param exchange the Camel exchange containing the RDF graph to be modified
+     * @param config the configuration bean containing the resource location to add
+     *               (specified via {@code chimeraResource} property)
+     * @throws Exception if the graph cannot be retrieved, the resource cannot be loaded,
+     *                   or the RDF data is malformed
+     */
+    public static void graphAdd(Exchange exchange, GraphBean config) throws Exception {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
+        RDFGraph result = graphAdd(graph, exchange, config);
+        exchange.getMessage().setBody(result, RDFGraph.class);
     }
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(operationConfig.getChimeraResource());
-    }
-    private static OperationParams getOperationParams(RDFGraph graph, Exchange exchange, GraphBean operationConfig) {
-        return new OperationParams(
-                graph,
-                exchange,
-                getEndpointParams(operationConfig));
-    }
-    public static void graphAdd(Exchange exchange, GraphBean operationConfig) throws Exception {
-        RDFGraph graph = exchange.getMessage().getBody(RDFGraph.class);
-        exchange.getMessage().setBody(graphAdd(graph, exchange, operationConfig), RDFGraph.class);
-    }
-    public static RDFGraph graphAdd(RDFGraph graph, Exchange exchange, GraphBean operationConfig) throws Exception {
-        OperationParams params = getOperationParams(graph, exchange, operationConfig);
-        if (validParams(params))
-            return graphAdd(params);
-        return null;
-    }
-    private static RDFGraph graphAdd(OperationParams params) throws Exception {
-        if (validParams(params)){
-            Utils.populateRepository(params.graph().getRepository(), params.operationParams().triples(), params.exchange());
-            return params.graph();
+
+    /**
+     * Adds RDF triples from an external resource to the specified RDF graph.
+     * <p>
+     * This method loads RDF data from the resource specified in the configuration and
+     * adds it to the graph's underlying repository. The resource location is resolved
+     * from the {@code chimeraResource} property in the configuration bean, which can
+     * reference:
+     * </p>
+     * <ul>
+     *   <li>File paths (absolute or relative)</li>
+     *   <li>HTTP/HTTPS URLs</li>
+     *   <li>Classpath resources</li>
+     *   <li>Exchange properties or headers containing the resource location</li>
+     * </ul>
+     * <p>
+     * The RDF format is automatically detected based on file extension or content type.
+     * </p>
+     *
+     * @param graph the RDF graph to which triples will be added (must not be null)
+     * @param exchange the Camel exchange providing context for resource resolution
+     * @param config the configuration bean containing the resource location
+     * @return the modified RDF graph with the added triples
+     * @throws IllegalArgumentException if the graph parameter is null
+     * @throws Exception if the resource cannot be loaded or the RDF data is malformed
+     */
+    public static RDFGraph graphAdd(RDFGraph graph, Exchange exchange, GraphBean config) throws Exception {
+        if (graph == null) {
+            throw new IllegalArgumentException("RDFGraph cannot be null");
         }
-        throw new IllegalArgumentException("One or more parameters for the GraphAdd operation are invalid");
+        Utils.populateRepository(graph.getRepository(), config.getChimeraResource(), exchange);
+        return graph;
     }
 }

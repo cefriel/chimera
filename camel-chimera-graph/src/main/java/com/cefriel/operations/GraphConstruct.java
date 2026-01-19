@@ -19,8 +19,7 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.MemoryRDFGraph;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraResourceBean;
-import com.cefriel.util.ResourceAccessor;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.model.IRI;
@@ -31,53 +30,76 @@ import org.eclipse.rdf4j.repository.util.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
+/**
+ * Provides operations for executing SPARQL CONSTRUCT queries on RDF graphs.
+ * <p>
+ * This class handles the execution of CONSTRUCT queries against an RDF graph and
+ * manages the resulting triples, either by adding them to the existing graph or
+ * creating a new graph. It also supports adding the constructed triples to specific
+ * named graphs within the repository.
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ */
 public class GraphConstruct {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConstruct.class);
-    private record EndpointParams(String literalQuery, ChimeraResourceBean queryResource, String namedGraph, boolean newGraph) {}
-    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(
-                operationConfig.getQuery(),
-                operationConfig.getChimeraResource(),
-                operationConfig.getNamedGraph(),
-                operationConfig.isNewGraph());
-    }
-    private static OperationParams getOperationParams (Exchange e, GraphBean operationConfig) {
-        return new OperationParams(
-                e.getMessage().getBody(RDFGraph.class),
-                getEndpointParams(operationConfig));
+
+    /**
+     * Executes a SPARQL CONSTRUCT query on an RDF graph and processes the results.
+     * <p>
+     * This method retrieves the RDF graph from the exchange, resolves the CONSTRUCT query
+     * from the configuration, executes the query, and sets the resulting graph as the
+     * exchange message body. The behavior is controlled by the {@link GraphBean} configuration:
+     * </p>
+     * <ul>
+     *   <li>If {@code newGraph} is true, results are added to a new graph instance</li>
+     *   <li>If {@code newGraph} is false, results are added to the existing graph</li>
+     *   <li>If {@code namedGraph} is specified, results are added to the specified named graph(s)</li>
+     * </ul>
+     *
+     * @param exchange the Camel exchange containing the RDF graph and configuration
+     * @param config the configuration bean containing query details, named graph settings,
+     *               and whether to create a new graph
+     * @throws Exception if the graph cannot be retrieved, the query is invalid, or execution fails
+     */
+    public static void graphConstruct(Exchange exchange, GraphBean config) throws Exception {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
+
+        String query = Utils.resolveQuery(config.getQuery(), config.getChimeraResource(), exchange);
+        RDFGraph result = executeQueryOnGraph(graph, query, config.getNamedGraph(), config.isNewGraph());
+
+        exchange.getMessage().setBody(result, RDFGraph.class);
     }
 
-    private static boolean validParams(OperationParams params) {
-        if (params.graph() == null)
-            throw new RuntimeException("graph in Exchange body cannot be null");
-
-        if (params.endpointParams().literalQuery() == null &&
-                params.endpointParams().queryResource() == null)
-            throw new IllegalArgumentException("No query and no queryResource specified");
-
-        return true;
-    }
-    public static String readSparqlQuery(ChimeraResourceBean queryResource, Exchange exchange) throws Exception {
-        InputStream inputStream = ResourceAccessor.open(queryResource, exchange);
-        //Creating a Scanner object
-        Scanner scanner = new Scanner(inputStream);
-        //Reading line by line from scanner to StringBuffer
-        StringBuilder stringBuilder = new StringBuilder();
-        while(scanner.hasNext()){
-            stringBuilder.append(scanner.nextLine());
-        }
-        String result = (stringBuilder.toString());
-        inputStream.close();
-
-        return result;
-    }
+    /**
+     * Executes a SPARQL CONSTRUCT query on the given RDF graph and manages the result triples.
+     * <p>
+     * This method performs the following operations:
+     * </p>
+     * <ol>
+     *   <li>Executes the CONSTRUCT query against the provided graph</li>
+     *   <li>Creates a new graph or reuses the existing one based on the {@code newGraph} flag</li>
+     *   <li>Adds the constructed triples to the target graph:
+     *     <ul>
+     *       <li>If {@code namedGraphs} is specified, adds triples to each named graph (semicolon-separated)</li>
+     *       <li>Otherwise, adds triples to the default graph</li>
+     *     </ul>
+     *   </li>
+     * </ol>
+     *
+     * @param graph the source RDF graph to query
+     * @param query the SPARQL CONSTRUCT query string to execute
+     * @param namedGraphs optional semicolon-separated list of named graph URIs where results should be added;
+     *                    if null, results are added to the default graph
+     * @param newGraph if true, creates a new {@link MemoryRDFGraph} for the results;
+     *                 if false, adds results to the existing graph
+     * @return the RDF graph containing the constructed triples (either new or the modified input graph)
+     */
     private static RDFGraph executeQueryOnGraph(RDFGraph graph, String query, String namedGraphs, boolean newGraph) {
         Model constructResult = Repositories.graphQuery(graph.getRepository(), query, QueryResults::asModel);
         RDFGraph resultGraph = newGraph ? new MemoryRDFGraph() : graph;
@@ -96,27 +118,5 @@ public class GraphConstruct {
         }
 
         return resultGraph;
-    }
-
-    public static void graphConstruct(Exchange exchange, GraphBean operationConfig) throws Exception {
-        OperationParams operationParams = getOperationParams(exchange, operationConfig);
-
-        if (validParams(operationParams)) {
-            RDFGraph graph = operationParams.graph();
-            RDFGraph result = graphConstruct(graph, operationParams, exchange);
-            exchange.getMessage().setBody(result, RDFGraph.class);
-        }
-    }
-    private static RDFGraph graphConstruct(RDFGraph graph, OperationParams params, Exchange exchange) throws Exception {
-
-        if (params.endpointParams().literalQuery() != null) {
-            return executeQueryOnGraph(graph, params.endpointParams().literalQuery(), params.endpointParams().namedGraph(), params.endpointParams().newGraph());
-        } else if (params.endpointParams().queryResource() != null) {
-            return executeQueryOnGraph(graph, readSparqlQuery(params.endpointParams().queryResource(), exchange),
-                    params.endpointParams().namedGraph(), params.endpointParams().newGraph());
-        }
-        else {
-            throw new IllegalArgumentException("No query and no queryResource specified");
-        }
     }
 }

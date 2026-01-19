@@ -3,156 +3,109 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.*;
 import com.cefriel.util.ChimeraConstants;
-import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.repository.Repository;
 
 import java.io.InputStream;
 
+/**
+ * Provides operations for creating and initializing RDF graphs.
+ * <p>
+ * This class handles the creation of various RDF graph implementations based on
+ * configuration parameters. It supports multiple backend types including in-memory graphs,
+ * native persistent stores, HTTP triple stores, SPARQL endpoints, and inference-enabled
+ * graphs. The class is used by both producers (to obtain graphs with data) and consumers
+ * (to create empty graphs for subsequent operations).
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ * @see MemoryRDFGraph
+ * @see NativeRDFGraph
+ * @see HTTPRDFGraph
+ * @see SPARQLEndpointGraph
+ * @see InferenceRDFGraph
+ */
 public class GraphGet {
-    private record HeaderParams(String namedGraphs, String baseIRI, String rdfFormat) {}
-    private record EndpointParams(String namedGraphs, String baseIri, Boolean defaultGraph,
-                                  String rdfFormat,
-                                  ChimeraResourceBean triples,
-                                  // HTTPRDF specific parameters
-                                  String serverURL,
-                                  String repositoryId,
-                                  // SPARQL ENDPOINT specific parameter
-                                  String sparqlEndpoint,
-                                  // Native and Inference data dir
-                                  String pathDataDir,
-                                  // InferenceRDFGraph parameter
-                                  Boolean allRules) {}
 
-    private record OperationParams(String jwtToken, String graphID, EndpointParams endpointParams) {}
-
-    //these params come from the header
-    private static HeaderParams getHeaderParams(Exchange e) {
-        return new HeaderParams(
-                e.getMessage().getHeader(ChimeraConstants.CONTEXT_GRAPH, String.class),
-                e.getMessage().getHeader(ChimeraConstants.BASE_IRI, String.class),
-                e.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class));
-    }
-    // these params come from the endpoint
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(
-                operationConfig.getNamedGraph(),
-                operationConfig.getBaseIri(),
-                operationConfig.isDefaultGraph(),
-                operationConfig.getRdfFormat(),
-                operationConfig.getChimeraResource(),
-                operationConfig.getServerUrl(),
-                operationConfig.getRepositoryID(),
-                operationConfig.getSparqlEndpoint(),
-                operationConfig.getPathDataDir(),
-                operationConfig.isAllRules());
-    }
-    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
-        String graphID = e.getMessage().getHeader(ChimeraConstants.GRAPH_ID, String.class);
-
-        return new OperationParams(
-                e.getMessage().getHeader(ChimeraConstants.JWT_TOKEN, String.class),
-                graphID == null ? e.getExchangeId() : graphID,
-                mergeHeaderParams(getHeaderParams(e), getEndpointParams(operationConfig)));
-    }
-    private static EndpointParams mergeHeaderParams(HeaderParams headerParams, EndpointParams endpointParams) {
-        return new EndpointParams(
-                headerParams.namedGraphs() != null ? headerParams.namedGraphs() : endpointParams.namedGraphs(),
-                headerParams.baseIRI() != null ? headerParams.baseIRI() : endpointParams.baseIri(),
-                endpointParams.defaultGraph(),
-                headerParams.rdfFormat() != null ? headerParams.rdfFormat() : endpointParams.rdfFormat(),
-                endpointParams.triples(),
-                endpointParams.serverURL(),
-                endpointParams.repositoryId(),
-                endpointParams.sparqlEndpoint(),
-                endpointParams.pathDataDir(),
-                endpointParams.allRules());
-    }
-    private static Boolean isNativeRDFGraph (OperationParams params) {
-        return params.endpointParams().pathDataDir() != null;
-    }
-    private static Boolean isInferenceRDFGraph (OperationParams params) {
-        return (params.endpointParams().triples() != null);
-    }
-    private static Boolean isHTTPRDFGraph (OperationParams params) {
-        return params.endpointParams().serverURL() != null &&
-                params.endpointParams().repositoryId() != null;
-    }
-    private static Boolean isSPARQLEndpointGraph (OperationParams params) {
-        return params.endpointParams().sparqlEndpoint() != null;
-    }
-
-    private static boolean validateParams(OperationParams params) {
-        return true;
-    }
-    // called by the producer
-    public static RDFGraph obtainGraph(Exchange exchange, GraphBean operationConfig, InputStream inputStream) throws Exception {
-        OperationParams params = getOperationParams(exchange, operationConfig);
-        if (validateParams(params)) {
-            return obtainGraph(params, exchange, inputStream);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid parameters supplied to GraphGET operation");
-        }
-
-    }
-    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange, InputStream inputStream) throws Exception {
-        RDFGraph graph = obtainGraph(params, exchange);
-        Utils.populateRepository(graph.getRepository(), inputStream, params.endpointParams().rdfFormat());
+    /**
+     * Creates an RDF graph and populates it with data from an input stream.
+     * <p>
+     * This method is called by producers to obtain a graph initialized with data.
+     * The RDF format for parsing the input stream is determined by checking the
+     * {@code ChimeraConstants.RDF_FORMAT} header first, then falling back to the
+     * configuration's {@code rdfFormat} parameter.
+     * </p>
+     *
+     * @param exchange the Camel exchange providing context for graph creation
+     * @param config the configuration bean specifying the graph type and parameters
+     * @param inputStream the input stream containing RDF data to load into the graph
+     * @return the created RDF graph populated with the input data
+     * @throws Exception if graph creation or data loading fails
+     */
+    public static RDFGraph obtainGraph(Exchange exchange, GraphBean config, InputStream inputStream) throws Exception {
+        RDFGraph graph = createGraph(exchange, config);
+        String headerRdfFormatValue = exchange.getMessage().getHeader(ChimeraConstants.RDF_FORMAT, String.class);
+        String rdfFormat = ParameterUtils.resolveParam(headerRdfFormatValue, config.getRdfFormat());
+        Utils.populateRepository(graph.getRepository(), inputStream, rdfFormat);
         return graph;
     }
 
-    // called by the consumer
-    public static void obtainGraph(Exchange exchange, GraphBean operationConfig) throws Exception {
-        OperationParams params = getOperationParams(exchange, operationConfig);
-        if (validateParams(params)) {
-            RDFGraph graph = obtainGraph(params, exchange);
-            exchange.getMessage().setBody(graph, RDFGraph.class);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid parameters supplied to GraphGet operation");
-        }
+    /**
+     * Creates an empty RDF graph and sets it as the exchange message body.
+     * <p>
+     * This method is called by consumers to create an empty graph instance that
+     * will be populated by subsequent operations in the route. The graph type
+     * is determined by the configuration parameters.
+     * </p>
+     *
+     * @param exchange the Camel exchange where the created graph will be set as the message body
+     * @param config the configuration bean specifying the graph type and parameters
+     * @throws Exception if graph creation fails
+     */
+    public static void obtainGraph(Exchange exchange, GraphBean config) throws Exception {
+        RDFGraph graph = createGraph(exchange, config);
+        exchange.getMessage().setBody(graph, RDFGraph.class);
     }
-    private static RDFGraph obtainGraph(OperationParams params, Exchange exchange) throws Exception {
 
-        String namedGraphs;
-        String baseIRI = params.endpointParams().baseIri != null ? params.endpointParams().baseIri() : ChimeraConstants.DEFAULT_BASE_IRI;
-        if(params.endpointParams().defaultGraph()) {
-            namedGraphs = null;
+    /**
+     * Creates the appropriate RDF graph implementation based on configuration parameters.
+     * <p>
+     * This method determines which graph implementation to instantiate based on the
+     * configuration bean properties, checked in the following priority order:
+     * </p>
+     * <ol>
+     *   <li>If {@code chimeraResource} is set: creates an {@link InferenceRDFGraph} with RDFS inference</li>
+     *   <li>If {@code serverUrl} and {@code repositoryID} are set: creates an {@link HTTPRDFGraph} for remote triple stores</li>
+     *   <li>If {@code sparqlEndpoint} is set: creates a {@link SPARQLEndpointGraph} for SPARQL-only access</li>
+     *   <li>If {@code pathDataDir} is set: creates a {@link NativeRDFGraph} with persistent disk storage</li>
+     *   <li>Otherwise: creates a {@link MemoryRDFGraph} with in-memory storage</li>
+     * </ol>
+     *
+     * @param exchange the Camel exchange providing context for graph creation and resource resolution
+     * @param config the configuration bean containing graph type and connection parameters
+     * @return the created RDF graph instance
+     * @throws Exception if graph creation or resource loading fails
+     */
+    private static RDFGraph createGraph(Exchange exchange, GraphBean config) throws Exception {
+        String namedGraph = ParameterUtils.resolveNamedGraph(exchange, config);
+        String baseIRI = ParameterUtils.resolveBaseIri(exchange, config);
+
+        if (config.getChimeraResource() != null) {
+            Repository schema = Utils.createSchemaRepository(config.getChimeraResource(), exchange);
+            return new InferenceRDFGraph(schema, config.getPathDataDir(), config.isAllRules(), namedGraph, baseIRI);
         }
-
-        else {
-            if (params.endpointParams().namedGraphs() != null) {
-                namedGraphs = params.endpointParams().namedGraphs();
-            }
-
-            else {
-                namedGraphs = ChimeraConstants.DEFAULT_BASE_IRI + params.graphID();
-            }
+        if (config.getServerUrl() != null && config.getRepositoryID() != null) {
+            return new HTTPRDFGraph(config.getServerUrl(), config.getRepositoryID(), namedGraph, baseIRI);
         }
-        RDFGraph graph;
-        if (isInferenceRDFGraph(params)) {
-            Repository schema = Utils.createSchemaRepository(params.endpointParams().triples(), exchange);
-            graph = new InferenceRDFGraph(schema, params.endpointParams().pathDataDir(), params.endpointParams().allRules(), namedGraphs, baseIRI);
+        if (config.getSparqlEndpoint() != null) {
+            return new SPARQLEndpointGraph(config.getSparqlEndpoint(), namedGraph, baseIRI);
         }
-
-        else if (isHTTPRDFGraph(params)) {
-            graph = new HTTPRDFGraph(params.endpointParams().serverURL(), params.endpointParams().repositoryId(), namedGraphs, baseIRI);
+        if (config.getPathDataDir() != null) {
+            return new NativeRDFGraph(config.getPathDataDir(), namedGraph, baseIRI);
         }
-
-        else if (isSPARQLEndpointGraph(params)) {
-            graph = new SPARQLEndpointGraph(params.endpointParams().sparqlEndpoint(), namedGraphs, baseIRI);
-        }
-
-        else if (isNativeRDFGraph(params)) {
-            graph = new NativeRDFGraph(params.endpointParams().pathDataDir(), namedGraphs, baseIRI);
-        }
-
-        else {
-            graph = new MemoryRDFGraph(namedGraphs, baseIRI);
-        }
-
-        return graph;
+        return new MemoryRDFGraph(namedGraph, baseIRI);
     }
 }

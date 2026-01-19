@@ -19,6 +19,7 @@ package com.cefriel.operations;
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
 import com.cefriel.util.ChimeraConstants;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.RDFSerializer;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
@@ -33,71 +34,69 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Provides operations for serializing and exporting RDF graph data.
+ * <p>
+ * This class handles the export of complete RDF graphs, including all triples and
+ * namespace declarations, to various serialization formats. The output can be written
+ * to files or set as the exchange message body. Supported formats include Turtle, RDF/XML,
+ * N-Triples, JSON-LD, and others supported by RDF4J.
+ * </p>
+ *
+ * @see RDFGraph
+ * @see GraphBean
+ * @see RDFSerializer
+ */
 public class GraphDump {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphDump.class);
 
-    // todo (maybe this can be changed) removed rdfFormat from headers because it would cause problems in a multicast operation (dump and add for example)
-    private record HeaderParams(String fileName) {}
-    private record EndpointParams(String dumpRDFFormat, String basePath, String fileName) {}
-    private record OperationParams(RDFGraph graph, EndpointParams endpointParams) {}
+    /**
+     * Dumps the complete RDF graph to a specified format.
+     * <p>
+     * This method extracts all statements and namespaces from the RDF graph and
+     * serializes them according to the specified format. The output destination is
+     * determined by the configuration:
+     * </p>
+     * <ul>
+     *   <li>If both {@code basePath} and {@code filename} are provided, writes to a file</li>
+     *   <li>Otherwise, sets the serialized content as the exchange message body</li>
+     * </ul>
+     * <p>
+     * The filename can be specified either in the configuration or via the
+     * {@code ChimeraConstants.FILENAME} header, with the header taking precedence.
+     * </p>
+     *
+     * @param exchange the Camel exchange containing the RDF graph to dump
+     * @param config the configuration bean containing the dump format, base path, and filename
+     * @throws IllegalArgumentException if no dump format is specified
+     * @throws IOException if an error occurs during file writing or serialization
+     */
+    public static void graphDump(Exchange exchange, GraphBean config) throws IOException {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
 
-    private static HeaderParams getHeaderParams(Exchange e) {
-        return new HeaderParams(e.getMessage().getHeader(ChimeraConstants.FILENAME, String.class));
-    }
-    private static EndpointParams getEndpointParams(GraphBean operationConfig) {
-        return new EndpointParams(
-                operationConfig.getDumpFormat(),
-                operationConfig.getBasePath(),
-                operationConfig.getFilename());
-    }
-
-    private static EndpointParams mergeHeaders(HeaderParams h, EndpointParams p) {
-        return new EndpointParams(
-                p.dumpRDFFormat(),
-                p.basePath(),
-                h.fileName() == null ? p.fileName() : h.fileName());
-    }
-    private static OperationParams getOperationParams(Exchange e, GraphBean operationConfig) {
-        return new OperationParams(
-                e.getMessage().getBody(RDFGraph.class),
-                mergeHeaders(getHeaderParams(e), getEndpointParams(operationConfig)));
-    }
-    private static Boolean validParams(OperationParams params) {
-        if (params.graph == null)
-            throw new IllegalArgumentException("Graph in body of exchange can not be null");
-
-        if (params.endpointParams().dumpRDFFormat() == null)
+        String dumpFormat = config.getDumpFormat();
+        if (dumpFormat == null) {
             throw new IllegalArgumentException("No dumpFormat parameter supplied to DUMP operation");
+        }
 
-        return true;
-    }
-    public static void graphDump(Exchange exchange, GraphBean operationConfig) throws IOException {
-         OperationParams params = getOperationParams(exchange, operationConfig);
-         if (validParams(params))
-             graphDump(params, exchange);
-    }
-    private static void graphDump(OperationParams params, Exchange exchange) throws IOException {
-        try(RepositoryConnection con = params.graph().getRepository().getConnection()) {
-            RepositoryResult<Statement> dump;
-            dump = con.getStatements(null, null, null);
+        String headerValue = exchange.getMessage().getHeader(ChimeraConstants.FILENAME, String.class);
+        String filename = ParameterUtils.resolveParam(headerValue, config.getFilename());
+
+        try (RepositoryConnection con = graph.getRepository().getConnection()) {
+            RepositoryResult<Statement> dump = con.getStatements(null, null, null);
             Model dumpModel = QueryResults.asModel(dump);
 
             RepositoryResult<Namespace> namespaces = con.getNamespaces();
-            for (Namespace n : namespaces.stream().toList())
+            for (Namespace n : namespaces.stream().toList()) {
                 dumpModel.setNamespace(n);
+            }
 
-            if (params.endpointParams().basePath() != null && params.endpointParams().fileName() != null) {
-                String path = Utils.writeModelToDestination(
-                        dumpModel,
-                        params.endpointParams().dumpRDFFormat(),
-                        params.endpointParams().basePath(),
-                        params.endpointParams().fileName());
-		
-                LOG.info("Graph dumped to file " + path);
+            if (config.getBasePath() != null && filename != null) {
+                String path = Utils.writeModelToDestination(dumpModel, dumpFormat, config.getBasePath(), filename);
+                LOG.info("Graph dumped to file {}", path);
             } else {
-		// sets serialized model as body of the exchange passed as input
-                RDFSerializer.serialize(dumpModel, params.endpointParams().dumpRDFFormat(), exchange);
+                RDFSerializer.serialize(dumpModel, dumpFormat, exchange);
                 LOG.info("Model dump set as body");
             }
         }

@@ -2,7 +2,7 @@ package com.cefriel.operations;
 
 import com.cefriel.component.GraphBean;
 import com.cefriel.graph.RDFGraph;
-import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.ParameterUtils;
 import com.cefriel.util.Utils;
 import org.apache.camel.Exchange;
 import org.eclipse.rdf4j.query.BooleanQuery;
@@ -11,62 +11,70 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
-
 /**
- * Operation to perform SPARQL ASK queries.
+ * Provides operations for executing SPARQL ASK queries on RDF graphs.
+ * <p>
+ * This class handles the execution of SPARQL ASK queries, which test whether a query
+ * pattern has at least one solution in the graph. The result is a boolean value
+ * indicating whether the pattern matches. The query can be provided either as a
+ * direct string parameter or loaded from an external resource.
+ * </p>
  *
- * A query can be supplied in the following ways:
- * <ul>
- *   <li>Using the 'query' endpoint parameter and passing the query as a String</li>
- *   <li>Using the 'chimeraResource' endpoint parameter and passing it in as a ChimeraResourceBean</li>
- * </ul>
- *
- * At least one of these queries must be not null. If both are specified then the 'query' String parameter has priority.
- *
- * The result of this operation is a Boolean, returned as the body of the outgoing Exchange.
- * *
+ * @see RDFGraph
+ * @see GraphBean
  */
 public class GraphSparqlAsk {
     private static final Logger LOG = LoggerFactory.getLogger(GraphSparqlAsk.class);
-    private record EndpointParams (String literalQuery, ChimeraResourceBean resourceQuery) {
-        EndpointParams(GraphBean operationConfig) {
-            this(operationConfig.getQuery(),
-                    operationConfig.getChimeraResource());
+
+    /**
+     * Executes a SPARQL ASK query on an RDF graph and returns the boolean result.
+     * <p>
+     * This method retrieves the RDF graph from the exchange, resolves the ASK query
+     * from the configuration, executes it, and sets the boolean result as the exchange
+     * message body. The query can be supplied in the following ways:
+     * </p>
+     * <ul>
+     *   <li>Using the {@code query} configuration parameter as a direct string</li>
+     *   <li>Using the {@code chimeraResource} configuration parameter to load from an external resource</li>
+     * </ul>
+     * <p>
+     * If both are specified, the {@code query} string parameter takes priority.
+     * At least one must be provided and the query cannot be null or blank.
+     * </p>
+     *
+     * @param exchange the Camel exchange containing the RDF graph to query
+     * @param config the configuration bean containing the query or resource location
+     * @throws IllegalArgumentException if the query is null or blank
+     * @throws Exception if the graph cannot be retrieved or query execution fails
+     */
+    public static void graphAsk(Exchange exchange, GraphBean config) throws Exception {
+        RDFGraph graph = ParameterUtils.requireGraph(exchange);
+        String query = Utils.resolveQuery(config.getQuery(), config.getChimeraResource(), exchange);
+
+        if (query == null || query.isBlank()) {
+            throw new IllegalArgumentException("SPARQL query cannot be null or blank");
         }
-        EndpointParams {
-            if (literalQuery == null && resourceQuery == null)
-                throw new NullPointerException("both sparql queries query cannot be null");
-        }
+
+        executeAskQuery(exchange, graph, query);
     }
 
-    private record OperationParams (Exchange exchange, RDFGraph graph, String query) {
-        OperationParams(Exchange exchange, EndpointParams endpointParams) throws Exception {
-            this(exchange,
-                    exchange.getMessage().getBody(RDFGraph.class),
-                    Utils.resolveQuery(endpointParams.literalQuery, endpointParams.resourceQuery, exchange));
-        }
-        OperationParams {
-            Objects.requireNonNull(exchange, "Incoming exchange cannot be null");
-            Objects.requireNonNull(graph, "RDFGraph cannot be null");
-
-            if (query.isBlank())
-                throw new IllegalArgumentException("SPARQL query cannot be blank");
-        }
-    }
-
-    public static void graphAsk(Exchange exchange, GraphBean operationConfig) throws Exception {
-        EndpointParams endpointParams = new EndpointParams(operationConfig);
-        OperationParams operationParams = new OperationParams(exchange, endpointParams);
-        graphAsk(exchange, operationParams.graph, operationParams.query);
-    }
-
-    private static void graphAsk(Exchange exchange, RDFGraph graph, String query) {
+    /**
+     * Executes a SPARQL ASK query and sets the boolean result as the exchange message body.
+     * <p>
+     * This method prepares a boolean query from the provided query string, executes it
+     * against the RDF graph's repository, and sets the result (true or false) as the
+     * exchange message body with Boolean type.
+     * </p>
+     *
+     * @param exchange the Camel exchange where the query result will be set
+     * @param graph the RDF graph to query
+     * @param query the SPARQL ASK query string to execute
+     */
+    private static void executeAskQuery(Exchange exchange, RDFGraph graph, String query) {
         Repository repo = graph.getRepository();
-        BooleanQuery booleanQuery;
 
         try (RepositoryConnection connection = repo.getConnection()) {
-            booleanQuery = connection.prepareBooleanQuery(query);
+            BooleanQuery booleanQuery = connection.prepareBooleanQuery(query);
             LOG.info("Executing sparql query...");
             boolean queryResult = booleanQuery.evaluate();
             exchange.getMessage().setBody(queryResult, Boolean.class);
