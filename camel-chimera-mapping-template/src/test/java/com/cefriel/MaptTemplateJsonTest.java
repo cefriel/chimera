@@ -50,10 +50,10 @@ public class MaptTemplateJsonTest extends CamelTestSupport {
         start.sendBody(ResourceAccessor.open(r, null));
 
         mock.assertIsSatisfied();
-        long filesEqual = Files.mismatch(Paths.get("./src/test/resources/file/json/output-correct.ttl"),
-                Paths.get(("./src/test/resources/file/result/output-json.ttl")));
-        boolean correctOutput = filesEqual == -1;
-        assert (correctOutput);
+
+        String correctOutput = Files.readString(Paths.get("./src/test/resources/file/json/output-correct.ttl"));
+        String mappedOutput = Files.readString(Paths.get("./src/test/resources/file/result/output-json.ttl"));
+        assert(TestUtils.isIsomorphicGraph(correctOutput, "turtle", mappedOutput, "turtle"));
     }
 
     @Override
