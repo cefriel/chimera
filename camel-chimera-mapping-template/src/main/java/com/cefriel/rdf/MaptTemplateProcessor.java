@@ -171,8 +171,6 @@ public class MaptTemplateProcessor {
             Path templatePath = null;
             if (x instanceof ChimeraResource.FileResource fileResource) {
                 templatePath = fileResource.getPath();
-            } else if (x instanceof ChimeraResource.ClassPathResource classPathResource) {
-                templatePath = classPathResource.getPath();
             }
 
             // if filename is specified then save to file

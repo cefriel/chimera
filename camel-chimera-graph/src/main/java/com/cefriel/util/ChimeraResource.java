@@ -13,11 +13,5 @@ public sealed interface ChimeraResource permits ChimeraResource.ClassPathResourc
     record HeaderResource(String url, String serializationFormat) implements ChimeraResource {}
     record PropertyResource(String url, String serializationFormat) implements ChimeraResource {}
     record VariableResource(String url, String serializationFormat) implements ChimeraResource {}
-    record ClassPathResource(String url, String serializationFormat) implements ChimeraResource {
-        public java.nio.file.Path getPath() {
-            String prefix = ChimeraResourceConstants.CLASSPATH_PREFIX;
-            String pathStr = url.startsWith(prefix) ? url.substring(prefix.length()) : url;
-            return java.nio.file.Paths.get(pathStr);
-        }
-    }
+    record ClassPathResource(String url, String serializationFormat) implements ChimeraResource {}
 }
