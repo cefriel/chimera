@@ -32,7 +32,7 @@ public class MaptTemplateClasspathTest extends CamelTestSupport {
     @BeforeAll
     static void fillBeans() {
         classpathTemplate = new ChimeraResourceBean(
-                "classpath://classpath/template.vm",
+                "classpath://classpath-template/template.vm",
                 "");
     }
 
