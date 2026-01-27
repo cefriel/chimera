@@ -173,7 +173,7 @@ public class MaptTemplateProcessor {
                     ResourceAccessor.open(params.rml(), exchange),
                     params.baseIRI(),
                     Path.of(params.basePath()),
-                    params.trimTemplate(),
+                    true,
                     params.verboseReader());
             templateSource = new TemplateSource.PathSource(compiledMTL);
         } else if (params.template() != null) {
