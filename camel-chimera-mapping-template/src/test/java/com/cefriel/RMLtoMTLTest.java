@@ -42,6 +42,13 @@ public class RMLtoMTLTest extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         String mappedOutput = mock.getExchanges().get(0).getMessage().getBody(String.class);
+
+        // clean up generated MTL template file
+        Path templatePath = Path.of("./src/test/resources/file/rml/template.rml.vm");
+        if (Files.exists(templatePath)) {
+            Files.delete(templatePath);
+        }
+
         String correctOutput = Files.readString(Path.of("./src/test/resources/file/rml/output.nq"));
         Model result = TestUtils.rdfToModel(mappedOutput, "nquads", null);
         Model expected = TestUtils.rdfToModel(correctOutput, "nquads", null);
