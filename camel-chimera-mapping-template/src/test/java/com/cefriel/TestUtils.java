@@ -33,5 +33,19 @@ public class TestUtils {
         }
         return model;
     }
+
+    public static boolean isIsomorphicGraph(String firstRdf, String firstRdfFormat, String secondRdf, String secondRdfFormat) {
+        return isIsomorphicGraph(firstRdf, firstRdfFormat, null, secondRdf, secondRdfFormat, null);
+    }
+
+    public static boolean isIsomorphicGraph(String firstRdf, String firstRdfFormat, String firstBaseIri, String secondRdf, String secondRdfFormat, String secondBaseIri) {
+        try {
+            Model firstModel = rdfToModel(firstRdf, firstRdfFormat, firstBaseIri);
+            Model secondModel = rdfToModel(secondRdf, secondRdfFormat, secondBaseIri);
+            return Models.isomorphic(firstModel, secondModel);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 

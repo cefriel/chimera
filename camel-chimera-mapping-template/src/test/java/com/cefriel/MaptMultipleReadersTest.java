@@ -4,6 +4,7 @@ import com.cefriel.aggregationStrategy.ReadersAggregation;
 import com.cefriel.template.io.Reader;
 import com.cefriel.template.io.csv.CSVReader;
 import com.cefriel.util.ChimeraResourceBean;
+import com.cefriel.util.JdbcConnectionDetails;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -11,6 +12,9 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,13 +26,17 @@ public class MaptMultipleReadersTest extends CamelTestSupport {
     @Produce
     ProducerTemplate template;
 
-
     private static ChimeraResourceBean templateMultipleReaders;
+    private static ChimeraResourceBean templateMultipleReadersSQL;
 
     @BeforeAll
     static void fillBeans(){
         templateMultipleReaders = new ChimeraResourceBean(
                 "file://./src/test/resources/file/multiple-readers/template.vm",
+                "");
+
+        templateMultipleReadersSQL = new ChimeraResourceBean(
+                "file://./src/test/resources/file/multiple-readers/sql-template.vm",
                 "");
     }
 
@@ -66,7 +74,46 @@ public class MaptMultipleReadersTest extends CamelTestSupport {
         String result = mock.getExchanges().get(0).getMessage().getBody(String.class);
         String expectedOutput = "1,2,3,4,5,6";
         assert expectedOutput.equals(result);
+    }
 
+    @Test
+    @EnabledIf("com.cefriel.DockerTestConditions#isDockerAvailable")
+    public void testMultipleSqlReaders() throws InterruptedException {
+        MockEndpoint mock = getMockEndpoint("mock:multipleReadersAggregationSql");
+        mock.expectedMessageCount(1);
+
+        PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+                "postgres:16-alpine")
+                .withDatabaseName("testdb")
+                .withUsername("test")
+                .withPassword("test")
+                .withInitScript("file/sql/postgres-init.sql");
+
+        MySQLContainer<?> mysql = new MySQLContainer<>(
+                "mysql:8.0.33")
+                .withDatabaseName("testdb")
+                .withUsername("test")
+                .withPassword("test")
+                .withInitScript("file/sql/mysql-init.sql");
+
+        postgres.start();
+        mysql.start();
+
+        template.sendBody("direct:postgresReader", new JdbcConnectionDetails(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()));
+        template.sendBody("direct:MySQLReader", new JdbcConnectionDetails(mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword()));
+        mock.assertIsSatisfied();
+
+        postgres.stop();
+        mysql.stop();
+
+        String result = mock.getExchanges().get(0).getMessage().getBody(String.class);
+        String expectedOutput = "10\r\n" +
+                "11\r\n" +
+                "12\r\n" +
+                "10\r\n" +
+                "11\r\n" +
+                "12\r\n";
+        assert expectedOutput.equals(result);
     }
 
     @Override
@@ -76,6 +123,8 @@ public class MaptMultipleReadersTest extends CamelTestSupport {
             public void configure() throws Exception {
 
                 getCamelContext().getRegistry().bind("templateMultipleReaders", templateMultipleReaders);
+                getCamelContext().getRegistry().bind("templateMultipleReadersSQL", templateMultipleReadersSQL);
+
                 from("direct:start")
                         .to("mapt://readers?template=#bean:templateMultipleReaders")
                         .to("mock:multipleReaders");
@@ -103,6 +152,22 @@ public class MaptMultipleReadersTest extends CamelTestSupport {
                         .completionSize(2)
                         .to("mapt://readers?template=#bean:templateMultipleReaders")
                         .to("mock:multipleReadersAggregation");
+
+                from("direct:postgresReader")
+                        .setVariable("readerFormat", constant("sql"))
+                        .setVariable("readerName", constant("readerPostgres"))
+                        .to("direct:sqlAggregation");
+
+                from("direct:MySQLReader")
+                        .setVariable("readerFormat", constant("sql"))
+                        .setVariable("readerName", constant("readerMySQL"))
+                        .to("direct:sqlAggregation");
+
+                from("direct:sqlAggregation")
+                        .aggregate(constant(true), new ReadersAggregation())
+                        .completionSize(2)
+                        .to("mapt://readers?template=#bean:templateMultipleReadersSQL")
+                        .to("mock:multipleReadersAggregationSql");
             }
         };
     }

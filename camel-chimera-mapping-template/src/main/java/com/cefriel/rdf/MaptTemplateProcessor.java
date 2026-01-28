@@ -25,6 +25,7 @@ import com.cefriel.template.io.Reader;
 import com.cefriel.template.io.csv.CSVReader;
 import com.cefriel.template.io.json.JSONReader;
 import com.cefriel.template.io.rdf.RDFReader;
+import com.cefriel.template.io.sql.SQLReader;
 import com.cefriel.template.io.xml.XMLReader;
 import com.cefriel.template.utils.TemplateFunctions;
 import com.cefriel.template.utils.Util;
@@ -293,9 +294,12 @@ public class MaptTemplateProcessor {
             case "json" -> new JSONReader(exchange.getMessage().getBody(String.class));
             case "xml" -> new XMLReader(exchange.getMessage().getBody(String.class));
             case "csv" -> new CSVReader(exchange.getMessage().getBody(String.class));
+            case "sql" -> {
+                JdbcConnectionDetails jdbcDetails = exchange.getMessage().getBody(JdbcConnectionDetails.class);
+                yield new SQLReader(jdbcDetails.jdbcUrl, jdbcDetails.username, jdbcDetails.password);
+            }
             default -> throw new InvalidParameterException("Cannot create Reader for inputFormat: " + inputFormat);
         };
-
         reader.setOutputFormat(outputFormat);
         return reader;
     }
@@ -307,7 +311,8 @@ public class MaptTemplateProcessor {
             RDFReader rdfReader = new RDFReader(graph.getRepository());
             rdfReader.setVerbose(verbose);
             return rdfReader;
-        } else {
+        }
+        else {
             RDFReader reader = new RDFReader();
             reader.setVerbose(verbose);
             RDFFormat format = Utils.getExchangeRdfFormat(exchange, Exchange.CONTENT_TYPE);
