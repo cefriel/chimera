@@ -325,8 +325,6 @@ public class MaptTemplateProcessor {
         ChimeraResource x = chimeraBean.specialize();
         if (x instanceof ChimeraResource.FileResource fileResource) {
             return new TemplateSource.PathSource(fileResource.getPath());
-        } else if (x instanceof ChimeraResource.ClassPathResource classPathResource) {
-            return new TemplateSource.PathSource(classPathResource.getPath());
         }
         else {
             return new TemplateSource.StreamSource(ResourceAccessor.open(chimeraBean, exchange));
