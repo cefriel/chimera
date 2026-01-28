@@ -13,20 +13,25 @@ import java.io.StringReader;
 
 public class TestUtils {
 
-    public static boolean isIsomorphicGraph(String rdfString, String rdfStringFormat,
-                                             String otherRdfString, String otherRdfStringFormat) throws Exception {
-        Model a = parseRDFString(rdfString, rdfStringFormat);
-        Model b = parseRDFString(otherRdfString, otherRdfStringFormat);
-        return Models.isomorphic(a,b);
-    }
-
-    public static Model parseRDFString(String rdfString, String rdfFormat) throws Exception {
+    public static Model rdfToModel(String rdf, String rdfFormat, String baseIri) throws Exception {
+        if (rdf == null || rdf.isEmpty()) {
+            throw new IllegalArgumentException("RDF string cannot be null or empty");
+        }
         RDFFormat format = Utils.getRDFFormat(rdfFormat);
-        RDFParser rdfParser = Rio.createParser(format);
-
+        if (format == null) {
+            throw new IllegalArgumentException("Unsupported RDF format: " + rdfFormat);
+        }
+        if (baseIri == null) {
+            baseIri = "";
+        }
+        RDFParser parser = Rio.createParser(format);
         Model model = new TreeModel();
-        rdfParser.setRDFHandler(new StatementCollector(model));
-        // rdfParser.parse(new StringReader(rdfString), "http://example.com/base/");
+        parser.setRDFHandler(new StatementCollector(model));
+
+        try (StringReader reader = new StringReader(rdf)) {
+            parser.parse(reader, baseIri);
+        }
         return model;
     }
 }
+

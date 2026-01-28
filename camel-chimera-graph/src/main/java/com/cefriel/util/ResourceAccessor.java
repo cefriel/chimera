@@ -44,7 +44,7 @@ public class ResourceAccessor {
     private static InputStream open(ChimeraResource.HttpResource resource, CamelContext context) throws Exception {
         ProducerTemplate producer = context.createProducerTemplate();
         ExchangeBuilder exchangeRequestTemp =  ExchangeBuilder.anExchange(context).withHeader(Exchange.HTTP_METHOD, "GET");
-
+        
         String callUrl;
         TypeAuthConfig authConfig = resource.authConfig();
         // ugly syntax that is fixed with switch pattern matching (requires bump to java 19)

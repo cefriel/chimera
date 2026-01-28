@@ -23,6 +23,7 @@ import com.cefriel.util.ChimeraResourceBean;
 public class MaptTemplateBean {
     private String basePath = "./";
     private ChimeraResourceBean template;
+    private ChimeraResourceBean rml;
     private String filename;
     private ChimeraResourceBean keyValuePairs;
     private ChimeraResourceBean keyValuePairsCSV;
@@ -43,6 +44,7 @@ public class MaptTemplateBean {
     public MaptTemplateBean(MaptTemplateBean options) {
         this.basePath = options.getBasePath();
         this.template = options.getTemplate();
+        this.rml = options.getRml();
         this.filename = options.getFilename();
         this.keyValuePairs = options.getKeyValuePairs();
         this.keyValuePairsCSV = options.getKeyValuePairsCSV();
@@ -168,6 +170,14 @@ public class MaptTemplateBean {
         this.templateMap = templateMap;
     }
 
+    public ChimeraResourceBean getRml() {
+        return rml;
+    }
+
+    public void setRml(ChimeraResourceBean rml) {
+        this.rml = rml;
+    }
+
     public void setConfig(MaptTemplateEndpoint endpoint){
 
         if (endpoint.getBasePath()!=null){
@@ -211,6 +221,9 @@ public class MaptTemplateBean {
         }
         if(endpoint.getTemplateMap() != null) {
             this.setTemplateMap(endpoint.getTemplateMap());
+        }
+        if(endpoint.getRml() != null) {
+            this.setRml(endpoint.getRml());
         }
     }
 }
