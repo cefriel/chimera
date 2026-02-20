@@ -1,0 +1,69 @@
+site_name: Chimera Documentation
+site_description: Documentation for the Chimera semantic transformation pipeline framework
+site_author: Cefriel
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Core Concepts:
+    - RDF Graphs: rdf-graphs.md
+    - ChimeraResource: chimera-resources.md
+  - Graph Component:
+    - Overview: graph-component.md
+    - get: graph-get.md
+    - add: graph-add.md
+    - construct: graph-construct.md
+    - select: graph-sparql-select.md
+    - ask: graph-sparql-ask.md
+    - dump: graph-dump.md
+    - inference: graph-inference.md
+    - shacl: graph-shacl.md
+    - detach: graph-detach.md
+  - Mapping Template Component:
+    - Overview: mapt-component.md
+    - Input Formats: mapt-input-formats.md
+    - Advanced Features:
+      - Parametric Mappings: mapt-parametric.md
+      - Custom Functions: mapt-custom-functions.md
+      - RML Compilation: mapt-rml-compilation.md
+  - Aggregation Strategies: aggregation-strategies.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
