@@ -56,7 +56,7 @@ utilizing the YAML DSL, routes can be configured graphically through
 Camel Karavan, as detailed in the approach outlined
 [here](./karavan/).
 
-### Projects
+### Projects using Chimera
 
 - Mouseworld Lab for Network Digital Twin (NDT): https://github.com/Mouseworld-Lab/mouseworld-kg
 - SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
@@ -81,6 +81,10 @@ If you need commercial support for Chimera contact us at [chimera-dev@cefriel.co
 Before contributing, please read carefully, complete and sign our [Contributor Licence Agreement](https://github.com/cefriel/contributing/blob/main/contributor-license-agreement.pdf). 
 
 When contributing to this repository, please first discuss the change you wish to make via issue or any other available method with the repository's owners.
+
+### Acknowledgements
+
+The development of Chimera has been partially supported by the European Commission through: the Chips Act Joint Undertaking project SMARTY (Grant Agreement 101140087), the SmartEdge project (Grant Agreement 101092908), funded under the Horizon Europe RIA Research and Innovation Programme; the TANGENT project (Grant Agreement 955273) and the SPRINT project (Grant Agreement 826172),  co-funded  by  the European  Commission  under  the  Horizon  2020  Framework Programme.
 
 ### License
 
