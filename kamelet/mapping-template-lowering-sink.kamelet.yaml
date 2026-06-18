@@ -1,0 +1,42 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: Kamelet
+metadata:
+  name: mapping-template-lowering-sink
+  annotations:
+    camel.apache.org/catalog.version: "4.3.0"
+    camel.apache.org/provider: "Chimera"
+    camel.apache.org/kamelet.group: "Mapping Template"
+  labels:
+    camel.apache.org/kamelet.type: "sink"
+spec:
+  definition:
+    title: "Mapping Template Lowering Sink"
+    description: "Executes a Chimera mapping template for lowering operation (converting from RDF). The output data are stored in the indicated file."
+    properties:
+      templateUrl:
+        title: Template URL
+        description: URL of the Chimera mapping template file
+        type: string
+      basePath:
+        title: Base Path
+        description: Directory path where the file will be saved
+        type: string
+        default: "./home/outbox"
+      fileName:
+        title: Filename
+        description: Name of the file to save the output data
+        type: string
+  dependencies:
+    - "mvn:com.cefriel:camel-chimera-mapping-template:4.3.0"
+  template:
+    beans:
+      - name: mappingTemplate
+        type: "#class:com.cefriel.util.ChimeraResourceBean"
+        properties:
+          url: "{{templateUrl}}"
+          serializationFormat: "vtl"
+    from:
+      uri: "kamelet:source"
+      steps:
+        - to:
+            uri: "mapt://rdf?template=#bean:{{mappingTemplate}}&basePath={{basePath}}&fileName={{fileName}}"

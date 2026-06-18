@@ -1,0 +1,44 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: Kamelet
+metadata:
+  name: mapping-template-lifting-action
+  annotations:
+    camel.apache.org/catalog.version: "4.3.0"
+    camel.apache.org/provider: "Chimera"
+    camel.apache.org/kamelet.group: "Mapping Template"
+  labels:
+    camel.apache.org/kamelet.type: "action"
+spec:
+  definition:
+    title: "Mapping Template Lifting Action"
+    description: "Executes a Chimera mapping template for lifting operation (converting data to RDF)"
+    properties:
+      templateUrl:
+        title: Template URL
+        description: URL of the Chimera mapping template file
+        type: string
+      inputFormat:
+        title: Input Format
+        description: Format of the input data (e.g., csv, json, xml)
+        type: string
+        enum: ["csv", "json", "xml", "mysql", "postgresql"]
+      outputFormat:
+        title: Output Format
+        description: Format of the output RDF data (e.g., turtle)
+        type: string
+        enum: ["turtle", "rdfxml", "nt", "json"]
+        default: turtle
+  dependencies:
+    - "mvn:com.cefriel:camel-chimera-mapping-template:4.3.0"
+  template:
+    beans:
+      - name: mappingTemplate
+        type: "#class:com.cefriel.util.ChimeraResourceBean"
+        properties:
+          url: "{{templateUrl}}"
+          serializationFormat: "vtl"
+    from:
+      uri: "kamelet:source"
+      steps:
+        - to:
+            uri: "mapt://{{inputFormat}}?template=#bean:{{mappingTemplate}}&format={{outputFormat}}"
