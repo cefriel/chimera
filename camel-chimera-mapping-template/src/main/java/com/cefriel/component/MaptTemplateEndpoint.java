@@ -53,6 +53,8 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
     private ChimeraResourceBean keyValuePairsCSV;
     @UriParam(defaultValue = "null", description = "TemplateMap to be used in the mapping process.")
     private TemplateMap templateMap;
+    @UriParam(defaultValue = "null", description = "String of key-value pairs used to build the templateMap used in the mapping process. Expected format is \"key1:value1;key2:value2\", where pairs are separated by ';' and keys and values by ':'.")
+    private String keyValuePairsString;
     @UriParam(defaultValue = "null")
     private String format;
     @UriParam(defaultValue = "null", description = "Query resource used in the mapping process")
@@ -250,5 +252,13 @@ public class MaptTemplateEndpoint extends DefaultEndpoint {
 
     public void setRml(ChimeraResourceBean rml) {
         this.rml = rml;
+    }
+
+    public String getKeyValuePairsString() {
+        return keyValuePairsString;
+    }
+
+    public void setKeyValuePairsString(String keyValuePairsString) {
+        this.keyValuePairsString = keyValuePairsString;
     }
 }
