@@ -5,9 +5,11 @@ _Chimera_: Composable Semantic Transformation Pipelines
 
 Chimera is a framework implemented on top of [Apache Camel](https://camel.apache.org/) offering components to define schema and data transformation pipelines based on Semantic Web solutions.
 
+📖 The [`chimera documentation`](https://cefriel.github.io/chimera/getting-started/) provides a comprehensive guide to getting started with Chimera, including setup instructions, core concepts, and usage examples.
+
 :toolbox: The [`chimera-deployment-templates`](https://github.com/cefriel/chimera-deployment-templates) repository offers ready-to-use templates to deploy a Chimera conversion pipeline in different environments.
 
-:arrow_forward: The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) repository provides a complete example of a Chimera conversion pipeline.
+:arrow_forward: The [`kg4di`](https://github.com/cefriel/kg4di) tutorial repository provides exercises to experiment with Chimera conversion pipelines. The [`chimera-tutorial`](https://github.com/cefriel/chimera-tutorial) provides complete Chimera conversion pipelines with detailed explanations (_currently not upated to latest Chimera release_).
 
 ### Goals
 The motivating scenario is about many stakeholders with an interoperability need. To avoid the definition of point-to-point conversions, an **any-to-one centralized mapping approach** based on Semantic Web technologies (and a reference ontology used as global conceptual model) offers the following advantages:
@@ -40,8 +42,8 @@ The project has a parent POM that can be used to trigger Maven goals and compile
 Chimera is currently composed of three Apache Camel Components, available as sub-projects in this repository. All the components rely on the [rdf4j](https://rdf4j.org/) library to handle the RDF graph.
 
 - `camel-chimera-graph` Camel component used to create and manipulate RDF knowledge graphs.
-- `camel-chimera-rmlmapper` Camel component used to lifting using the [rmlmapper-cefriel](https://github.com/cefriel/rmlmapper-cefriel) library 
-- `camel-chimera-mapping-template` Camel component able to implement both lifting and lowering steps using the [mapping-template](https://github.com/cefriel/mapping-template) library
+- `camel-chimera-mapping-template` Camel component able to implement both lifting and lowering steps using the [mapping-template](https://github.com/cefriel/mapping-template) library and execute RML mapping rules.
+- [**deprecated**] `camel-chimera-rmlmapper` Camel component used to lifting using the [rmlmapper-cefriel](https://github.com/cefriel/rmlmapper-cefriel) library 
 
 **N.B.** The `camel-chimera-mapping-template` includes `camel-chimera-graph` as a dependency. Therefore, when using the `camel-chimera-mapping-template` component, you do **not** need to include the `camel-chimera-graph` dependency separately.
 
@@ -54,7 +56,7 @@ utilizing the YAML DSL, routes can be configured graphically through
 Camel Karavan, as detailed in the approach outlined
 [here](./karavan/).
 
-### Projects
+### Projects using Chimera
 
 - Mouseworld Lab for Network Digital Twin (NDT): https://github.com/Mouseworld-Lab/mouseworld-kg
 - SMARTY: Scalable and Quantum Resilient Heterogeneous Edge Computing enabling Trustworthy AI https://www.smarty-project.eu/
@@ -79,6 +81,10 @@ If you need commercial support for Chimera contact us at [chimera-dev@cefriel.co
 Before contributing, please read carefully, complete and sign our [Contributor Licence Agreement](https://github.com/cefriel/contributing/blob/main/contributor-license-agreement.pdf). 
 
 When contributing to this repository, please first discuss the change you wish to make via issue or any other available method with the repository's owners.
+
+### Acknowledgements
+
+The development of Chimera has been partially supported by the European Commission through: the Chips Act Joint Undertaking project SMARTY (Grant Agreement 101140087), the SmartEdge project (Grant Agreement 101092908), funded under the Horizon Europe RIA Research and Innovation Programme; the TANGENT project (Grant Agreement 955273) and the SPRINT project (Grant Agreement 826172),  co-funded  by  the European  Commission  under  the  Horizon  2020  Framework Programme.
 
 ### License
 
