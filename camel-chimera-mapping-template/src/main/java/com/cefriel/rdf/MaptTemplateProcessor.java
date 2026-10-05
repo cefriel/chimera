@@ -170,13 +170,18 @@ public class MaptTemplateProcessor {
         if (params.rml() != null && params.template() != null) {
             throw new InvalidParameterException("template and rml parameters cannot be used together");
         } else if (params.rml() != null) {
-            Path compiledMTL = Util.compiledMTLMapping(
+
+
+            RMLtoMTLConversion.CompiledMTLResult x = RMLtoMTLConversion.compileMTLMapping(
                     ResourceAccessor.open(params.rml(), exchange),
                     params.baseIRI(),
                     Path.of(params.basePath()),
-                    true,
                     params.verboseReader());
+
+            readers = x.readers();
+            Path compiledMTL = x.mappingMTL();
             templateSource = new TemplateSource.PathSource(compiledMTL);
+
         } else if (params.template() != null) {
             templateSource = getTemplateMapping(params.template(), exchange);
         } else {

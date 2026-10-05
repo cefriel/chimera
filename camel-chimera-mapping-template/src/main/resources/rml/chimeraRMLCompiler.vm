@@ -1,0 +1,238 @@
+#set ( $prefixes = $reader.setPrefixes("
+    prefix rml: <http://w3id.org/rml/>
+    prefix dcat: <http://www.w3.org/ns/dcat#>
+    prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#>
+") )##
+#set($d="$")#set($h="#")#set($pa="{")#set($pc="}")##
+#if($map.baseIRI)#set($base = "$map.baseIRI")#else#set($base = "http://example.com/base/")#end#set($foo = $functions.setBaseIRI($base))##
+${h}set(${d}foo = ${d}functions.setBaseIRI("$base"))##
+#set($mappings_content = $reader.getDataframe("
+SELECT DISTINCT *
+WHERE {
+
+	# Subject -------------------------------------------------------------------------
+			?triples_map_id rml:logicalSource ?_source .
+
+			# typhon-rml identifier
+            ?_source rml:reader ?reader_id .
+
+			OPTIONAL {?_source rml:referenceFormulation ?ref_form .}
+			OPTIONAL { ?_source rml:iterator ?iterator . }
+			OPTIONAL { ?_source rml:query ?query .}
+            # TODO Handle rml:null
+
+			?triples_map_id rml:subjectMap ?_subject_map .
+			OPTIONAL {?_subject_map rml:template ?subject_template .}
+			OPTIONAL {?_subject_map rml:reference ?subject_reference .}
+			OPTIONAL {?_subject_map rml:constant ?subject_constant}
+            OPTIONAL {?triples_map_id rml:subject ?subject_constant_shortcut .}
+
+			OPTIONAL { ?_subject_map rml:termType ?subject_termtype . }
+
+			OPTIONAL { ?_subject_map rml:graph ?graph_constant_shortcut . }
+			OPTIONAL { ?_subject_map rml:graphMap ?_graph_structure .
+					   ?_graph_structure rml:constant ?graph_constant . }
+            OPTIONAL { ?_subject_map rml:graphMap ?_graph_structure .
+					    ?_graph_structure rml:reference ?graph_reference . }
+			OPTIONAL { ?_subject_map rml:graphMap ?_graph_structure .
+					   ?_graph_structure rml:template ?graph_template . }
+
+	# Predicate -----------------------------------------------------------------------
+			OPTIONAL {
+			?triples_map_id rml:predicateObjectMap ?_predicate_object_map .
+
+			OPTIONAL {
+				?_predicate_object_map rml:predicateMap ?_predicate_map .
+				?_predicate_map rml:constant ?predicate_constant .
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:predicateMap ?_predicate_map .
+				?_predicate_map rml:template ?predicate_template .
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:predicateMap ?_predicate_map .
+				?_predicate_map rml:reference ?predicate_reference .
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:predicate ?predicate_constant_shortcut .
+			}
+
+	# Object --------------------------------------------------------------------------
+			OPTIONAL {
+				?_predicate_object_map rml:objectMap ?_object_map .
+				?_object_map rml:constant ?object_constant .
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:objectMap ?_object_map .
+				?_object_map rml:template ?object_template .
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:objectMap ?_object_map .
+				?_object_map rml:reference ?object_reference .
+			}
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:languageMap ?_language_map .
+                ?_language_map rml:constant ?language_constant .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:languageMap ?_language_map .
+                ?_language_map rml:template ?language_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:languageMap ?_language_map .
+                ?_language_map rml:reference ?language_reference .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:language ?language_constant_shortcut .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:datatypeMap ?_datatype_map .
+                ?_datatype_map rml:constant ?datatype_constant .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:datatypeMap ?_datatype_map .
+                ?_datatype_map rml:template ?datatype_template .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:datatypeMap ?_datatype_map .
+                ?_datatype_map rml:reference ?datatype_reference .
+            }
+            OPTIONAL {
+                ?_predicate_object_map rml:objectMap ?_object_map .
+                ?_object_map rml:datatype ?datatype_constant_shortcut .
+            }
+			OPTIONAL {
+				?_predicate_object_map rml:objectMap ?_object_map .
+				?_object_map rml:parentTriplesMap ?object_parent_triples_map .
+				OPTIONAL {
+					?_object_map rml:joinCondition ?join_condition .
+					?join_condition rml:child ?child_value;
+								 rml:parent ?parent_value.
+					OPTIONAL {?_object_map rml:termType ?objec_termtype .}
+				}
+			}
+			OPTIONAL {
+				?_predicate_object_map rml:object ?object_constant_shortcut .
+			}
+			OPTIONAL {?_predicate_object_map rml:graph ?predicate_object_graph .}
+			OPTIONAL { ?_predicate_object_map  rml:graphMap ?_graph_structure .
+				?_graph_structure rml:constant ?predicate_object_graph  .
+                OPTIONAL {?_graph_structure rml:termType ?graph_termtype .}
+            }
+            OPTIONAL { ?_predicate_object_map  rml:graphMap ?_graph_structure .
+				?_graph_structure rml:reference ?predicate_object_graph  .
+                OPTIONAL {?_graph_structure rml:termType ?graph_termtype .}
+            }
+			OPTIONAL { ?_predicate_object_map  rml:graphMap ?_graph_structure .
+				?_graph_structure rml:template ?predicate_object_graph  .
+                OPTIONAL {?_graph_structure rml:termType ?graph_termtype .}
+            }
+            }
+			OPTIONAL {
+				?data_source a d2rq:Database;
+  				d2rq:jdbcDSN ?jdbcDSN;
+  				d2rq:jdbcDriver ?jdbcDriver;
+			    d2rq:username ?user;
+			    d2rq:password ?password .
+			}
+		}
+ORDER BY ?reader_id
+") )##
+#set ( $subjectClassesQuery = "
+    SELECT DISTINCT *
+    WHERE {
+        <TRIPLES_MAP> rml:subjectMap ?_subject_map .
+        ?_subject_map rml:class ?subject_rdf_class .
+    }
+")##
+#if(!$functions.checkList($mappings_content))${d}error: "No valid TriplesMap found!"#end##
+#set($lTriplesMaps = $functions.getMap($mappings_content, "triples_map_id"))##
+#foreach($tm in $lTriplesMaps.keySet())#set($refs = [])#set($foo = $lTriplesMaps.get($tm).put("_REFS_", $refs))#end##
+#foreach($row in $mappings_content)#set($lReferences = [])##
+#if($row.subject_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.subject_template)))#elseif($row.subject_reference)#set($foo = $lReferences.add($row.subject_reference))#end##
+#if($row.graph_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.graph_template)))#elseif($row.graph_reference)#set($foo = $lReferences.add($row.graph_reference))#end##
+#if($row.predicate_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.predicate_template)))#elseif($row.predicate_reference)#set($foo = $lReferences.add($row.predicate_reference))#end##
+#if($row.object_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.object_template)))#elseif($row.object_reference)#set($foo = $lReferences.add($row.object_reference))#elseif($row.object_parent_triples_map)#if($row.child_value)#set($foo = $lReferences.add($row.child_value))#end##
+#if($row.parent_value)#set($parentTriplesMap = $row.object_parent_triples_map)#set($foo = $lTriplesMaps.get($parentTriplesMap).get("_REFS_").add($row.parent_value))#end#end##
+#if($row.language_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.language_template)))#elseif($row.language_reference)#set($foo = $lReferences.add($row.language_reference))#end##
+#if($row.datatype_template)#set($foo = $lReferences.addAll($functions.getReferencesFromTemplate($row.datatype_template)))#elseif($row.datatype_reference)#set($foo = $lReferences.add($row.datatype_reference))#end##
+#set($foo = $lTriplesMaps.get($row.triples_map_id).get("_REFS_").addAll($lReferences))#end##
+#foreach($tm in $lTriplesMaps.keySet())#set($refs = $lTriplesMaps.get($tm).get("_REFS_"))#set($foo = $lTriplesMaps.get($tm).put("_REFS_", $functions.getDistinct($refs)))#end##
+#set($lLogicalSources = $functions.getMap($mappings_content, "_source"))#foreach($ls in $lLogicalSources.keySet())#if(!$lLogicalSources.get($ls).get("_REFS_"))#set($refs = [])#set($foo = $lLogicalSources.get($ls).put("_REFS_", $refs))#end#end##
+#foreach($tm in $lTriplesMaps.keySet())#set($refs = $lTriplesMaps.get($tm).get("_REFS_"))#set($tm_source = $lTriplesMaps.get($tm)._source)#set($foo = $lLogicalSources.get($tm_source).get("_REFS_").addAll($refs))#end##
+#foreach($ls in $lLogicalSources.keySet())#set($refs = $lLogicalSources.get($ls).get("_REFS_"))#set($foo = $lLogicalSources.get($ls).put("_REFS_", $functions.getDistinct($refs)))#end##
+#set($sqlTypes = [])#foreach($lsEntry in $lLogicalSources.entrySet())#set($ls = $lsEntry.value)##
+#set($refForm = $ls.ref_form)#set($sourceHash = $functions.hash($ls._source))#set($foo = $ls.put("_SOURCE_HASH_", $sourceHash))#set($lsReferences = $ls.get("_REFS_"))#set($iterator = $ls.iterator)${h}set(${d}reader_$sourceHash = ${d}readers.$functions.hash($ls.reader_id))##
+#if($refForm == "http://w3id.org/rml/CSV")##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setHashVariable(true))##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setOnlyDistinct(true))##
+#set($stringRefs = $functions.getAsCommaSeparatedString($lsReferences))##
+#if($functions.checkString($stringRefs))${h}set(${d}columns = "$stringRefs")##
+${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe(${d}columns))#else##
+${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe())#end##
+#elseif($refForm == "http://w3id.org/rml/SQL2008Table" || $refForm == "http://w3id.org/rml/SQL2008TableName" || $refForm == "http://w3id.org/rml/SQL2008Query")##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setHashVariable(true))##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setOnlyDistinct(true))#if($ls.query)#set($iterator = $ls.query)#end#if($refForm == "http://w3id.org/rml/SQL2008Table" && $ls.jdbcDSN.contains("postgres"))#set($iterator = $iterator.toLowerCase())#end##
+#set($stringRefs = $functions.getAsCommaSeparatedString($lsReferences))#if($functions.checkString($stringRefs))${h}set(${d}columns = "$stringRefs")${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getFilteredDataFrame("$iterator", ${d}columns))#else${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe("$iterator"))#end##
+${h}set(${d}types_$sourceHash = ${d}reader_${sourceHash}.getColumnTypes("$iterator"))##
+${h}set(${d}columns = ${d}types_${sourceHash}.keySet())##
+${h}set(${d}refColumns = $functions.getAsStringArray($lsReferences))##
+${h}foreach(${d}column in ${d}refColumns)${h}if(!${d}columns.contains(${d}column))${d}error: "${d}column not found in ${d}dataframe_$sourceHash."${h}end${h}end##
+#set($foo = $sqlTypes.add($sourceHash))##
+#elseif($refForm == "http://www.w3.org/ns/formats/SPARQL_Results_CSV")##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setHashVariable(true))##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setOnlyDistinct(true))##
+${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe("$iterator"))##
+#elseif($refForm == "http://w3id.org/rml/XPath")##
+${h}set(${d}foo = ${d}reader_${sourceHash}.setOnlyDistinct(true))##
+#if($functions.checkList($lsReferences))##
+#set($xmlQuery = '
+    for $i in ITERATOR
+    return map {
+')##
+#set($xmlQuery = $xmlQuery.replace("ITERATOR", $iterator))#foreach($ref in $lsReferences)#set($refHash = $functions.hash($ref))#set($parts = $ref.split("/"))#if(!$parts.get($parts.size() - 1).contains("@"))#set($ref = "${ref}/text()")#end#set($referenceQuery = '"VARIABLE": $i/REFERENCE,
+')#set($referenceQuery = $referenceQuery.replace("VARIABLE", $refHash))#set($referenceQuery = $referenceQuery.replace("REFERENCE", $ref))#set($xmlQuery = "${xmlQuery}${referenceQuery}") #end#set($xmlQuery = $xmlQuery.trim())#set($xmlQuery = $xmlQuery.substring(0, $xmlQuery.length() - 1))#set($xmlQuery = "${xmlQuery} }")##
+${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe('$xmlQuery'))##
+#else${h}set(${d}dataframe_$sourceHash = [{"ITERATOR" : "ONCE"}])#end##
+#elseif($refForm=="http://w3id.org/rml/JSONPath")##
+#if($functions.checkList($lsReferences))#set($jsonQuery = '{
+    "iterator": "ITERATOR_PATH",
+    "paths": {
+')#set($jsonQuery = $jsonQuery.replace("ITERATOR_PATH", $iterator))##
+#foreach($ref in $lsReferences) #set($refHash = $functions.hash($ref))#set($referenceQuery = '"VARIABLE": "REFERENCE",
+')#set($referenceQuery = $referenceQuery.replace("VARIABLE", $refHash))#set($ref = $ref.replace("$.",""))#set($referenceQuery = $referenceQuery.replace("REFERENCE", $ref))#set($jsonQuery = "${jsonQuery}${referenceQuery}")#end#set($jsonQuery = $jsonQuery.trim())#set($jsonQuery = $jsonQuery.substring(0, $jsonQuery.length() - 1))#set($jsonQuery = "${jsonQuery} }}")#set($jsonQuery = $functions.sanitizeJSON($jsonQuery))##
+${h}set(${d}dataframe_$sourceHash = ${d}reader_${sourceHash}.getDataframe('$jsonQuery'))#else##
+${h}set(${d}dataframe_$sourceHash = [{"ITERATOR" : "ONCE"}])#end#else##
+${d}error: "No compatible Reader found."#end#end##
+#foreach($row in $mappings_content)#if($row.object_parent_triples_map)#set($childHash = $functions.hash($row._source))#set($tmParent = $lTriplesMaps.get($row.object_parent_triples_map))#set($join_hash = $functions.appendHash($tmParent._source, $row.parent_value))#set($child_df = "$dataframe_" + $childHash)#set($parentHash = $functions.hash($tmParent._source))#set($parent_df = "$dataframe_" + $parentHash)#if($row.join_condition)#set($join_variable = $functions.hash($row.parent_value))${h}if(!${d}dataframe_join_$join_hash)${h}set(${d}dataframe_join_$join_hash = ${d}functions.getListMap($parent_df, "$join_variable"))${h}end#else${h}if(!${d}dataframe_join_$join_hash)${h}set(${d}dataframe_join_$join_hash = $parent_df)${h}end#end#end#end##
+#macro(subjectRender $stm)#set($s = $null)#if($stm.subject_template)#set($s = $functions.resolveTemplate($stm.subject_template))#elseif($stm.subject_reference)#set($s = $functions.resolveReference($stm.subject_reference))#elseif($stm.subject_constant)#set($s = $stm.subject_constant)#elseif($stm.subject_constant_shortcut)#set($s = $stm.subject_constant_shortcut)#end #if($stm.subject_termtype == "http://w3id.org/rml/BlankNode")#set($s = $functions.encodeBlankNode($s))#elseif($stm.subject_termtype == "http://w3id.org/rml/Literal")${d}error: subject can not be of type Literal.#else#set($s = $functions.encodeReferencesIRI($s, $stm.subject_termtype))#end##
+$s#end##
+#set($lmSources = $functions.getListMap($mappings_content, "_source"))##
+#foreach($lmSource in $lmSources.entrySet())#set($ls = $lLogicalSources.get($lmSource.key))#set($sourceHash = $functions.hash($ls._source))#set($lmTmSource = $functions.getListMap($lmSource.value,"triples_map_id"))##
+#foreach($lmTmSourceEntry in $lmTmSource.entrySet())#set($tm = $lmTmSourceEntry.value.get(0))#set($subject = "#subjectRender($tm)")#set($subject = $subject.trim())#set($graph = $null)#if($tm.graph_template)#set($graph = $functions.resolveTemplate($tm.graph_template))#elseif($tm.graph_reference)#set($graph = $functions.resolveReference($tm.graph_reference))#elseif($tm.graph_constant)#set($graph = $tm.graph_constant)#elseif($tm.graph_constant_shortcut)#set($graph = $tm.graph_constant_shortcut)#end#if($graph.equals("http://w3id.org/rml/defaultGraph")) #set($graph = $null)#else#set($graph = $functions.encodeReferencesIRI($graph, $tm.graph_termtype))#end#if($tm.graph_termtype.equals("http://w3id.org/rml/Literal"))${d}error: graph can not be of type Literal.#end##
+${h}foreach(${d}i in ${d}dataframe_$sourceHash)##
+#set($rSubjectClassesQuery = $subjectClassesQuery.replace("TRIPLES_MAP", $tm.triples_map_id))#set($subjectClasses = $reader.getDataframe($rSubjectClassesQuery))#foreach($subjClass in $subjectClasses)#if($graph)
+$subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <$subjClass.subject_rdf_class> $graph.
+#else##
+$subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <$subjClass.subject_rdf_class> .
+#end#end##
+#foreach($pom in $lmTmSourceEntry.value)#set($predicate = $null)#if($pom.predicate_template)#set($predicate = $functions.resolveTemplate($pom.predicate_template))#elseif($pom.predicate_reference)#set($predicate = $functions.resolveReference($pom.predicate_reference))#elseif($pom.predicate_constant)#set($predicate = $pom.predicate_constant)#elseif($pom.predicate_constant_shortcut)#set($predicate = $pom.predicate_constant_shortcut)#end#set($predicate = $functions.encodeReferencesIRI($predicate, $null))#set($objects = [])#if($pom.object_template)#set($foo = $objects.add($functions.resolveTemplate($pom.object_template)))#elseif($pom.object_reference)#set($foo = $objects.add($functions.resolveReference($pom.object_reference)))#elseif($pom.object_constant)#set($foo = $objects.add($pom.object_constant))#elseif($pom.object_constant_shortcut)#set($foo = $objects.add($pom.object_constant_shortcut))#elseif($pom.object_parent_triples_map)#set($ptm = $lTriplesMaps.get($pom.object_parent_triples_map))#set($join_hash = $functions.appendHash($ptm._source, $pom.parent_value))#set($parent_subject = $null)#set($parent_subject = "#subjectRender($ptm)")#set($parent_subject = $parent_subject.trim())#set($foo = $objects.add("_REFERENCING_OBJECT_MAP_"))#end##
+#set($language = $null)#if($pom.language_template)#set($language = $functions.resolveTemplate($pom.language_template))#elseif($pom.language_reference)#set($language = $functions.resolveReference($pom.language_reference))#elseif($pom.language_constant)#set($language = $pom.language_constant)#elseif($pom.language_constant_shortcut)#set($language = $pom.language_constant_shortcut)#end#set($datatype = $null)#if($pom.datatype_template)#set($datatype = $functions.resolveTemplate($pom.datatype_template))#elseif($pom.datatype_reference)#set($datatype = $functions.resolveReference($pom.datatype_reference))#elseif($pom.datatype_constant)#set($datatype = $pom.datatype_constant)#elseif($pom.datatype_constant_shortcut)#set($datatype = $pom.datatype_constant_shortcut)#end##
+#foreach($object in $objects)#if($object.equals("_REFERENCING_OBJECT_MAP_"))#if($pom.child_value)#set($join_variable = $functions.hash($pom.child_value))${h}if(${d}functions.checkString(${d}i.$join_variable))##
+${h}foreach(${d}j in ${d}dataframe_join_${join_hash}.get(${d}i.$join_variable))#else##
+${h}foreach(${d}j in ${d}dataframe_join_$join_hash)#end#set($parent_subject = $parent_subject.replaceAll("\{i.","\{j."))#set($refs = $functions.getReferencesFromTriple($subject, $predicate, $parent_subject, $graph))${h}set(${d}refs = $refs)${h}if(${d}functions.checkStrings(${d}refs))#if($graph)
+$subject $predicate $parent_subject $graph .
+#else##
+$subject $predicate $parent_subject .
+#end${h}end${h}end#if($pom.child_value)${h}end#end#else#if($object.contains("://") || $object.startsWith("data:"))#set($object = $functions.encodeReferencesIRI($object, $pom.object_termtype))#else#set($raw_object = $object)#set($object = $object.replaceAll("\\",""))#set($object = $functions.encodeReferencesLiteral($object))#if($datatype)#set($object = $functions.encodeDatatype($object, $datatype))#elseif($sqlTypes.contains($sourceHash) && $functions.checkReference($raw_object))#set($column = $functions.getIteratorFromString($raw_object))#set($object = $functions.encodeSQLDatatype($object, $column, $sourceHash))#end#if($language)#set($object = $functions.encodeLanguage($object, $language))#end#end#set($refs = $functions.getReferencesFromTriple($subject, $predicate, $object, $graph))${h}set(${d}refs = $refs)${h}if(${d}functions.checkStrings(${d}refs))#if($graph)
+$subject $predicate $object $graph .
+#else##
+$subject $predicate $object .
+#end${h}end#end#end#end${h}end#end#end
