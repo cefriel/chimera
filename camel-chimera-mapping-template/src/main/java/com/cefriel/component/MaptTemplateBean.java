@@ -27,6 +27,7 @@ public class MaptTemplateBean {
     private String filename;
     private ChimeraResourceBean keyValuePairs;
     private ChimeraResourceBean keyValuePairsCSV;
+    private String keyValuePairsString;
     private TemplateMap templateMap;
     private String format;
     private ChimeraResourceBean query;
@@ -56,6 +57,7 @@ public class MaptTemplateBean {
         this.isStream = options.isStream();
         this.fir = options.isFir();
         this.resourceCustomFunctions = options.getResourceCustomFunctions();
+        this.keyValuePairsString = options.getKeyValuePairsString();
     }
 
     public String getBasePath() {
@@ -178,6 +180,14 @@ public class MaptTemplateBean {
         this.rml = rml;
     }
 
+    public String getKeyValuePairsString() {
+        return keyValuePairsString;
+    }
+
+    public void setKeyValuePairsString(String keyValuePairsString) {
+        this.keyValuePairsString = keyValuePairsString;
+    }
+
     public void setConfig(MaptTemplateEndpoint endpoint){
 
         if (endpoint.getBasePath()!=null){
@@ -224,6 +234,9 @@ public class MaptTemplateBean {
         }
         if(endpoint.getRml() != null) {
             this.setRml(endpoint.getRml());
+        }
+        if(endpoint.getKeyValuePairsString() != null) {
+            this.setKeyValuePairsString(endpoint.getKeyValuePairsString());
         }
     }
 }

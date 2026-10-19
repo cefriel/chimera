@@ -26,6 +26,17 @@ public class MaptTemplateMapTest extends CamelTestSupport {
         mock.assertIsSatisfied();
     }
 
+    @Test
+    public void testTemplateMapFromKeyValuePairsString() throws Exception {
+        MockEndpoint mock = getMockEndpoint("mock:resultString");
+        mock.expectedMessageCount(1);
+
+        template.send("direct:startString", ExchangeBuilder.anExchange(context()).build());
+        String result = mock.getExchanges().get(0).getMessage().getBody(String.class);
+        Assertions.assertEquals(result, "1,2");
+        mock.assertIsSatisfied();
+    }
+
     protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
             @Override
@@ -36,6 +47,10 @@ public class MaptTemplateMapTest extends CamelTestSupport {
                 from("direct:start")
                         .to("mapt://?template=#bean:mtlTemplate&templateMap=#bean:templateMap")
                         .to("mock:result");
+
+                from("direct:startString")
+                        .to("mapt://?template=#bean:mtlTemplate&keyValuePairsString=key1:1;key2:2")
+                        .to("mock:resultString");
             }
         };
     }

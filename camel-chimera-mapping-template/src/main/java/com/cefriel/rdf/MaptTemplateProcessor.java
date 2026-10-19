@@ -72,6 +72,7 @@ public class MaptTemplateProcessor {
                                    ChimeraResourceBean templateMapKV,
                                    ChimeraResourceBean templateMapKVCsv,
                                    TemplateMap templateMap,
+                                   String templateMapKVsString,
                                    String baseIRI,
                                    boolean isStream,
                                    boolean fir,
@@ -93,6 +94,7 @@ public class MaptTemplateProcessor {
                 operationConfig.getKeyValuePairs(),
                 operationConfig.getKeyValuePairsCSV(),
                 operationConfig.getTemplateMap(),
+                operationConfig.getKeyValuePairsString(),
                 baseIri == null ? ChimeraConstants.DEFAULT_BASE_IRI : baseIri,
                 operationConfig.isStream(),
                 operationConfig.isFir(),
@@ -164,6 +166,24 @@ public class MaptTemplateProcessor {
             templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKVCsv(), exchange), true);
         } else if (params.templateMapKV() != null) {
             templateMap = new TemplateMap(ResourceAccessor.open(params.templateMapKV(), exchange), false);
+        } else if (params.templateMapKVsString() != null && !params.templateMapKVsString().isBlank()) {
+            Map<String, String> kvMap = new HashMap<>();
+            for (String pair : params.templateMapKVsString().split(";")) {
+                if (pair.isBlank()) {
+                    continue;
+                }
+                int separatorIndex = pair.indexOf(':');
+                if (separatorIndex < 0) {
+                    throw new InvalidParameterException("Invalid key-value pair '" + pair + "' in keyValuePairsString. Expected format \"key1:value1;key2:value2\"");
+                }
+                String key = pair.substring(0, separatorIndex).trim();
+                String value = pair.substring(separatorIndex + 1).trim();
+                if (key.isEmpty()) {
+                    throw new InvalidParameterException("Empty key in key-value pair '" + pair + "' in keyValuePairsString");
+                }
+                kvMap.put(key, value);
+            }
+            templateMap = new TemplateMap(kvMap);
         }
 
         TemplateSource templateSource;

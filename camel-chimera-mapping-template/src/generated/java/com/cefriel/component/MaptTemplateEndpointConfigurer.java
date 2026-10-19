@@ -38,6 +38,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "keyValuePairs": target.setKeyValuePairs(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
         case "keyvaluepairscsv":
         case "keyValuePairsCSV": target.setKeyValuePairsCSV(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
+        case "keyvaluepairsstring":
+        case "keyValuePairsString": target.setKeyValuePairsString(property(camelContext, java.lang.String.class, value)); return true;
         case "lazystartproducer":
         case "lazyStartProducer": target.setLazyStartProducer(property(camelContext, boolean.class, value)); return true;
         case "query": target.setQuery(property(camelContext, com.cefriel.util.ChimeraResourceBean.class, value)); return true;
@@ -78,6 +80,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "keyValuePairs": return com.cefriel.util.ChimeraResourceBean.class;
         case "keyvaluepairscsv":
         case "keyValuePairsCSV": return com.cefriel.util.ChimeraResourceBean.class;
+        case "keyvaluepairsstring":
+        case "keyValuePairsString": return java.lang.String.class;
         case "lazystartproducer":
         case "lazyStartProducer": return boolean.class;
         case "query": return com.cefriel.util.ChimeraResourceBean.class;
@@ -119,6 +123,8 @@ public class MaptTemplateEndpointConfigurer extends PropertyConfigurerSupport im
         case "keyValuePairs": return target.getKeyValuePairs();
         case "keyvaluepairscsv":
         case "keyValuePairsCSV": return target.getKeyValuePairsCSV();
+        case "keyvaluepairsstring":
+        case "keyValuePairsString": return target.getKeyValuePairsString();
         case "lazystartproducer":
         case "lazyStartProducer": return target.isLazyStartProducer();
         case "query": return target.getQuery();
